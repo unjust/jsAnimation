@@ -1,19 +1,39 @@
-// use strict
-// Create a Paper.js Path to draw a line into it:
-var path = new Path();
+import { paper, Path, Point, PointText } from 'paper';
 
-// Give the stroke a color
-path.strokeColor = 'black';
-var start = new Point(100, 100);
+(function HelloWorld() {
 
-// Move to start and draw a line from there
-path.moveTo(start);
+    paper.setup(document.getElementById("myCanvas"));
+    const view = paper.view;
 
-// Note the plus operator on Point objects.
-// PaperScript does that for us, and much more!
-path.lineTo(start.length * 3 + [ 100, -50 ]);
+    // Create a Paper.js Path to draw a line into it:
+    let path = new Path();
 
-var otherPath = new Path();
-otherPath.strokeColor = 'green';
-otherPath.add(new Point(0, 0), new Point(0, 100));
-otherPath.angle = 200;
+    // Give the stroke a color
+    path.strokeColor = 'green';
+    path.strokeWidth = 3;
+
+    path.add(new Point(0, 50), new Point(100, 100))
+    path.insert(1, new Point(40, 50));
+    path.closed = true;
+   
+    const text = new PointText({
+        point: view.center,
+        fontSize: 30,
+        fillColor: 'black',
+        justifiction: 'center'
+    });
+
+    const getDestination = () => Point.random().multiply(view.size);
+    let destination = getDestination();
+    
+    paper.view.onFrame = function(e) {
+        
+        let vector = destination.subtract(text.position);
+        text.position = text.position.add(vector.divide(30));
+        text.content = Math.round(vector.length);
+        console.log(vector.length);
+        if (vector.length < 5) {
+            destination = getDestination();
+        }
+    }
+})();
