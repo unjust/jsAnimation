@@ -31,7 +31,7 @@ import { paper, Path, Point, PointText } from 'paper';
         let vector = destination.subtract(text.position);
         text.position = text.position.add(vector.divide(30));
         text.content = Math.round(vector.length);
-        console.log(vector.length);
+        // console.log(vector.length);
         if (vector.length < 5) {
             destination = getDestination();
         }
