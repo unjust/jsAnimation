@@ -1,20 +1,20 @@
-import { paper, Shape, Point } from 'paper';
+import { paper } from 'paper';
 
 (function myApp() {
 
     paper.setup(document.getElementById("myCanvas"));
 
-    const view_center = paper.view.center,
-        origin = new Point(view_center.x, view_center.y);
-    
+    const view_center = paper.view.center;
     
     paper.view.onMouseDown = (event) => {
         // interaction here
+        console.log('clicked');
     };
 
         
     paper.view.onFrame = (e) => {
         // animation here
+        console.log('hello world', view_center);
     };
 
 })();
