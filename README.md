@@ -13,6 +13,11 @@ Project is build with webpack, using babel so I can use imports/exports and othe
 
 ## Build process
 
-`yarn run webpack`  
-webpack looks in the js directory, for every js it creates and entry point based on the file name (eg `first` for `first.js`, `foo` for `foo.js` etc)
-the the html plugin uses those entry points and creates an html file based on the `templates/template.html`. it appends the script tag to the bottom and interpolates basic template vars.
+`yarn run webpack` 
+
+webpack looks in the js directory, for every js it creates and entry point based on the file name  
+(eg `first` for `first.js`, `foo` for `foo.js` etc) 
+
+https://github.com/jantimon/html-webpack-plugin
+the the html plugin uses those entry points and creates an html file based on the `templates/template.html`. 
+it appends the script tag to the bottom and interpolates basic template vars.
