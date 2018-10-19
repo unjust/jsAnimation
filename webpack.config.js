@@ -23,8 +23,6 @@ const generateHtmlPluginCalls = () => {
         };
         return new HtmlWebpackPlugin(config);
     });
-    // console.log(arr);
-    // return arr;
 };
 
 module.exports = {
