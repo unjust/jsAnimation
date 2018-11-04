@@ -16,8 +16,10 @@ const entryConfig = entryFiles.reduce((config, item) => {
     return config;
 }, {});
 
-const template = 'templates/template.html';
-const generateHtmlPluginCalls = () => {
+const template = (entryName) => 
+    (entryName.indexOf('p5') > -1) ? 'templates/template_p5.html' : 'templates/template_paper.html';
+
+    const generateHtmlPluginCalls = () => {
     return Object.keys(entryConfig).map((entryName, index) => {
         const date = new Date(fs.statSync(entryFiles[index]).ctime);
         const ctime = `${date.getDate()}\
@@ -26,7 +28,7 @@ const generateHtmlPluginCalls = () => {
         const config = {
             chunks: [entryName],
             filename: `${entryName}.html`,
-            template,
+            template: template(entryName),
             title: `${entryName} Paper`,
             ctime
         };
