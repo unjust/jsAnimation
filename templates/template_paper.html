@@ -1,21 +1,31 @@
 
 <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta http-equiv="X-UA-Compatible" content="ie=edge">
-            <title><%= htmlWebpackPlugin.options.title %></title>
-        </head>
-        <body>
-            <canvas id="myCanvas" 
-                width="800"
-                height="500"
-                style="border:1px solid black;"></canvas>
-            <div style="font-family: monospace;">
-                #<%= htmlWebpackPlugin.options.title %>
-                <%= htmlWebpackPlugin.options.ctime %>
-            </div>
-        </body>
-    
-        <!-- <script type="text/javascript" src="build/{{source}}"></script> -->
-    </html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title><%= htmlWebpackPlugin.options.title %></title>
+    </head>
+    <style>
+        #myCanvas {
+            margin: 0 auto;
+        }
+        .about {
+            margin: 0 5px;
+            color: darkslategrey;
+            font-family: 'Monaco', Courier, monospace;
+        };
+    </style>
+    <body>
+        <canvas id="myCanvas" 
+            width="800"
+            height="500"
+            style="border:1px solid black;"></canvas>
+        <div class="about">
+            <%= htmlWebpackPlugin.options.title %>
+            <%= htmlWebpackPlugin.options.ctime %>
+        </div>
+    </body>
+
+    <!-- <script type="text/javascript" src="build/{{source}}"></script> -->
+</html>

@@ -6,10 +6,20 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title><%= htmlWebpackPlugin.options.title %></title>
     </head>
+    <style>
+        #container {
+            margin: 0 auto;
+        }
+        .about {
+            margin: 0 5px;
+            color: darkslategrey;
+            font-family: 'Monaco', Courier, monospace;
+        }
+    </style>
     <body>
-        
-        <div style="font-family: monospace;">
-            #<%= htmlWebpackPlugin.options.title %>
+        <div id="container"></div>
+        <div class="about">
+            <%= htmlWebpackPlugin.options.title %>
             <%= htmlWebpackPlugin.options.ctime %>
         </div>
     </body>
