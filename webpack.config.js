@@ -22,14 +22,13 @@ const template = (entryName) =>
     const generateHtmlPluginCalls = () => {
     return Object.keys(entryConfig).map((entryName, index) => {
         const date = new Date(fs.statSync(entryFiles[index]).ctime);
-        const ctime = `${date.getDate()}\
-        -${date.getMonth() < 12 ? date.getMonth() + 1 : 12}\
-        -${date.getFullYear()}`;
+        const ctime = 
+            `${date.getDate()}-${date.getMonth() < 12 ? date.getMonth() + 1 : 12}-${date.getFullYear()}`;
         const config = {
             chunks: [entryName],
             filename: `${entryName}.html`,
             template: template(entryName),
-            title: `${entryName} Paper`,
+            title: `${entryName}`,
             ctime
         };
         return new HtmlWebpackPlugin(config);
