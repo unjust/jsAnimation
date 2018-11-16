@@ -41,6 +41,7 @@ module.exports = {
     mode: 'development',
     watch: true,
     entry: entryConfig,
+    devtool: 'eval-source-map',
     output: {
         path: buildPath,
         filename: `[name].js`
