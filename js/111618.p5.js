@@ -11,37 +11,39 @@ function getRandomInt(max) {
 
 const Object = function(shapeFn, w, h, x, y, z, rate=0.01) {
     this.pos = createVector(x, y, z);
-    this.posEnd = createVector(x, y, 10000.); 
+    this.posEnd = createVector(x, y, -1 * 10000.); 
 
     this.counter = 0.0;
     
     this.tick = (x = 0.1) => this.counter += x;
 
     this.move = () => {
-        console.log('my counter ', this.counter);
+        if (this.counter > 100) {
+            return;
+        }
         const pct = this.counter/100;
+        
+        // TODO: check this math
         // (A * (1-pct)) + (B * pct)
-        /// this.pos = (this.pos.mult(1-pct)).add(this.posEnd.mult(pct));
-        this.pos.z = (this.pos.z * (pct)) + (this.posEnd.z * (1- pct));
+        // this.pos = (this.pos.mult(1-pct)).add(this.posEnd.mult(pct));
+
+        const A = this.pos.mult(1-pct);
+        const B = this.posEnd.mult(pct);
+        // this.pos.z = (this.pos.z * (1 - pct)) + (this.posEnd.z * pct);
+        this.pos = A.add(B);
+        console.log(this.pos.z);
         return this.pos;
     }
 
     this.draw = () => {
-        
         // console.log(this.pos.z);  
         stroke('black');
         fill('white');
-
-        push();
-        // console.log(this.move());
-        translate(this.pos.x, this.pos.y, this.pos.z);
-        rotate(this.tick(rate), [1, 1, 1]);
-        shapeFn(w, h);
-        pop();
+        this.move();
 
         push();
         translate(this.pos);
-        
+        rotate(this.tick(rate), [1, 1, 1]);
         shapeFn(w, h);
         pop();
     }
@@ -51,7 +53,6 @@ const Shapes = [];
 const NUM_SHAPES = 12;
 let canvas;
 
-debugger
 const shapeTypes = [
     "sphere",
     "box",
