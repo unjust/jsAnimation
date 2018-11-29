@@ -1,14 +1,16 @@
-# paperJS
-experiments with paperJS drawing and animation
-
-Going to work through some ideas and tutorials with http://paperjs.org/
+# JS animation
+experiments with drawing and animation in js frameworks
+https://paperjs.org 
+https://p5js.org
 
 Project is build with webpack, using babel so I can use imports/exports and other es6 features :hooray:
 
 ## Structure
 
-- templates: contains a template for js (just as an example) and a template for html that is used in the webpack build.
-- js: each sketch has its own file
+- templates dir: 
+contains a template for js (just as an example) 
+and two templates for html that are used in the webpack build, one is used for p5 projects because it doesnt have a canvas element in the dom (p5 makes a canvas).
+- js dir: each sketch has its own file - using the extension \*.p5.js right now will generate an html file using the p5 template
 - build: dir for built js (webpack/babel) and generated html files
 
 ## Build process
