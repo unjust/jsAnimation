@@ -7,22 +7,31 @@
         <title><%= htmlWebpackPlugin.options.title %></title>
     </head>
     <style>
-        #container {
+        #container, #myCanvas {
             margin: 0 auto;
         }
         .about {
             margin: 0 5px;
             color: darkslategrey;
             font-family: 'Monaco', Courier, monospace;
-        }
+        };
     </style>
     <body>
-        <div id="container"></div>
+
+       
+            <% if (htmlWebpackPlugin.options.noCanvasDOM) { %>
+                <div id="container"></div>
+            <% } else { %> 
+                <canvas id="myCanvas" 
+                    width="800"
+                    height="500"
+                    style="border:1px solid black;"></canvas>
+            <% } %>
+        </div>
         <div class="about">
             <%= htmlWebpackPlugin.options.title %>
             <%= htmlWebpackPlugin.options.ctime %>
         </div>
     </body>
 
-    <!-- <script type="text/javascript" src="build/{{source}}"></script> -->
 </html>

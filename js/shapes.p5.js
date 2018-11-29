@@ -60,7 +60,7 @@ class Objekt {
 
     draw(warp) {
         if (warp) {
-            this.fillColor.setAlpha(10);
+            this.fillColor.setAlpha(190);
         } else {
             this.move();
         }
@@ -103,7 +103,7 @@ class Cone extends Objekt {
 
     draw(warp) {
         if (warp) {
-            this.fillColor.setAlpha(100);
+            this.fillColor.setAlpha(190);
         } else {
             this.fillColor.setAlpha(255);
         }
@@ -128,7 +128,7 @@ class Cone extends Objekt {
 };
 
 class Cube extends Objekt {
-    constructor(side, h, x, y, z, rate=0.1, colors={ stroke: 'black', fill: 'blue'}) {
+    constructor(side, h, x, y, z, rate=0.1, colors={ stroke: 'red', fill: 'blue'}) {
         super("box", side, side, x, y, z, rate, colors );
     }
 };

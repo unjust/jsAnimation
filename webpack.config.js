@@ -16,10 +16,10 @@ const entryConfig = entryFiles.reduce((config, item) => {
     return config;
 }, {});
 
-const template = (entryName) => 
-    (entryName.indexOf('p5') > -1) ? 'templates/template_p5.html' : 'templates/template_paper.html';
 
-    const generateHtmlPluginCalls = () => {
+const noCanvasDOM = (entryName) => (entryName.indexOf('p5') > -1);
+
+const generateHtmlPluginCalls = () => {
     return Object.keys(entryConfig).map((entryName, index) => {
         const date = new Date(fs.statSync(entryFiles[index]).ctime);
         const ctime = 
@@ -27,8 +27,9 @@ const template = (entryName) =>
         const config = {
             chunks: [entryName],
             filename: `${entryName}.html`,
-            template: template(entryName),
+            template: 'templates/template.html',
             title: `${entryName}`,
+            noCanvasDOM: noCanvasDOM(entryName),
             ctime
         };
         return new HtmlWebpackPlugin(config);
