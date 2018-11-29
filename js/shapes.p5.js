@@ -6,56 +6,43 @@ import p5 from 'p5';
 // TODO: get shapes to generate on a cycle
 // TODO: get more dynamic speeds, some random of this, some fast some slow
 // TODO: more dynamic sizes
-// TODO: draw shapes with better texture
-
-const shapeTypes = [
-    "sphere",
-    "box",
-    "cone",
-    "cylinder",
-    "ellipsoid"
-];
 
 
 const Shapes = [];
 const NUM_SHAPES = 12;
 const depth = 5000.0; // TODO: play around with adjusting this for black hole effect
+let worldRotation = 0;
 
 let canvas;
 
-const Objekt = function(shapeType, w, h, x, y, z, rate=0.01) {
-    this.shapeType = shapeType;
-    this.shapeFn = window[shapeType]; // p5 is in global mode, shape fn on window
-    this.dim = { w }
-    this.dim.h = (shapeType === "box") ? w : h;
+class Objekt {
+    constructor(
+        shapeType, 
+        w, h,
+        x, y, z, 
+        rate=0.01, 
+        colors={ stroke: 'black', fill: 'white' }) 
+    {
 
-    this.pos = createVector(x, y, z);
-    this.posEnd = createVector(x, y, -1 * depth); 
-    this.counter = 0.0;
-}
+        this.shapeType = shapeType;
+        this.shapeFn = window[shapeType]; // p5 is in global mode, shape fn on window
+        
+        this.dim = { w, h };
 
-Object.assign(Objekt.prototype, {
-    stroke() {
-        switch(this.shapeType) {
-            case("box"): 
-                stroke("black");
-                break;
-            case("sphere"):
-                noStroke();
-                break;
-            case("cone"):
-                stroke("black")
-                ellipse(0, this.dim.h, this.dim.w);
-                stroke("white");
-                break;
-            case("ellipsoid"): 
-                noStroke();
-                break;
-            default:
-                noStroke();
-        }
-    },
+        this.fillColor = color(colors.fill);
+        this.strokeColor = color(colors.stroke);
+
+        this.pos = createVector(x, y, z);
+        this.posEnd = createVector(x, y, -1 * depth); 
+
+
+        this.rate = rate;
+        this.counter = 0.0;
+    }
+
     move() {
+        // console.log("move");
+        this.counter += 0.001;
         if (this.pos - this.posEnd > 100) {
             return;
         }
@@ -67,93 +54,142 @@ Object.assign(Objekt.prototype, {
         
         // console.log(this.pos);
         return this.pos;
-    },
-    draw() {}
-});
+    }
 
+    drawStroke() {}
 
-const Cone = function(w, h, x, y, z, rate=0.01) {
-    this.shapeFn = window["cone"]; // p5 is in global mode, shape fn on window
-    this.dim = { w, h };
+    draw(warp) {
+        if (warp) {
+            this.fillColor.setAlpha(10);
+        } else {
+            this.move();
+        }
 
-    this.pos = createVector(x, y, z);
-    this.posEnd = createVector(x, y, -1 * depth); 
-    this.counter = 0.0;
-}
-
-
-Object.assign(Cone.prototype, Objekt.prototype, {
-    shapeType: "cone",
-    counter: 0,
-    stroke() {
-        
-    },
-    draw() {
-        // stroke('black');
-        fill('blue');
-        
-        // push();
-        
-        // pop();
+        fill(this.fillColor);
+        stroke(this.strokeColor);
 
         push();
+        translate(this.pos);
         this.shapeFn(this.dim.w, this.dim.h);
-        rotateY(this.counter++);
-        //rotateY(180);
-        beginShape(LINES);
-        for (let i = 0; i < TWO_PI; i+=1/360) {
-            let px = (cos(i) * this.dim.w);
-            let py = (sin(i) * this.dim.w);
-            vertex(px, py, this.pos.z);
-        }
-        endShape();
         pop();
     }
-});
+};
+
+
+class Cone extends Objekt {
+     
+    constructor(w, h, x, y, z, rate, colors={ stroke: 'black', fill: 'red'}) {
+        super("cone", w, h, x, y, z, rate, colors);
+        this.rotateCounter = 0.0;
+    }
+
+    // drawing a circle base
+    // for a cartoon effect
+
+    drawStroke() {
+        translate(0, -1 * this.dim.h/2, 0);
+        rotateX(90);
+        stroke(this.strokeColor);
+
+        angleMode(DEGREES);
+        beginShape(LINES);
+        for (let i = 0; i < 360; i++) {
+            let px = (cos(i) * this.dim.w);
+            let py = (sin(i) * this.dim.w);
+            vertex(px, py);
+        }
+        endShape();
+    }
+
+    draw(warp) {
+        if (warp) {
+            this.fillColor.setAlpha(100);
+        } else {
+            this.fillColor.setAlpha(255);
+        }
+
+        fill(this.fillColor);
+        noStroke();
+        
+        this.rotateCounter += 0.1;
+
+        if (!warp) {
+            this.move();
+        }
+
+        push();
+        translate(this.pos);
+        rotate(this.rotateCounter, [0, 0, 1]);
+        
+        this.shapeFn(this.dim.w, this.dim.h);
+        this.drawStroke();
+        pop();
+    }
+};
+
+class Cube extends Objekt {
+    constructor(side, h, x, y, z, rate=0.1, colors={ stroke: 'black', fill: 'blue'}) {
+        super("box", side, side, x, y, z, rate, colors );
+    }
+};
+
+const shapeTypes = [
+    //"sphere",
+    Cube,
+    Cone,
+    //"cylinder",
+    //"ellipsoid"
+];
 
 const createShape = function() {
-
-    const shapeType = random(shapeTypes);
+    const Shape = random(shapeTypes);
     const v = p5.Vector.random3D();
 
     const x = v.x * width/2; // trying to constrain the cone
     const y = v.y * height/2;
-    const z = -200; // hard coding z forward
+    const z = 200; // hard coding z forward
 
     const w = random(5, 10) * 5;
-    const h = random(5, 10) * 5;
+    const h = random(5, 10) * 8;
     const rate = random(0.0001, 0.0008);
 
     console.log("i am god", x, y, z, w, h, rate);
 
     Shapes.push(
-        new Cone(w, h, 0, 0, z, 0.0)
+        new Shape(w, h, x, y, z, 0.0)
     );
 };
 
+const spinTheWorld = () => {
+    // spin the world
+    rotateZ(worldRotation++);
+}
+
 window.setup = () => {
-    
     canvas = createCanvas(710, 400, WEBGL);
     // https://p5js.org/es/reference/#/p5/perspective
-    perspective(PI/3, width/height, 70, depth);	
-   
+    perspective(PI/3, width/height, 70, depth);	  
     canvas.mouseClicked(createShape);
+    
+    background(0);
 };
 
 window.draw = () => {
-    
-    clear();
-    background(0);
-    orbitControl();
-    
-    push();
-    translate(200, 200, -500);
-    cone(200, 300);
-    pop();
 
+    orbitControl();
+
+    const warp = keyIsPressed;
+
+    if (warp) {
+        spinTheWorld();
+    } else {
+        clear();
+        background(0);
+    } 
+    
+    
     Shapes.forEach((shape) => {
-        console.log("drawww");
-        shape.draw();
+        shape.draw(warp);
     });
 };
 
