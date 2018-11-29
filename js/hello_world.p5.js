@@ -1,3 +1,6 @@
+// add *.p5.js as an extension and the p5 template
+// without canvas
+
 import p5 from 'p5';
 import "p5/lib/addons/p5.sound";
 
