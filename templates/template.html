@@ -9,6 +9,7 @@
     <style>
         #container, #myCanvas {
             margin: 0 auto;
+            border: 1px solid black;
         }
         .about {
             margin: 0 5px;
@@ -17,17 +18,14 @@
         };
     </style>
     <body>
-
-       
-            <% if (htmlWebpackPlugin.options.noCanvasDOM) { %>
-                <div id="container"></div>
-            <% } else { %> 
-                <canvas id="myCanvas" 
-                    width="800"
-                    height="500"
-                    style="border:1px solid black;"></canvas>
-            <% } %>
-        </div>
+        <% if (htmlWebpackPlugin.options.noCanvasDOM) { %>
+            <div id="container"></div>
+        <% } else { %> 
+            <canvas id="myCanvas" 
+                width="800"
+                height="500"
+                style="border:1px solid black;"></canvas>
+        <% } %>
         <div class="about">
             <%= htmlWebpackPlugin.options.title %>
             <%= htmlWebpackPlugin.options.ctime %>
