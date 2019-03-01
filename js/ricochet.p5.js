@@ -1,139 +1,134 @@
 import p5 from 'p5';
 
 new p5((sketch) => {
-  const canvas_w = 800,
-      	canvas_h = 600;
-  const vel = 10;
-  const directions = [
-		sketch.createVector(1 * vel, 1 * vel),
-		sketch.createVector(-1 * vel, 1 * vel),
-		sketch.createVector(1 * vel, -1 * vel),
-		sketch.createVector(-1 * vel, -1 * vel)];
-  /**
-   * @function hit
-   * @param {Vector} v 
-   * @returns {Boolean} whether or not vector has hit the wall
-   */
 
-  const hit = (v) => v.x >= canvas_w || v.x <= 0 || v.y >= canvas_h || v.y <= 0;
-  // trying to prevent changing directions too much if we are out of bounds
+	const canvas_w = 800,
+		canvas_h = 600;
 
 
-  const isInBounds = (v) => !hit(v);
+	const vel = 10;
 
-  const getNewDirection = function(direction) {
-    const d = Math.floor(Math.random() * Math.floor(directions.length));
-    return d != direction ? d : getNewDirection(d);
-  };
-  /**
-   *  @returns percentage RGBA notation stroke('rgba(100%,0%,100%,0.5)');
-   */
+	// t, r, b, l
+	const normals = [
+		sketch.createVector(1,1),
+		sketch.createVector(-1,1),
+		sketch.createVector(1,-1),
+		sketch.createVector(1,-1)
+	];
 
-
-	const randomColor = function randomColor(opacity=1.0) {
-    return new Array(3).fill(0).map(function () {
-      return Math.ceil(Math.random() * 100);
-    });
-  };
-
-  const Vector = function(x1=100, y1=100, vel=10, mag=100) {
-  	this.velocity = vel;
-    this.magnitude = mag; // magnitude ??
-
-    this.buffer = [];
-    this.currentDirectionIndex = 0;
-    this.currentColor = randomColor();
-    this.headPoint = sketch.createVector(x1, y1);
-    this.endPoint = null;
-
-
-    this.restart = function () {};
-
-    this.bufferIsFull = function() {
-      return this.buffer.length === this.magnitude;
-    }; // https://processing.org/examples/accelerationwithvectors.html
-
-
-    this.update = function() {
-      if (this.bufferIsFull()) {
-        this.buffer.shift();
-
-        this.endPoint = this.buffer[0]; // the oldest are at the front of the buffer
-      }
-
-      this.headPoint.add(directions[this.currentDirectionIndex]);
-
-      this.buffer.push(this.headPoint.copy()); // console.log(`start = ${start}, 0 = ${buffer[0]}, end = ${end}`);
-
-
-      if (hit(this.headPoint)) {
-        // if (isInBounds(start)) {
-        // get nearest edge
-        this.currentColor = randomColor();
-        this.currentDirectionIndex = getNewDirection(this.currentDirectionIndex);
-        console.log("now the direction is", this.currentDirectionIndex); // }
-        // else {
-        // 	this.restart();
-        // }
-      }
-    };
-
-    this.draw = function () {
-      const bufferLength = this.buffer.length;
-
-      for (var v = 0; v < bufferLength; v++) {
-        let percentageLeft = 1 - v / bufferLength; // 0 opacity on the first one since its the last pixel really
-        let opacity = bufferLength - percentageLeft * bufferLength;
-
-        if (v == bufferLength - 1) {
-          sketch.stroke('black');
-        } else {
-          let str = `rgba(${this.currentColor[0]}%, ${this.currentColor[1]}%, ${this.currentColor[2]}%, ${opacity / 100})`;
-					sketch.stroke(str);
-        }
-        if (bufferLength > v + 1) {
-          sketch.line(this.buffer[v].x, this.buffer[v].y, this.buffer[v + 1].x, this.buffer[v + 1].y);
-        } else {
-          sketch.point(this.buffer[v].x, this.buffer[v].y);
-        }
-      }
-    };
-	}; 
+	/**
+	 * @function hit
+	 * @param {Vector} v 
+	 * @returns {String, Boolean} what edge it hit or false if none
+	 */
 	
-	// const nearestEdge = (v) => {
-  // 	let nearestEdge = sketch.createVector(0, 0);
-  // 	if (v.x > canvas_w) {
-  // 		nearestEdge.x = canvas_w;
-  // 		// recalc
-  // 	}
-  // 	if (v.y > canvas_h) {
-  // 		nearestEdge.x = canvas_h;
-  // 		//recalc
-  // 	}
-  // 	if (v.x < 0) {
-  // 		// recalc
-  // 	}
-  // 	if (v.y < 0) {
-  // 		//recalc
-  // 		const a = sketch.createVector(v.x, -1 * v.y);
-  // 		v.add(a);
-  // 	}
-  // }
+	 // need to more accuratel calculate what will hit,
+	 // could hit a corner
+	const hit = (v) => {
+		console.log("calling hit test with v is ", v);
+		if (v.y <= 0) {
+			return 't';
+		} else if (v.x >= canvas_w) {
+			return 'r';
+		} else if (v.y >= canvas_h) {
+			return 'b'
+		} else if (v.x <= 0) {
+			return 'l'
+		} 
+		return false;
+	};
+
+	// trying to prevent changing directions
+	// too much if we are out of bounds
+	const isInBounds = (v) => !hit(v);
+
+	const getNewDirection = (direction) => {
+		let d = Math.floor(Math.random() * Math.floor(normals.length));
+		return (d != direction) ? d : getNewDirection(d);
+	};
+
+	/**
+	 *  @returns percentage RGBA notation stroke('rgba(100%,0%,100%,0.5)');
+	 */
+	const randomColor = (opacity = 1.0) => new Array(3).fill(0).map(() => Math.ceil(Math.random() * 100));
+
+	const Ray = function(x1=100, y1=100, vel=.2, mag=100) {
+	
+		this.velocity = vel;
+		this.maxMagnitude = mag; // magnitude ??
+
+		this.currentDirectionIndex = 0;
+		this.currentColor = randomColor();
+
+		// start by storing initial vertex
+		this.vertices = [ sketch.createVector(x1, y1) ];
+
+		// the last point in our buffer
+		this.lastVertex = () => this.vertices[this.vertices.length - 1];
+		
+		this.setColor = (c) => this.color = c;
+	
+		this.getMagnitude = () => {
+			const mag = p5.Vector.sub(this.vertices[0], this.lastVertex()).mag();
+			
+			const a = (this.vertices[0].x - this.vertices[this.vertices.length - 1].x);
+			const b = (this.vertices[0].y - this.vertices[this.vertices.length - 1].y);
+			const mag2 = Math.sqrt(a*a + b*b);
+			console.log(a, b, mag, mag2, this.vertices.length); 
+			return mag;
+		}
+		
+		// https://processing.org/examples/accelerationwithvectors.html
+		// http://www.mightydrake.com/Articles/ricochet.htm
+		//https://gamedev.stackexchange.com/questions/23672/determine-resulting-angle-of-wall-collision
+	
+		this.update = () => {
+			// if this thing is less than the magnitude we want, add a vertex
+			if (this.getMagnitude() > this.maxMagnitude) {
+				this.vertices.pop();
+			}
+			const newVertex = (this.vertices[0].copy()).add(normals[this.currentDirectionIndex]);
+			this.vertices.unshift(newVertex);
+			
+			// console.log(`start = ${this.vertices[0]}, end = ${this.lastVertex()}`);
+	
+			if (hit(this.vertices[0])) {
+				// debugger
+				this.currentColor = randomColor();
+				this.currentDirectionIndex = getNewDirection(this.currentDirectionIndex);
+				console.log("now the direction is", this.currentDirectionIndex);
+			}
+		};
+
+		this.draw = () => {
+			//sketch.push();
+			//sketch.translate(this.lastVertex().x, this.lastVertex().y);
+			sketch.stroke(`rgba(${this.currentColor[0]},${this.currentColor[1]},${this.currentColor[2]},1.0)`);
+			
+			for (let v = 0; v < this.vertices.length; v++) {
+				sketch.point(this.vertices[v].x, this.vertices[v].y);
+			}
+			
+			sketch.stroke('yellow');
+			sketch.point(this.vertices[0].x, this.vertices[0].y);
+			//sketch.pop();
+		}
+	}
 
 
-  var line;
+	let ray;
 
-  sketch.setup = () => {
-    var c = sketch.createCanvas(canvas_w, canvas_h, p5__WEBPACK_IMPORTED_MODULE_0___default.a.WEBGL);
-    c.parent('container');
-    sketch.fill('white');
-    sketch.strokeWeight(4);
-    line = new Vector();
-  };
+	sketch.setup = () => {
+		const c = sketch.createCanvas(canvas_w, canvas_h, p5.WEBGL);
+		c.parent('container');
+		sketch.fill('white');
+		sketch.strokeWeight(4);
+		ray = new Ray();
+	};
 
-  sketch.draw = () => {
-    sketch.clear();
-    line.update();
-    line.draw();
-  };
+	sketch.draw = () => {
+		sketch.clear();
+		ray.update();
+		ray.draw();
+	};
 });
