@@ -5,7 +5,6 @@ new p5((s) => {
 	const canvas_w = 800,
 		canvas_h = 600;
 
-
 	const vel = 10;
 
 	// t, r, b, l
@@ -22,8 +21,8 @@ new p5((s) => {
 	 * @returns {String, Boolean} what edge it hit or false if none
 	 */
 	
-	 // need to more accurate calculate what will hit,
-	 // could hit a corner
+	// need to more accurate calculate what will hit,
+	// could hit a corner
 	const topBottomEdge = (v) => (v.y >= canvas_h - 3 || v.y <= 3);
 	const leftRightEdge = (v) => (v.x >= canvas_w - 3 || v.x <= 3);
 
@@ -61,7 +60,7 @@ new p5((s) => {
 	 */
 	const randomColor = (opacity = 1.0) => new Array(3).fill(0).map(() => Math.ceil(Math.random() * 100));
 
-	const Ray = function(x1=100, y1=100, vel=.2, mag=100) {
+	const Ray = function(x1=100, y1=100, vel=10, mag=100) {
 	
 		this.velocity = vel;
 		this.maxMagnitude = mag; // magnitude ??
@@ -103,7 +102,7 @@ new p5((s) => {
 			if (this.getMagnitude() > this.maxMagnitude) {
 				this.verticesArray.pop();
 			}
-			const newVertex = (this.verticesArray[0].copy()).add(this.directionVector);
+			const newVertex = (this.verticesArray[0].copy()).add(p5.Vector.mult(this.directionVector, this.velocity));
 			this.verticesArray.unshift(newVertex);
 			
 			// console.log(`start = ${this.verticesArray[0]}, end = ${this.lastVertex()}`);
@@ -126,7 +125,6 @@ new p5((s) => {
 			
 			s.stroke('yellow');
 			s.point(this.verticesArray[0].x, this.verticesArray[0].y);
-			//s.pop();
 		}
 	}
 
