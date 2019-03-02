@@ -22,17 +22,31 @@ new p5((s) => {
 	 * @returns {String, Boolean} what edge it hit or false if none
 	 */
 	
-	 // need to more accuratel calculate what will hit,
+	 // need to more accurate calculate what will hit,
 	 // could hit a corner
+	const topBottomEdge = (v) => (v.y >= canvas_h - 3 || v.y <= 3);
+	const leftRightEdge = (v) => (v.x >= canvas_w - 3 || v.x <= 3);
+
 	const hit = (v) => {
-		console.log("calling hit test with v is ", v);
 		if (v.y <= 0) {
+			if (leftRightEdge(v)) {
+				return 'c';
+			}
 			return 't';
 		} else if (v.x >= canvas_w) {
+			if (topBottomEdge(v)) {
+				return 'c';
+			}
 			return 'r';
 		} else if (v.y >= canvas_h) {
+			if (leftRightEdge(v)) {
+				return 'c';
+			}
 			return 'b'
 		} else if (v.x <= 0) {
+			if (topBottomEdge(v)) {
+				return 'c';
+			}
 			return 'l'
 		} 
 		return false;
@@ -42,10 +56,6 @@ new p5((s) => {
 	// too much if we are out of bounds
 	const isInBounds = (v) => !hit(v);
 
-	const getNewDirection = (direction) => {
-		let d = Math.floor(Math.random() * Math.floor(normals.length));
-		return (d != direction) ? d : getNewDirection(d);
-	};
 	/**
 	 *  @returns percentage RGBA notation stroke('rgba(100%,0%,100%,0.5)');
 	 */
@@ -56,46 +66,53 @@ new p5((s) => {
 		this.velocity = vel;
 		this.maxMagnitude = mag; // magnitude ??
 
-		this.currentDirectionIndex = 0;
-		this.directionAngle = 45;
+		this.directionVector = s.createVector(1, 1);
 
 		this.currentColor = randomColor();
 
 		// start by storing initial vertex
-		this.vertices = [ s.createVector(x1, y1) ];
+		this.verticesArray = [ s.createVector(x1, y1) ];
 
 		// the last point in our buffer
-		this.lastVertex = () => this.vertices[this.vertices.length - 1];
+		this.lastVertex = () => this.verticesArray[this.verticesArray.length - 1];
 		
 		this.setColor = (c) => this.color = c;
 	
-		this.getMagnitude = () => p5.Vector.sub(this.vertices[0], this.lastVertex()).mag();
+		this.getMagnitude = () => p5.Vector.sub(this.verticesArray[0], this.lastVertex()).mag();
 		
-		this.setNewDirection = () => {
-			const currentDirectonAngle = this.directionAngle;
+		this.setNewDirection = (side) => {
+			const vector = this.directionVector.copy();
 
-			this.direction = getNewDirection(this.currentDirectionIndex);
+			if (side == 'c') {
+				vector.y *= -1;
+				vector.x *= -1;
+			} else if (side == 't' || side == 'b') {
+				vector.y *= -1;
+			} else {
+				vector.x *= -1;
+			}
+			this.directionVector = vector;
 		}
 
-		
 		// https://processing.org/examples/accelerationwithvectors.html
 		// http://www.mightydrake.com/Articles/ricochet.htm
-		//https://gamedev.stackexchange.com/questions/23672/determine-resulting-angle-of-wall-collision
+		// https://gamedev.stackexchange.com/questions/23672/determine-resulting-angle-of-wall-collision
 	
 		this.update = () => {
 			// if this thing is less than the magnitude we want, add a vertex
 			if (this.getMagnitude() > this.maxMagnitude) {
-				this.vertices.pop();
+				this.verticesArray.pop();
 			}
-			const newVertex = (this.vertices[0].copy()).add(normals[this.currentDirectionIndex]);
-			this.vertices.unshift(newVertex);
+			const newVertex = (this.verticesArray[0].copy()).add(this.directionVector);
+			this.verticesArray.unshift(newVertex);
 			
-			// console.log(`start = ${this.vertices[0]}, end = ${this.lastVertex()}`);
+			// console.log(`start = ${this.verticesArray[0]}, end = ${this.lastVertex()}`);
 	
-			if (hit(this.vertices[0])) {
+			let side;
+			if (side = hit(this.verticesArray[0])) {
 				// debugger
 				this.currentColor = randomColor();
-				this.setNewDirection();
+				this.setNewDirection(side);
 				console.log("now the direction is", this.currentDirectionIndex);
 			}
 		};
@@ -103,12 +120,12 @@ new p5((s) => {
 		this.draw = () => {
 			s.stroke(`rgba(${this.currentColor[0]},${this.currentColor[1]},${this.currentColor[2]},1.0)`);
 			
-			for (let v = 0; v < this.vertices.length; v++) {
-				s.point(this.vertices[v].x, this.vertices[v].y);
+			for (let v = 0; v < this.verticesArray.length; v++) {
+				s.point(this.verticesArray[v].x, this.verticesArray[v].y);
 			}
 			
 			s.stroke('yellow');
-			s.point(this.vertices[0].x, this.vertices[0].y);
+			s.point(this.verticesArray[0].x, this.verticesArray[0].y);
 			//s.pop();
 		}
 	}
@@ -148,6 +165,7 @@ new p5((s) => {
 
 		if (drawDebug) {
 			s.debug();
+			s.text('heading of ray: ', s.width - 80, s.height - 10);
 		}
 	};
 });
