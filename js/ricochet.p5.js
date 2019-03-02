@@ -1,6 +1,6 @@
 import p5 from 'p5';
 
-new p5((sketch) => {
+new p5((s) => {
 
 	const canvas_w = 800,
 		canvas_h = 600;
@@ -10,10 +10,10 @@ new p5((sketch) => {
 
 	// t, r, b, l
 	const normals = [
-		sketch.createVector(1,1),
-		sketch.createVector(-1,1),
-		sketch.createVector(1,-1),
-		sketch.createVector(1,-1)
+		s.createVector(1,1),
+		s.createVector(-1,1),
+		s.createVector(1,-1),
+		s.createVector(1,-1)
 	];
 
 	/**
@@ -46,7 +46,6 @@ new p5((sketch) => {
 		let d = Math.floor(Math.random() * Math.floor(normals.length));
 		return (d != direction) ? d : getNewDirection(d);
 	};
-
 	/**
 	 *  @returns percentage RGBA notation stroke('rgba(100%,0%,100%,0.5)');
 	 */
@@ -58,25 +57,26 @@ new p5((sketch) => {
 		this.maxMagnitude = mag; // magnitude ??
 
 		this.currentDirectionIndex = 0;
+		this.directionAngle = 45;
+
 		this.currentColor = randomColor();
 
 		// start by storing initial vertex
-		this.vertices = [ sketch.createVector(x1, y1) ];
+		this.vertices = [ s.createVector(x1, y1) ];
 
 		// the last point in our buffer
 		this.lastVertex = () => this.vertices[this.vertices.length - 1];
 		
 		this.setColor = (c) => this.color = c;
 	
-		this.getMagnitude = () => {
-			const mag = p5.Vector.sub(this.vertices[0], this.lastVertex()).mag();
-			
-			const a = (this.vertices[0].x - this.vertices[this.vertices.length - 1].x);
-			const b = (this.vertices[0].y - this.vertices[this.vertices.length - 1].y);
-			const mag2 = Math.sqrt(a*a + b*b);
-			console.log(a, b, mag, mag2, this.vertices.length); 
-			return mag;
+		this.getMagnitude = () => p5.Vector.sub(this.vertices[0], this.lastVertex()).mag();
+		
+		this.setNewDirection = () => {
+			const currentDirectonAngle = this.directionAngle;
+
+			this.direction = getNewDirection(this.currentDirectionIndex);
 		}
+
 		
 		// https://processing.org/examples/accelerationwithvectors.html
 		// http://www.mightydrake.com/Articles/ricochet.htm
@@ -95,40 +95,59 @@ new p5((sketch) => {
 			if (hit(this.vertices[0])) {
 				// debugger
 				this.currentColor = randomColor();
-				this.currentDirectionIndex = getNewDirection(this.currentDirectionIndex);
+				this.setNewDirection();
 				console.log("now the direction is", this.currentDirectionIndex);
 			}
 		};
 
 		this.draw = () => {
-			//sketch.push();
-			//sketch.translate(this.lastVertex().x, this.lastVertex().y);
-			sketch.stroke(`rgba(${this.currentColor[0]},${this.currentColor[1]},${this.currentColor[2]},1.0)`);
+			s.stroke(`rgba(${this.currentColor[0]},${this.currentColor[1]},${this.currentColor[2]},1.0)`);
 			
 			for (let v = 0; v < this.vertices.length; v++) {
-				sketch.point(this.vertices[v].x, this.vertices[v].y);
+				s.point(this.vertices[v].x, this.vertices[v].y);
 			}
 			
-			sketch.stroke('yellow');
-			sketch.point(this.vertices[0].x, this.vertices[0].y);
-			//sketch.pop();
+			s.stroke('yellow');
+			s.point(this.vertices[0].x, this.vertices[0].y);
+			//s.pop();
 		}
 	}
 
 
 	let ray;
+	let drawDebug = false;
+	
+	s.debug = () => {
+		// update
+		s.stroke('green');
+		
+		const v0 = s.createVector(s.width/2, s.height/2);
+		const v1 = s.createVector(s.mouseX, s.mouseY);
+		const h = p5.Vector.sub(v1, v0).heading();
 
-	sketch.setup = () => {
-		const c = sketch.createCanvas(canvas_w, canvas_h, p5.WEBGL);
-		c.parent('container');
-		sketch.fill('white');
-		sketch.strokeWeight(4);
-		ray = new Ray();
+		s.line(v0.x, v0.y, v1.x, v1.y);
+		s.text(`heading: \n radians ${h} \n degrees ${s.degrees(h)}`, v1.x + 5, v1.y + 5);
 	};
 
-	sketch.draw = () => {
-		sketch.clear();
+
+	s.setup = () => {
+		const c = s.createCanvas(canvas_w, canvas_h, p5.WEBGL);
+		c.parent('container');
+		s.fill('white');
+		s.strokeWeight(4);
+		ray = new Ray();
+
+	};
+
+	s.keyPressed = () => drawDebug = !drawDebug;
+
+	s.draw = () => {
+		s.clear();
 		ray.update();
 		ray.draw();
+
+		if (drawDebug) {
+			s.debug();
+		}
 	};
 });
