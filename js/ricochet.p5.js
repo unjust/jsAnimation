@@ -5,29 +5,30 @@ new p5((s) => {
 	const canvas_w = 800,
 		canvas_h = 600;
 
-	const vel = 10;
+	// t, r, b, l = sides top, right, bottom, left
+	const normals = {
+		t: s.createVector(0,1),
+		r: s.createVector(-1,0),
+		b: s.createVector(0,-1),
+		l: s.createVector(1,0)
+	};
 
-	// t, r, b, l
-	const normals = [
-		s.createVector(1,1),
-		s.createVector(-1,1),
-		s.createVector(1,-1),
-		s.createVector(1,-1)
-	];
 
-	/**
-	 * @function hit
-	 * @param {Vector} v 
-	 * @returns {String, Boolean} what edge it hit or false if none
-	 */
 	
 	// need to more accurate calculate what will hit,
 	// could hit a corner
 	const topBottomEdge = (v) => (v.y >= canvas_h - 3 || v.y <= 3);
 	const leftRightEdge = (v) => (v.x >= canvas_w - 3 || v.x <= 3);
 
+	const MARGIN = 2;
+
+	/**
+	 * @function hit
+	 * @param {Vector} v 
+	 * @returns {String, Boolean} what edge it hit or false if none
+	 */
 	const hit = (v) => {
-		if (v.y <= 0) {
+		if (v.y <= MARGIN) {
 			if (leftRightEdge(v)) {
 				return 'c';
 			}
@@ -85,12 +86,11 @@ new p5((s) => {
 			if (side == 'c') {
 				vector.y *= -1;
 				vector.x *= -1;
-			} else if (side == 't' || side == 'b') {
-				vector.y *= -1;
 			} else {
-				vector.x *= -1;
+				vector.add(normals[side]);
 			}
 			this.directionVector = vector;
+			console.log(`directionVector ${this.directionVector}`);
 		}
 
 		// https://processing.org/examples/accelerationwithvectors.html
@@ -102,14 +102,18 @@ new p5((s) => {
 			if (this.getMagnitude() > this.maxMagnitude) {
 				this.verticesArray.pop();
 			}
-			const newVertex = (this.verticesArray[0].copy()).add(p5.Vector.mult(this.directionVector, this.velocity));
+
+
+			const velocityDirection = p5.Vector.mult(this.directionVector, this.velocity);
+			console.log(`directionVector ${this.directionVector}, velocity ${this.velocity} = ${velocityDirection}`);
+			
+			const newVertex = (this.verticesArray[0].copy()).add(velocityDirection);
 			this.verticesArray.unshift(newVertex);
 			
 			// console.log(`start = ${this.verticesArray[0]}, end = ${this.lastVertex()}`);
 	
 			let side;
 			if (side = hit(this.verticesArray[0])) {
-				// debugger
 				this.currentColor = randomColor();
 				this.setNewDirection(side);
 				console.log("now the direction is", this.currentDirectionIndex);
@@ -151,7 +155,6 @@ new p5((s) => {
 		s.fill('white');
 		s.strokeWeight(4);
 		ray = new Ray();
-
 	};
 
 	s.keyPressed = () => drawDebug = !drawDebug;
