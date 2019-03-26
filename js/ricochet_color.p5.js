@@ -31,7 +31,7 @@ new p5((s) => {
 		let hitpoints = "";
 
 		if (v.y <= MARGIN) {
-			hitpoints = 't';
+			hitpoints += 't';
 		}
 		if (v.x >= canvas_w - MARGIN) {
 			hitpoints += 'r';
@@ -53,7 +53,7 @@ new p5((s) => {
 	/**
 	 *  @returns percentage RGBA notation stroke('rgba(100%,0%,100%,0.5)');
 	 */
-	const randomColor = (opacity = 1.0) => new Array(3).fill(0).map(() => Math.ceil(Math.random() * 100));
+	const randomColor = (opacity = 1.0) => new Array(3).fill(0).map(() => Math.ceil(Math.random() * 255));
 
 	const Ray = function(x1=100, y1=100, vel=10, mag=100) {
 	
@@ -94,18 +94,17 @@ new p5((s) => {
 	
 		this.update = () => {
 			
-			// if this thing is less than the magnitude we want, add a vertex
+			
 			if (this.getMagnitude() > this.maxMagnitude) {
 				this.verticesArray.pop();
 			}
 
+			// if this thing is less than the magnitude we want, add a vertex
 			const velocityDirection = p5.Vector.mult(this.directionVector, this.velocity);
 			// console.log(`directionVector ${this.directionVector}, velocity ${this.velocity} = ${velocityDirection}`);
 			
 			const newVertex = (this.verticesArray[0].copy()).add(velocityDirection);
 			this.verticesArray.unshift(newVertex);
-
-			
 			
 			// console.log(`start = ${this.verticesArray[0]}, end = ${this.lastVertex()}`);
 	
@@ -115,17 +114,21 @@ new p5((s) => {
 				this.setNewDirection(side);
 				// console.log("now the direction is", this.currentDirectionIndex);
 			}
+			console.log(this.verticesArray);
 		};
 
 		this.draw = () => {
-			s.stroke(`rgba(${this.currentColor[0]},${this.currentColor[1]},${this.currentColor[2]},1.0)`);
+			s.stroke(this.currentColor[0], this.currentColor[1], this.currentColor[2], 255);
 			
+			s.beginShape();
 			for (let v = 0; v < this.verticesArray.length; v++) {
-				s.point(this.verticesArray[v].x, this.verticesArray[v].y);
+				// s.point(this.verticesArray[v].x, this.verticesArray[v].y);
+				s.vertex(this.verticesArray[v].x, this.verticesArray[v].y)
 			}
+			s.endShape();
 			
-			s.stroke('yellow');
-			s.point(this.verticesArray[0].x, this.verticesArray[0].y);
+			// s.stroke('yellow');
+			// s.point(this.verticesArray[0].x, this.verticesArray[0].y);
 		}
 	}
 
@@ -152,6 +155,7 @@ new p5((s) => {
 		s.fill('white');
 		s.strokeWeight(4);
 		ray = new Ray();
+		// ray.update();
 	};
 
 	s.keyPressed = () => drawDebug = !drawDebug;
