@@ -64,6 +64,8 @@ new p5((sk) => {
   sk.setup = () => {
     sk.createCanvas(500, 500);
 
+    console.log("Triangle motions");
+
     for (let x = 0; x < sk.windowWidth; x += tw) {
       for (let y = 0; y < sk.windowHeight; y += th) {
         triangles.push(new DancingTriangle(x, y, tw, th));
