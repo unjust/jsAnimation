@@ -1,3 +1,12 @@
+const motionTypes = Object.freeze({
+  UP_DOWN: 0,
+  CLOCKWISE: 1,
+  WAVE: 2,
+  FOLD: 3,
+  SAWTOOTH: 4,
+});
+
+
 class DancingTriangle {
 
   posx = 0;
@@ -58,7 +67,26 @@ class DancingTriangle {
 
     switch (DancingTriangle.motionType) {
 
-      case 0:
+      case motionTypes.UP_DOWN: // up and down
+        th_delta = Math.sin(this.counter) * this.height;
+        this.y2 = this.posy + th_delta;
+        break;
+
+      case motionTypes.CLOCKWISE: // clock like
+        th_delta = Math.sin(this.counter) * this.height;
+        tw_delta = (Math.cos(this.counter) + 1) * this.width/2;
+        this.y2 = this.posy + th_delta; 
+        this.x3 = this.posx + tw_delta;
+        break;
+
+      case motionTypes.WAVE: // oscillate
+        th_delta = Math.sin(this.counter) * this.height;
+        tw_delta = (Math.sin(this.counter) + 1) * this.width/2;
+        this.y2 = this.posy + th_delta; 
+        this.x3 = this.posx + tw_delta;
+        break;
+  
+      case motionTypes.FOLD: // fold
         tw_delta = ((Math.cos(this.counter) + 1)/2);
         th_delta = Math.sin(this.counter);
 
@@ -72,7 +100,7 @@ class DancingTriangle {
         this.y3 = this.posy;
         break;
 
-      case 1:
+      case motionTypes.SAWTOOTH: // saw tooth
         tw_delta = Math.sin(this.counter)/2 - 1;
         th_delta = (Math.cos(this.counter) + 1)/2;
 
@@ -84,9 +112,6 @@ class DancingTriangle {
         
         this.y3 = this.posy;
         this.x3 = (this.posx + this.width) + (tw_delta * this.width/2);
-        break;
-
-      case 2:
         break;
 
       default:
@@ -107,15 +132,15 @@ class DancingTriangle {
   }
 
   static switchMotion() {
-    if (DancingTriangle.motionType < 2) {
-      ++DancingTriangle.motionType;
+    if (DancingTriangle.motionType < (Object.keys(motionTypes)).length) {
+      DancingTriangle.motionType++;
     } else {
-      DancingTriangle.motionType = 0;
+      DancingTriangle.motionType = motionTypes.UP_DOWN;
     }
-    console.log(DancingTriangle.motionType);
+    console.log("motion is now ", DancingTriangle.motionType);
   }
 };
 
-DancingTriangle.motionType = 0;
+DancingTriangle.motionType = motionTypes.UP_DOWN;
 
 export default DancingTriangle;

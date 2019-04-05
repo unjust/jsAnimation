@@ -117,10 +117,8 @@ new p5((sk) => {
   const DIM = 20;
   let th = DIM * 1.5;
   let tw = DIM * 2;
-
   let triangles = [];
 
-  
   sk.setup = () => {
     sk.createCanvas(500, 500);
     sk.createTriangles(2);
