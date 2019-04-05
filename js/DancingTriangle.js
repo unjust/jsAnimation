@@ -26,7 +26,6 @@ class DancingTriangle {
   isOffScreenX = false;
   isOffScreenY = false;
 
-  shouldMove = false; // scroll from left to right
 
   // posx and posy = center
   constructor(posx, posy, w, h, id) {
@@ -55,12 +54,12 @@ class DancingTriangle {
     }
   };
 
-  update = () => {
-    this.counter += .03;
+  update = (milliseconds) => {
+    this.counter = milliseconds / 300;
 
     let tw_delta, th_delta;
 
-    if (this.shouldMove) {
+    if (DancingTriangle.shouldMove) {
       // moves from left to right
       this.move();
     }
@@ -69,21 +68,45 @@ class DancingTriangle {
 
       case motionTypes.UP_DOWN: // up and down
         th_delta = Math.sin(this.counter) * this.height;
+
+        this.x1 = this.posx;
+        this.y1 = this.posy;
+
+        this.x2 = this.x1 + this.width/2;
         this.y2 = this.posy + th_delta;
+
+        this.x3 = this.x1 + this.width;
+        this.y3 = this.posy;
+
         break;
 
       case motionTypes.CLOCKWISE: // clock like
         th_delta = Math.sin(this.counter) * this.height;
         tw_delta = (Math.cos(this.counter) + 1) * this.width/2;
-        this.y2 = this.posy + th_delta; 
+
+        this.x1 = this.posx;
+        this.y1 = this.posy;
+
+        this.x2 = this.x1 + this.width/2;
+        this.y2 = this.posy + th_delta;
+
         this.x3 = this.posx + tw_delta;
+        this.y3 = this.posy;
         break;
 
       case motionTypes.WAVE: // oscillate
         th_delta = Math.sin(this.counter) * this.height;
         tw_delta = (Math.sin(this.counter) + 1) * this.width/2;
-        this.y2 = this.posy + th_delta; 
+
+        this.x1 = this.posx;
+        this.y1 = this.posy;
+
+        this.x2 = this.x1 + this.width/2;
+        this.y2 = this.posy + th_delta;
+
         this.x3 = this.posx + tw_delta;
+        this.y3 = this.posy;
+        
         break;
   
       case motionTypes.FOLD: // fold
@@ -107,7 +130,7 @@ class DancingTriangle {
         this.x1 = this.posx + (tw_delta * this.width/2);
         this.y1 = this.posy;
 
-        this.x2 = this.posx + this.width/2;
+        this.x2 = this.x1 + this.width/2;
         this.y2 = this.posy + (th_delta * this.height); 
         
         this.y3 = this.posy;
@@ -120,8 +143,8 @@ class DancingTriangle {
   };
 
   draw(sk, rotation=0) {
-    this.isOffScreenX = this.x1 > sk.windowWidth + this.width/2;
-    this.isOffScreenY = this.y1 > sk.windowHeight + this.height/2;
+    this.isOffScreenX = this.x1 > sk.width + this.width/2;
+    this.isOffScreenY = this.y1 > sk.height + this.height/2;
 
     sk.beginShape();
     sk.rotateX(rotation);
@@ -132,15 +155,17 @@ class DancingTriangle {
   }
 
   static switchMotion() {
-    if (DancingTriangle.motionType < (Object.keys(motionTypes)).length) {
+    if (DancingTriangle.motionType < (Object.keys(motionTypes)).length - 1) {
       DancingTriangle.motionType++;
     } else {
       DancingTriangle.motionType = motionTypes.UP_DOWN;
     }
-    console.log("motion is now ", DancingTriangle.motionType);
+    console.log(`motion is now ${DancingTriangle.motionType}`);
   }
 };
 
+
+DancingTriangle.shouldMove = false; // scroll from left to right
 DancingTriangle.motionType = motionTypes.UP_DOWN;
 
 export default DancingTriangle;

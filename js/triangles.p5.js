@@ -8,27 +8,31 @@ new p5((sk) => {
   sk.setup = () => {
     sk.createCanvas(500, 500, sk.WEBGL);
     sk.createObjects();
+    console.info("Dancing triangles. Press any key to change the motion.")
   };
 
   sk.createObjects = function() {
-
     const DIM = 20;
     let th = DIM * 1.5;
     let tw = DIM * 2;
+    let objectCount = 0;
 
-    for (let x = 0, objectCount = 0; x < sk.width + tw; x += tw, objectCount++) {
+    for (let x = 0; x < sk.width + tw; x += tw, objectCount++) {
       for (let y = 0; y < sk.height + th; y += th) {
         objects.push(new DancingTriangle(x, y, tw, th, objectCount));
       }
-
-      console.log(objectCount, " triangles created");
     }
+    console.log(`${objectCount} triangles created`);
   };
 
   sk.update = () => {};
 
   sk.keyPressed = () => {
-    DancingTriangle.switchMotion();
+    if (sk.key === 'm') {
+      DancingTriangle.shouldMove = !DancingTriangle.shouldMove;
+    } else {
+      DancingTriangle.switchMotion();
+    }
   };
 
   sk.draw = () => {
@@ -37,8 +41,9 @@ new p5((sk) => {
     sk.push();
     sk.translate(-sk.width/2, -sk.height/2);
 
+    const m = sk.millis();
     objects.forEach((triangle) => {
-      triangle.update();
+      triangle.update(m);
       triangle.draw(sk);
     });
   
