@@ -138,6 +138,14 @@ class DancingTriangle {
         break;
 
       default:
+        this.x1 = this.posx;
+        this.y1 = this.posy;
+
+        this.x2 = this.x1 + this.width/2;
+        this.y2 = this.posy;
+
+        this.x3 = this.posx + this.width;
+        this.y3 = this.posy;
         break;
     }
   };
@@ -147,7 +155,7 @@ class DancingTriangle {
     this.isOffScreenY = this.y1 > sk.height + this.height/2;
 
     sk.beginShape();
-    sk.rotateX(rotation);
+    sk.rotateY(rotation);
     sk.vertex(this.x1, this.y1);
     sk.vertex(this.x2, this.y2);
     sk.vertex(this.x3, this.y3);
