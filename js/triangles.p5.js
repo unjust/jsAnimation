@@ -43,7 +43,7 @@ new p5((sk) => {
 
     const m = sk.millis();
     objects.forEach((triangle) => {
-      triangle.update(m);
+      triangle.update(m/1000);
       triangle.draw(sk);
     });
   
