@@ -4,6 +4,7 @@ import DancingTriangle from './DancingTriangle.js';
 new p5((sk) => {
 
   let objects = [];
+  const MILLIS_SCALER = 2;
 
   sk.setup = () => {
     sk.createCanvas(500, 500, sk.WEBGL);
@@ -35,15 +36,19 @@ new p5((sk) => {
     }
   };
 
+  
+
   sk.draw = () => {
     sk.background(200);
     
     sk.push();
     sk.translate(-sk.width/2, -sk.height/2);
 
-    const m = sk.millis();
+    const m = sk.millis() / MILLIS_SCALER;
+    
     objects.forEach((triangle) => {
-      triangle.update(m/1000);
+      //console.log(m, m2);
+      triangle.update(m);
       triangle.draw(sk);
     });
   
