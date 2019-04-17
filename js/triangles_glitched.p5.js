@@ -87,7 +87,7 @@ new p5((sk) => {
 
   sk.setup = () => {
     sk.createCanvas(500, 500);
-    console.log("Triangle motions with a little bot of glitch");
+    console.log("Triangle motions with a little bit of glitch");
     sk.createTriangles();
   };
 

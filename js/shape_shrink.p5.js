@@ -28,7 +28,7 @@ new p5((sk) => {
     sk.background(100);
     sk.createCanvas(canvasW, canvasH);
     console.log('objective: one shape that scrolls through forms and shrinks with delayed drawing');
-    console.log('man: hold down key to shrink, move mouse to alter falling direction');
+    console.log('hold down key to shrink, move mouse to alter falling direction');
   };
 
   sk.keyPressed = () => {};
