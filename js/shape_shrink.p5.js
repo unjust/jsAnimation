@@ -20,8 +20,7 @@ new p5((sk) => {
 
   let inResetMode = false;
   
-  let drawingBuffer = [];
-  const bufferLength = 10;
+  const BUFFER_MAX_LENGTH = 5;
 
   let drawingHistory = [];
 
@@ -34,9 +33,7 @@ new p5((sk) => {
 
   sk.keyPressed = () => {};
 
-  sk.keyReleased = () => {
-    clearBg = false;
-  };
+  sk.keyReleased = () => {};
 
   sk.drawShape = (dest_x, dest_y, shape_type, w, h) => {
     sk.fill('white');
@@ -49,13 +46,12 @@ new p5((sk) => {
     //     sk.rect(dest_x - w/2, dest_y - h, w, h);
     //     break;
     //   case 2:
-    //     sk.ellipse(dest_x, dest_y - h/2, w/2, h/2);
+    //     sk.ellipse(dest_x, dest_y - h/4, w/2, h/2);
     //     break;
     //   default:
     //     sk.triangle(dest_x - w/2, dest_y, dest_x, dest_y - h, dest_x + w/2, dest_y);
     //     break;
     // }
-
     sk.triangle(dest_x - w/2, dest_y, dest_x, dest_y - h, dest_x + w/2, dest_y);
   }
 
@@ -84,7 +80,7 @@ new p5((sk) => {
     let w = shapeWidth - (shape_size_diff_counter);
     let h = shapeHeight - (shape_size_diff_counter);
 
-    const rand = Math.floor(Math.random() * 10);
+    const rand = Math.floor(Math.random() * 5);
     
     // if we reach a certain mizsize
     if (w < MIN_SIZE || h < MIN_SIZE) {
@@ -95,27 +91,20 @@ new p5((sk) => {
     }
     
     // get shapetype
-    shape_type = (shape_type >= 3) ? 0 : shape_type + 1;
-    
-    
-    // for (let i = 0; i < drawingBuffer.length; i++) {
-    //   console.log(shape_type);
-    //   const nextShape = drawingBuffer[i];
-    //   // todo translate??
-    //   if (counter % 5 == 0) {
-    //     sk.drawShape(dest_x, dest_y, nextShape.shape_type, nextShape.w, nextShape.h);
-    //   }
-    // } 
+    shape_type = (shape_type === 2) ? 0 : shape_type + 1;
 
-    if (!sk.keyIsPressed) {
+    if (inResetMode) {
       sk.clear();
       sk.background(100);
     }
 
-   
+    // if (!sk.keyIsPressed) {
+    //   sk.clear();
+    //   sk.background(100);
+    // }
+
 
     if (inResetMode) {
-      drawingBuffer = [];
       if (drawingHistory.length === 0) {
         inResetMode = false;
       }
@@ -129,12 +118,12 @@ new p5((sk) => {
     if (!inResetMode && draw_counter % 10 == 0 && draw_counter > 0) {
       sk.drawShape(dest_x, dest_y, shape_type, w, h);
       // push new shape if less than 10 in buffer
-      if (drawingHistory.length < bufferLength) {
+      //if (drawingHistory.length < BUFFER_MAX_LENGTH) {
         drawingHistory.push({ shape_type, w, h });
-      }
+      //}
     } 
 
-    if (inResetMode || drawingHistory.length > 0) {
+    if (inResetMode || drawingHistory.length > BUFFER_MAX_LENGTH) {
       drawingHistory.shift();
     }
   };
