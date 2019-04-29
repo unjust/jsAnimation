@@ -50,10 +50,25 @@ module.exports = {
         ...generateHtmlPluginCalls(),
         new CopyWebpackPlugin([{ from: 'img', to: `${buildPath}/img` }])
     ],
+    // resolve: {
+    //     alias: {
+    //         Libraries: path.resolve(__dirname, './libs/'),
+    //     }
+    // },
     module: {
-        rules: [ 
+        rules: [
+            {
+                test: path.resolve(__dirname, 'libs/easycam/p5.easycam.js'),
+                use: "imports-loader?p5=>require('p5')"
+            },
+            {
+                // https://webpack.js.org/guides/shimming/#global-exports
+                test: path.resolve(__dirname, 'libs/easycam/p5.easycam.js'),
+                use: 'exports-loader?createEasyCam=p5.prototype.createEasyCam,EasyCamLib=Dw'
+            },
             {
                 test: /\.js$/,
+                exclude: /libs/,
                 loader: 'babel-loader',
                 options: {
                     presets: ['@babel/preset-env'],
