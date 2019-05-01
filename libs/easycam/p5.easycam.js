@@ -1677,7 +1677,6 @@ if(p5){
    * Arguments are optional, and equal to the default EasyCam constructor.
    * @return {EasyCam} a new EasyCam
    */
-  console.log("HELLO WORLD", p5, p5.prototype);
   p5.prototype.createEasyCam = function(/* p5.RendererGL, {state} */){
     
     var renderer = this._renderer;

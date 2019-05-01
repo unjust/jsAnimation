@@ -68,7 +68,7 @@ new p5((sk) => {
 
   sk.draw = () => {
 
-    let beat = false;
+    let willDrawBeat = false;
 
     if (sequenceBuffer.length && !isRecording) {
   
@@ -81,12 +81,10 @@ new p5((sk) => {
       
       console.log(`${timeLapsed} = ${sk.millis()} - ${timer_start} - ${sequenceBuffer[0]}`);
       if (timeLapsed > 0 && timeLapsed <= 100) {
-        console.log('gonna shift');
-        beat = true;
+        willDrawBeat = true;
         sequenceBuffer.shift();
       }
     }
-  
    
     sk.clear(); 
     sk.background(255);
@@ -95,20 +93,33 @@ new p5((sk) => {
     drawAxes();
     sk.noStroke();
 
-    sk.rotateZ(sk.millis() / 1000);
+    const rotation = sk.millis() / 1000;
+    // console.log(rotation);
+    sk.rotateZ(rotation);
 
-    if (!beat) {
-      sk.fill(255, 0, 0);
-    } else {
-      console.log('draw beat');
-      sk.fill(0, 0, 255);
-    }
+    // if (!willDrawBeat) {
+      // sk.fill(255, 0, 0);
+    //} else { 
+    //}
 
     for (let i = 1; i <= CIRCLES_COUNT; i++) {
       const pos = (sk.TWO_PI * i) / CIRCLES_COUNT;
-  
+      const x = Math.sin(pos);
+      const y =  Math.cos(pos);
+      let rad = Math.atan2(y, x);
+      const fullCircle = (rotation + rad) % sk.TWO_PI;
+      
+      let dist = RADIUS;
+      if (willDrawBeat) {
+        dist = RADIUS + 5;
+      }
+      if (fullCircle >= 0 && fullCircle < .1) {
+        sk.fill(0, 0, 255);
+      } else {
+        sk.fill(255, 0, 0);
+      }
       sk.push();
-      sk.translate(RADIUS * Math.sin(pos), RADIUS * Math.cos(pos), 0);
+      sk.translate(dist * x, dist * y, 0);
       sk.sphere(SPHERE_SIZE);
       sk.pop();
     }
