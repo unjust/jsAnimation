@@ -18,60 +18,79 @@ class VibrateShape {
     this.x0 = x;
     this.x1 = x;
     this.y0 = y;
-    this.y1 = this.y0 + 5;
+    this.y1 = y;
     this.size = size;
   }
 
   addVibe() {
-    this.vibrations.push(this.size);
+    this.vibrations.push({ size: this.size + 20, opacity: 100 });
   }
 
-  update(sk, isOverThreshold) {
-    if (isOverThreshold) {
-      this.addVibe();
+  bounce(sk) {
+    if (this.y >= this.y1) {
       this.y = sk.lerp(this.y0, this.y1, .1);
     } else {
       this.y = sk.lerp(this.y1, this.y0, .1);
     }
-    this.x = this.x0 + Math.sin(sk.millis() / 1000) * 50;
-    if (this.vibrations[this.vibrations.length - 1] > 200) {
+  }
+
+  pace(millis) {
+    this.x = this.x0 + Math.sin( millis / 1000) * 50;
+  }
+
+  update(sk, isOverThreshold, levelDiff) {
+    // console.log(isOverThreshold, levelDiff);
+    if (isOverThreshold) {
+      this.addVibe();
+
+      const bounceLevel = this.y - (2000 * levelDiff);
+      this.y1 = sk.constrain(bounceLevel, this.y0 - 400, this.y0);
+    }
+    
+    this.bounce(sk);
+    this.pace(sk.millis());
+    
+    const vibesCount = this.vibrations.length;
+    if (vibesCount && this.vibrations[vibesCount - 1].opacity < 1) {
       this.vibrations.shift();
     }
   }
   
   createShape(sk, size) {
-    // calculate size for sphere
     // calculate size for triangle
     
-    let hyp = ((this.x) / 2) / Math.cos(30);
-    let half_tri_height = Math.pow(hyp) - Math.pow(this.x / 2, 2);
+    const rad_30 = sk.radians(30);
+    const rad_60 = sk.radians(60);
+    let y_height_1 = Math.sin(rad_30) * (size / Math.sin(rad_60));
 
     const half_size = size / 2;
-
+    let hypoteneuse = half_size / Math.cos(rad_30);
+    let y_height_2 = Math.sqrt((Math.pow(hypoteneuse, 2) - Math.pow(half_size, 2)));
+    
     sk.beginShape();
-      sk.vertex(this.x - half_size, this.y - half_size);
-      sk.vertex(this.x, this.y + half_size);
-      sk.vertex(this.x + half_size, this.y - half_size);
-    sk.endShape();
+    sk.vertex(this.x - half_size, this.y + y_height_2);
+    sk.vertex(this.x, this.y - y_height_1);
+    sk.vertex(this.x + half_size, this.y + y_height_2);
+    sk.endShape(sk.CLOSE);
+    // sk.ellipse(this.x, this.y, 2);
   }
 
   draw(sk) {
     sk.noFill();
 
     const vibesCount = this.vibrations.length;
-    for (let v = 0; v < vibesCount; v++) {
-      const m = v;
-      //var newval=(n-start1)/(stop1-start1)*(stop2-start2)+start2;if(!withinBounds){return newval;}if(start2<stop2){return this.constrain(newval,start2,stop2);}else{return this.constrain(newval,stop2,start2);}};
-      sk.map(m, 0, vibesCount, 0, 100);
-      sk.stroke(sk.color(0, 100/m));
-      const r = this.vibrations[v] + (1 * v);
-      this.vibrations[v] = r;
-      sk.ellipse(this.x, this.y, r);
+    for (let i = 0, pos = 1; i < vibesCount; i++, pos++) {
+      const v = this.vibrations[i];
+      sk.stroke(sk.color(0, v.opacity));
+      this.createShape(sk, v.size);
+      v.size = v.size + ((vibesCount / pos) * 5);
+      v.opacity = v.opacity - 5;
     }
+  
     sk.stroke(0);
     sk.fill(255);
-    sk.ellipse(this.x, this.y, this.size - 20);
-    // this.createShape(sk, this.size - 20);
+    // sk.ellipse(this.x, this.y, this.size - 20);
+    this.createShape(sk, this.size);
   }
 
 };
@@ -82,7 +101,7 @@ new p5((sk) => {
     mLevel,
     fft;
 
-  const threshold = 0.05;
+  const threshold = 0.03;
 
   const drawSpectrum = () => {
     let spectrum = fft.analyze();
@@ -98,7 +117,7 @@ new p5((sk) => {
 
   sk.setup = () => {
     sk.createCanvas(sk.displayWidth - 200, sk.displayHeight - 200, sk.WEB_GL);
-    vs = new VibrateShape(sk.width / 2, sk.height / 2, 100);
+    vs = new VibrateShape(sk.width / 2, sk.height / 2, 200);
 
     input = new p5.AudioIn();
     input.start();
@@ -110,12 +129,11 @@ new p5((sk) => {
   sk.draw = () => {
     sk.background(100);
     // drawSpectrum();
-    
-    // sk.translate(-sk.width/2, -sk.height/2);
+
     mLevel = input.getLevel();
 
     // console.log(mLevel);
-    vs.update(sk, isOverThreshold(mLevel));
+    vs.update(sk, isOverThreshold(mLevel), mLevel - threshold);
     vs.draw(sk);
   }
 });
