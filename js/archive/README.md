@@ -1,1 +1,1 @@
-This isnt a folder of dead code, but code that is motly done but can be referenced for future projects.
+This isn't a folder of dead code, but code that is mostly done but can be referenced for future projects.
