@@ -1,7 +1,7 @@
 # JS animation
 
-experiments with drawing and animation in js frameworks
-http://paperjs.org  
+experiments with drawing and animation in js frameworks . 
+http://paperjs.org (haven't given paper too much love)
 https://p5js.org
 
 Project is build with webpack, and using babel so I can use imports/exports and other es6 features :hooray:
@@ -20,6 +20,10 @@ and two templates for html that are used in the webpack build, [one that is used
 ## Build process
 
 `yarn run webpack` 
+
+Options:  
+`--archive` `-a` build the archive directory
+`--file` `-f` just build one file
 
 webpack looks in the js directory,  
 for every js it creates and entry point based on the file name  
