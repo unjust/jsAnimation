@@ -1,6 +1,6 @@
 # JS animation
 
-experiments with drawing and animation in js frameworks . 
+experiments with drawing and animation in js frameworks    
 http://paperjs.org (haven't given paper too much love)
 https://p5js.org
 
