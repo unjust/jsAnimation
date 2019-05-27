@@ -18,7 +18,7 @@ argv.option([
     {
         name: ARG_FILE,
         short: 'f',
-        type: 'csv,string'
+        type: 'string'
     }
 ]);
 
@@ -33,18 +33,17 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 // don't build lib files individually
-const ignorePaths = ["./js/myLib/*.*js", "./js/libs/*.*js"];
-
-// ignore archive and utils by default
-if (argsOptions[ARG_ARCHIVE]) {
+const ignorePaths = ["./js/myLib/**/*.*js", "./js/libs/**/*.*js"];
+if (!argsOptions[ARG_ARCHIVE]) {
+    // ignore archive and utils by default
     ignorePaths.push("./js/archive/*.*js", "./js/utils/*.*js");
 }
 
-const pathPatterns = !(argsOptions[ARG_FILE]) ? '*.*js' :
-'*(' + (argsOptions[ARG_FILE]).reduce((acc, path) => `${acc}|${path}`) + ')';
+const pathPatterns = !(argsOptions[ARG_FILE]) ? './js/**/*.*js' : `./${argsOptions[ARG_FILE]}`;
 
-const entryFiles = glob.sync(`./js/**/${pathPatterns}`, { "ignore": ignorePaths });
-
+console.log(pathPatterns);
+const entryFiles = glob.sync(pathPatterns, { "ignore": ignorePaths });
+console.log("entries", entryFiles);
 // allows us to dynamically create file names
 const entryConfig = entryFiles.reduce((config, item) => {
     const filename = path.basename(item);
