@@ -1,8 +1,8 @@
 import p5 from "p5";
-import Cone from "./lib/Cone.js";
-import Cube from "./lib/Cube.js";
-import OrbitMixin from "./lib/mixins/orbit.js";
-import { createEasyCam } from "../libs/easycam/p5.easycam.js";
+import Cone from "./myLib/Cone.js";
+import Cube from "./myLib/Cube.js";
+import OrbitMixin from "./myLib/mixins/orbit.js";
+import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
 const SET_COUNT = 2;
 let shapeSets = [];

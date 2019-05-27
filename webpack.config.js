@@ -32,12 +32,18 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const ignoreOptions = (argsOptions[ARG_ARCHIVE]) ? null : 
-    { "ignore": ["./js/archive/*.*js", "./js/utils/*.*js"] } ;
-const pathPatterns = !(argsOptions[ARG_FILE]) ? '*.*js' :
-    '*(' + (argsOptions[ARG_FILE]).reduce((acc, path) => `${acc}|${path}`) + ')';
+// don't build lib files individually
+const ignorePaths = ["./js/myLib/*.*js", "./js/libs/*.*js"];
 
-const entryFiles = glob.sync(`./js/**/${pathPatterns}`, ignoreOptions);
+// ignore archive and utils by default
+if (argsOptions[ARG_ARCHIVE]) {
+    ignorePaths.push("./js/archive/*.*js", "./js/utils/*.*js");
+}
+
+const pathPatterns = !(argsOptions[ARG_FILE]) ? '*.*js' :
+'*(' + (argsOptions[ARG_FILE]).reduce((acc, path) => `${acc}|${path}`) + ')';
+
+const entryFiles = glob.sync(`./js/**/${pathPatterns}`, { "ignore": ignorePaths });
 
 // allows us to dynamically create file names
 const entryConfig = entryFiles.reduce((config, item) => {
@@ -56,7 +62,7 @@ const generateHtmlPluginCalls = () => {
             `${date.getDate()}-${date.getMonth() < 12 ? date.getMonth() + 1 : 12}-${date.getFullYear()}`;
         const config = {
             chunks: [entryName],
-            filename: `${entryName}.html`,
+            filename: `../${entryName}.html`, // at root of build
             template: 'templates/template.html',
             title: `${entryName}`,
             noCanvasDOM: noCanvasDOM(entryName),
@@ -66,6 +72,7 @@ const generateHtmlPluginCalls = () => {
     });
 };
 
+<<<<<<< HEAD
 const generateIndex = () => {
     const config = {
         chunks: [],
@@ -77,14 +84,15 @@ const generateIndex = () => {
     return new HtmlWebpackPlugin(config);
 };
 
-const buildPath = path.resolve(__dirname, 'build');
+const buildPath = path.resolve(__dirname, 'build/');
+const jsBuildPath = path.resolve(__dirname, 'build/js');
 
 module.exports = {
     mode: 'development',
     watch: true,
     entry: entryConfig,
     output: {
-        path: buildPath,
+        path: jsBuildPath,
         filename: `[name].js`
     },
     plugins: [
@@ -93,20 +101,20 @@ module.exports = {
         generateIndex(),
         new CopyWebpackPlugin([{ from: 'img', to: `${buildPath}/img` }])
     ],
-    // resolve: {
-    //     alias: {
-    //         Libraries: path.resolve(__dirname, './libs/'),
-    //     }
-    // },
+    resolve: {
+        alias: {
+            Libraries: path.resolve(__dirname, './js/libs/'),
+        }
+    },
     module: {
         rules: [
             {
-                test: path.resolve(__dirname, 'libs/easycam/p5.easycam.js'),
+                test: path.resolve(__dirname, 'js/libs/easycam/p5.easycam.js'),
                 use: "imports-loader?p5=>require('p5')"
             },
             {
                 // https://webpack.js.org/guides/shimming/#global-exports
-                test: path.resolve(__dirname, 'libs/easycam/p5.easycam.js'),
+                test: path.resolve(__dirname, 'js/libs/easycam/p5.easycam.js'),
                 use: 'exports-loader?createEasyCam=p5.prototype.createEasyCam,EasyCamLib=Dw'
             },
             {
