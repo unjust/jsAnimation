@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { createEasyCam } from '../libs/easycam/p5.easycam.js';
+import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 let g_p5; // trying something new here so can use p5 everywhere
 const planetPaths = [

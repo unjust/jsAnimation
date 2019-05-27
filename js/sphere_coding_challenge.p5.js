@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { createEasyCam, EasyCamLib } from '../libs/easycam/p5.easycam.js';
+import { createEasyCam, EasyCamLib } from 'Libraries/easycam/p5.easycam.js';
 
 new p5((sk) => {
   let m, n1, n2, n3;

@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { createEasyCam, EasyCamLib } from '../libs/easycam/p5.easycam.js';
+import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 
 let CIRCLES_COUNT = 20;
