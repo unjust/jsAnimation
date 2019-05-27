@@ -1,6 +1,7 @@
 {
   "license": "UNLICENSED",
   "dependencies": {
+    "argv": "^0.0.2",
     "copy-webpack-plugin": "^4.5.4",
     "imports-loader": "^0.8.0",
     "paper": "^0.11.5",
