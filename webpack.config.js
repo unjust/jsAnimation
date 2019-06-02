@@ -4,7 +4,7 @@ const fs = require('fs');
 const argv = require('argv');
 
 const ARG_ARCHIVE = 'archive';
-const ARG_FILE = 'file';
+const ARG_FILEPATH = 'file';
 
 argv.option([
     {
@@ -16,7 +16,7 @@ argv.option([
         example: "'yarn run webpack -a'"
     },
     {
-        name: ARG_FILE,
+        name: ARG_FILEPATH,
         short: 'f',
         type: 'string'
     }
@@ -39,11 +39,9 @@ if (!argsOptions[ARG_ARCHIVE]) {
     ignorePaths.push("./js/archive/*.*js", "./js/utils/*.*js");
 }
 
-const pathPatterns = !(argsOptions[ARG_FILE]) ? './js/**/*.*js' : `./${argsOptions[ARG_FILE]}`;
-
-console.log(pathPatterns);
+const pathPatterns = !(argsOptions[ARG_FILEPATH]) ? './js/**/*.*js' : `./${argsOptions[ARG_FILEPATH]}`;
 const entryFiles = glob.sync(pathPatterns, { "ignore": ignorePaths });
-console.log("entries", entryFiles);
+
 // allows us to dynamically create file names
 const entryConfig = entryFiles.reduce((config, item) => {
     const filename = path.basename(item);
@@ -90,6 +88,7 @@ module.exports = {
     resolve: {
         alias: {
             Libraries: path.resolve(__dirname, './js/libs/'),
+            Framework: path.resolve(__dirname, './js/myLib/')
         }
     },
     module: {
