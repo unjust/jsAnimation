@@ -1,3 +1,9 @@
+export const shapeTypes = [
+    "box",
+    "cone",
+    "sphere"
+];
+
 export default class Objekt {
     constructor(
         shapeType, 
@@ -9,8 +15,7 @@ export default class Objekt {
         colors={ stroke: 'black', fill: 'white' }) 
     {
 
-        this.shapeType = shapeType;
-        this.shapeFn = $p5[shapeType].bind($p5);
+        this.setShapeType(shapeType);
         
         this.dim = { w, h };
 
@@ -25,25 +30,33 @@ export default class Objekt {
         this.stopped = false;
     }
 
+    setShapeType(shapeType) {
+        this.shapeFn = $p5[shapeType].bind($p5);
+    }
+
     toInfinity() {
         this.posEnd = $p5.createVector(x, y, -1 * depth); 
     }
 
-    move() {
+    update() {
         if (this.stopped) {
             return;
         }
 
         this.counter += 0.001;
+
         if (this.pos - this.posEnd > 100) {
             return;
         }
+        this.position();
+    }
 
+    position() {
         const pct = this.counter/100;
         this.pos.x = (this.pos.x * (1 - pct)) + (this.posEnd.x * pct);
         this.pos.y = (this.pos.y * (1 - pct)) + (this.posEnd.y * pct);
         this.pos.z = (this.pos.z * (1 - pct)) + (this.posEnd.z * pct);
-        
+    
         return this.pos;
     }
 
@@ -53,9 +66,8 @@ export default class Objekt {
         if (warp) {
             this.fillColor.setAlpha(190);
         } else {
-            this.move();
+            this.update();
         }
-
         $p5.fill(this.fillColor);
         $p5.stroke(this.strokeColor);
 

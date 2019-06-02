@@ -43,7 +43,7 @@ export default class Cone extends Objekt {
         $p5.noStroke();
         
         if (!warp) {
-            this.move();
+            this.update();
         }
 
         $p5.push();
