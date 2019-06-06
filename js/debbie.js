@@ -28,9 +28,9 @@ function loadSVG( url ) {
   scene = new THREE.Scene();
   scene.background = new THREE.Color( 0xb0b0b0 );
   //
-  // var helper = new THREE.GridHelper( 160, 10 );
-  // helper.rotation.x = Math.PI / 2;
-  // scene.add( helper );
+  var helper = new THREE.GridHelper( 160, 10 );
+  helper.rotation.x = Math.PI / 2;
+  scene.add( helper );
   //
   var loader = new SVGLoader();
   loader.load( url, function ( data ) {
@@ -39,7 +39,7 @@ function loadSVG( url ) {
     group.scale.multiplyScalar( 0.25 );
     group.position.x = - 70;
     group.position.y = 70;
-    // group.scale.y *= - 1;
+    group.scale.y *= - 1;
     for ( var i = 0; i < paths.length; i ++ ) {
       var path = paths[ i ];
       var fillColor = path.userData.style.fill;

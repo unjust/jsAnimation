@@ -1,6 +1,7 @@
 {
   "license": "UNLICENSED",
   "dependencies": {
+    "@tweenjs/tween.js": "^17.4.0",
     "argv": "^0.0.2",
     "copy-webpack-plugin": "^4.5.4",
     "paper": "^0.11.5",
