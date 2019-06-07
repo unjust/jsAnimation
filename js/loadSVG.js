@@ -4,7 +4,12 @@ import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 
 const loader = new SVGLoader();
 
-export default function loadSVG( url, group, doNotFlip=false, loadedCallback= () => {} ) {
+export default function loadSVG(
+  url,
+  group,
+  doNotFlip=false,
+  loadedCallback=()=>{} 
+) {
   
   // const helper = new THREE.GridHelper( 160, 10 );
   // helper.rotation.x = Math.PI / 2;
@@ -61,7 +66,7 @@ export default function loadSVG( url, group, doNotFlip=false, loadedCallback= ()
       group.scale.y *= -1;
     }
 
-    loadedCallback();
+    loadedCallback(group);
     return group;
   });
 }
