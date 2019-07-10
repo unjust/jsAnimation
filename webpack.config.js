@@ -1,15 +1,47 @@
 const path = require('path');
 const glob = require('glob');
 const fs = require('fs');
+const argv = require('argv');
+
+const ARG_ARCHIVE = 'archive';
+const ARG_FILE = 'file';
+
+argv.option([
+    {
+        name: ARG_ARCHIVE,
+        short: 'a',
+        default: true,
+        type: 'boolean',
+        description: 'Compile archive and utils too',
+        example: "'yarn run webpack -a'"
+    },
+    {
+        name: ARG_FILE,
+        short: 'f',
+        type: 'csv,string'
+    }
+]);
+
+argv.info( `yarn run webpack to build js files, \n
+    use -a to build archive and util dirs as well,
+    use -f for an array of individual files (a little busted)` );
+
+const argsOptions = argv.run().options;
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const entryFiles = glob.sync('./js/**/*.*js');
+const ignoreOptions = (argsOptions[ARG_ARCHIVE]) ? null : 
+    { "ignore": ["./js/archive/*.*js", "./js/utils/*.*js"] } ;
+const pathPatterns = !(argsOptions[ARG_FILE]) ? '*.*js' :
+    '*(' + (argsOptions[ARG_FILE]).reduce((acc, path) => `${acc}|${path}`) + ')';
+
+const entryFiles = glob.sync(`./js/**/${pathPatterns}`, ignoreOptions);
 
 // allows us to dynamically create file names
 const entryConfig = entryFiles.reduce((config, item) => {
+    debugger
     const filename = path.basename(item);
     const name = filename.replace('.js', '');
     config[name] = item;
@@ -57,6 +89,7 @@ module.exports = {
                 loader: 'babel-loader',
                 options: {
                     presets: ['@babel/preset-env'],
+                    plugins: ['@babel/plugin-proposal-class-properties'],
                     sourceMap: true
                 }
             }
