@@ -128,6 +128,7 @@ const createShape = function() {
 window.setup = () => {
     
     canvas = createCanvas(710, 400, WEBGL);
+    canvas.parent('container');
     // https://p5js.org/es/reference/#/p5/perspective
     perspective(PI/3, width/height, 70, depth);	
    

@@ -1,25 +1,26 @@
 import p5 from 'p5';
 
-new p5((sketch) => {
-    let start = p5.createVector(100, 100), 
-        end = p5.createVector(0, 0),
-        augment = p5.createVector(1, 1);
+new p5((sk) => {
+    let start = sk.createVector(100, 100), 
+        end = sk.createVector(0, 0),
+        augment = sk.createVector(1, 1);
 
-    const canvas_w = 1200, 
+    const canvas_w = 1000, 
         canvas_h = 800;
 
     const update = () => {
         start.add(augment);
     };
 
-    sketch.setup = () => {
-        p5.createCanvas(canvas_w, canvas_h, p5.WEBGL);
-        p5.fill('white');
+    sk.setup = () => {
+        sk.createCanvas(canvas_w, canvas_h, p5.WEBGL).parent('container');
+        
+        sk.fill('white');
     };
 
-    sketch.draw = () => {
+    sk.draw = () => {
         //sketch.clear();
         update();
-        p5.line(start.x, start.y, end.x, end.y);
+        sk.line(start.x, start.y, end.x, end.y);
     };
 });
