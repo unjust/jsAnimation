@@ -19,7 +19,8 @@ const OrbitMixin = {
     this.orbitSpeed = speed;
     this.orbitPoint = orbitPoint;
 
-    this.distanceVector = p5.Vector.sub(orbitPoint, position); // how far the object is from the orbit
+    // how far the object is from the orbit
+    this.distanceVector = p5.Vector.sub(orbitPoint, position); 
 
     this.rotateCounter = 0; // for rotation of shape individually
     this.rotateVector = p5.Vector.random3D();
@@ -29,12 +30,20 @@ const OrbitMixin = {
     if (this.stopped) {
       return;
     }
+
     this.orbitAngle += this.orbitSpeed;
     this.rotateCounter += 0.01;
-
     // move the counter
     this.orbitPoint.add(.1, 0, 0);
   },
+
+  // getShapePostion() {
+  //   const sinAngle = Math.sin(this.orbitAngle);
+  //   const cosAngle = Math.cos(this.orbitAngle);
+  //   const x = this.distanceVector.x * cosAngle - this.distanceVector.y * sinAngle;
+  //   const y = this.distanceVector.y * cosAngle  - this.distanceVector.x * sinAngle;
+  //   return { x: x + this.orbitPoint.x, y: y + this.orbitPoint.y };ß
+  // },
 
   drawDebug() {
     $p5.stroke('green');
