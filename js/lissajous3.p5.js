@@ -1,0 +1,146 @@
+import p5 from 'p5';
+import Liss from 'Framework/Lissajous';
+import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
+
+
+Math.fmod = (a,b) => Number((a - (Math.floor(a / b) * b)).toPrecision(8));
+
+class LissVert extends Liss {
+  height = 500;
+  update() {
+    this.angle += this.speed.x;
+    const nPoints = this.verticeTail;
+    console.log(this.height);
+    for (let point = 1; point < nPoints; point++) {
+        
+      let pointRatio = point/nPoints;
+      let radPosition = 360 * pointRatio * $p5.PI/180;
+      
+      let lissX = Math.cos(radPosition * this.xFactor) * this.rad;
+      let lissY = Math.sin(radPosition * this.yFactor) * this.rad + (this.height * pointRatio * this.angle);
+      lissY = Math.fmod(lissY, this.height);
+      let lissZ = (Math.sin(radPosition * this.xFactor * this.yFactor) * this.rad);
+      if (this.vertices.length > this.verticeTail) {
+        this.vertices.shift();
+      }
+      this.vertices.push({ x: lissX, y: lissY, z: lissZ });
+    }
+  }
+
+  draw() {
+    this.update();
+    $p5.fill('rgba(0,255,0,0.25)');;
+    $p5.stroke('rgba(0,255,0,0.25)');
+    
+    $p5.beginShape($p5.POINTS);
+    this.vertices.forEach((v, i) => {
+      $p5.vertex(v.x, v.y, v.z);
+    });
+    $p5.endShape();
+  }
+};
+
+window.$p5 = new p5((sk) => {
+  let dim = 60;
+  let cols, rows;
+  let lissArray = [];
+  
+  // controls
+  let speed = 1, 
+      xFactor = 1, 
+      yFactor = 1,
+      height = 500;
+  let cam;
+
+  sk.setup = () => {
+    sk.createCanvas(dim * 16, dim * 9, sk.WEBGL);
+    cam = createEasyCam.bind(sk)();
+    cols = 1;
+    rows = 1;
+    dim = 500;
+    
+    for (let i = 0, rowNum = 0; i < cols * rows; i++){
+      const liss = new LissVert();
+      liss.id = i;
+      liss.xFactor = i % cols + 1;
+      liss.yFactor = Math.floor(i / cols) + 1;
+      liss.zFactor = 1;
+      liss.verticeTail = 1000;
+      liss.rad = dim/2;
+      liss.height = dim;
+      lissArray.push(liss);
+      liss.setSpeed((speed + 1 * i)/10);
+    }
+  }
+
+
+  sk.update = () => {
+    // liss.update();
+  }
+
+  sk.keyPressed = () => {
+    if (sk.key == 'r') {
+      cam.reset();
+    }
+    if (!(sk.key == 'x' 
+      || sk.key == 'y' 
+      || sk.key == 'X' 
+      || sk.key == 'Y'
+      || sk.key == 'h'
+      || sk.key == 'H'
+      || sk.key == 'f'
+      || sk.key == 's')) {
+      return;
+    }
+
+    if (sk.key == 'x') {
+      xFactor--;
+    } else if (sk.key == 'y') {
+      yFactor--;
+    } if (sk.key == 'X') {
+      xFactor++;
+    } else if (sk.key == 'Y') {
+      yFactor++;
+    } else if (sk.key == 'H') {
+      height += 10;
+    } else if (sk.key == 'h') {
+      height -= 10;
+    } else if (sk.key == 'f') {
+      speed += 10;
+    } else if (sk.key == 's') {
+      speed -= 10;
+    }
+    lissArray.forEach((l) => {
+      const newSpeed = (speed + (1 * l.id))/1000;
+      //l.setSpeed(newSpeed);
+      l.xFactor = xFactor;
+      l.yFactor = yFactor;
+      l.height = height;
+      // l.verticeTail += Math.max(xFactor, yFactor) * 2;
+    });
+  }
+
+  sk.draw = () => {
+    sk.background('black');
+    
+    sk.update();
+    for (let i = 0,
+      x = 0,
+      y = 0; 
+      i < cols * rows;
+      x += dim,
+      i++) 
+    {
+      if (i > 0 && i % cols == 0) {
+        x = 0;
+        y += dim;
+      }
+      sk.push();
+      sk.translate(x, y - lissArray[i].height/2);
+      lissArray[i].draw();
+      sk.pop();
+    }
+  }
+});
+
+
