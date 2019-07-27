@@ -7,7 +7,7 @@ import { paper, Path, Point } from 'paper';
     height, 
     center;
 
-  const points = 16;
+  const points = 8;
 
   let path, 
     mousePos, 
@@ -82,9 +82,7 @@ import { paper, Path, Point } from 'paper';
     pathHeight += (center.y - mousePos.y - pathHeight) / 10;
 
     for (var i = 1; i < points; i++) {
-      var sinSeed = event.count + (i + i % 10) * 100;
-      var sinHeight = Math.sin(sinSeed / 200) * pathHeight;
-      var yPos = Math.sin(sinSeed / 100) * sinHeight + height;
+      
 
       if (analyzer) {
         const index = i - 1;
@@ -92,8 +90,12 @@ import { paper, Path, Point } from 'paper';
         const arr = dataArray.slice(index * section, index * section + section);
         volume = arr.reduce((total, v) => total + v);
       }
+      var sinSeed = event.count + (i + i % 10) * 100;
+      var sinHeight = Math.sin(sinSeed / 200) * pathHeight;
+      var yPos = Math.sin(sinSeed / 100) * sinHeight - volume/200 + height;
+
       ///console.log(volume);
-      path.segments[i].point.y = yPos + (volume/200);
+      path.segments[i].point.y = yPos;
     }
     if (smooth) {
       path.smooth({ type: 'continuous' });
