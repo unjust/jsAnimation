@@ -62,17 +62,28 @@ export default class Objekt {
 
     drawStroke() {}
 
-    draw(warp) {
-        if (warp) {
+    setCounter(c) {
+        this.counter = c;
+    }
+
+    draw(options={ warp: false, rotate: false}) {
+        if (options.warp) {
             this.fillColor.setAlpha(190);
         } else {
+            this.fillColor.setAlpha(255);
             this.update();
         }
-        $p5.fill(this.fillColor);
-        $p5.stroke(this.strokeColor);
-
+        if (options.texture) {
+            $p5.texture(options.texture);
+        } else {
+            $p5.fill(this.fillColor);
+            $p5.stroke(this.strokeColor);
+        }
         $p5.push();
         $p5.translate(this.pos);
+        if (options.rotate) {
+            $p5.rotate(this.counter, $p5.createVector(0, 1, 0));
+        };
         this.shapeFn(this.dim.w, this.dim.h);
         $p5.pop();
     }
