@@ -88,6 +88,7 @@ module.exports = {
     resolve: {
         alias: {
             Libraries: path.resolve(__dirname, './js/libs/'),
+            Utils: path.resolve(__dirname, './js/utils/'),
             Framework: path.resolve(__dirname, './js/myLib/')
         }
     },
