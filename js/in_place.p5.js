@@ -11,17 +11,12 @@ window.$p5 = new p5((sk) => {
   const objectTypes = 3;
 
   const instanceNum = 300;
-  let marioBox;
 
-  sk.preload = () => {
-    debugger
-    marioBox = sk.loadImage('img/mariobw.png');
-  };
 
   sk.setup = () => {
 
     sk.createCanvas(1280, 720, sk.WEBGL);
-    //createEasyCam.bind(sk)();
+    createEasyCam.bind(sk)();
 
     for (let i = 0; i < instanceNum; i++) {
       objects.push(new Cube(40, 0, 0, 0));
