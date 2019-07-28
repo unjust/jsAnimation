@@ -47,7 +47,7 @@ function init() {
 
 function createVideoTexture() {
   const video = document.createElement( 'video' );
-  video.src = "img/sky.mov";
+  video.src = "img/sky_.mov";
   video.loop = true;
   video.load();
   video.play();
