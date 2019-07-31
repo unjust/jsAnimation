@@ -85,6 +85,7 @@ window.$p5 = new p5((sk) => {
     liss.xFactor = xFactor;
     liss.yFactor = yFactor;
     liss.height = height;
+    console.log(`xfactor ${xFactor} yfactor ${yFactor} newSpeed ${newSpeed} height ${height}`);
   }
 
   sk.draw = () => {
