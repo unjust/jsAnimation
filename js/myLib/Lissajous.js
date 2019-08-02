@@ -1,13 +1,9 @@
-export default class Liss {
+export default class Lissajous {
   color = 'white';
-  rad = 10;
-  speed = {
-    x: .01,
-    y: .01,
-    z: .01
-  };
+  radius = 10;
+  speed = .01;
   vertices = [];
-  verticeTail = 100;
+  verticesTail = 100;
   pos = { 
     x: 0,
     y: 0,
@@ -27,8 +23,8 @@ export default class Liss {
   setColor(colorString) {
     this.color = colorString;
   }
-  setSpeed(x=1, y=1, z=1) {
-    this.speed = { x, y, z};
+  setSpeed(s) {
+    this.speed = s;
   }
   setPos({ x, y, z }) {
     this.pos.x = x ? x : this.pos.x;
@@ -36,30 +32,34 @@ export default class Liss {
     this.pos.z = z ? z : this.pos.z;
   }
   update() {
-    this.angle += this.speed.x;
+    this.angle += this.speed;
     this.addVertice();
-    // if (this.currentPos != this.pos) {
-    //   this.currentPos = (this.pct * this.currentPos) + (1. - this.pct) * this.pos;
-    // }
   }
   addVertice() {
-    const x = this.rad * Math.cos(this.angle * this.xFactor);
-    const y = this.rad * Math.sin(this.angle * this.yFactor);
-    const z = this.rad * Math.sin(this.angle);
-    if (this.vertices.length > this.verticeTail) {
+    const x = this.radius * Math.cos(this.angle * this.xFactor);
+    const y = this.radius * Math.sin(this.angle * this.yFactor);
+    const z = this.radius * Math.sin(this.angle);
+    if (this.vertices.length > this.verticesTail) {
       this.vertices.shift();
     }
     this.vertices.push({x, y, z});
   }
-  draw() {
+  draw(mode) {
     this.update();
-    $p5.stroke(this.color);
     $p5.noFill();
     $p5.stroke(this.color);
     
-    this.vertices.forEach((v, i) => {
-      $p5.ellipse(v.x, v.y, 1);
-    });
+    if (mode) {
+       $p5.beginShape(mode);
+      this.vertices.forEach((v) => {
+        $p5.vertex(v.x, v.y, 1);
+      });
+      $p5.endShape();
+    } else {
+      this.vertices.forEach((v, i) => {
+        $p5.ellipse(v.x, v.y, 1);
+      });
+    }
   }
 };
 

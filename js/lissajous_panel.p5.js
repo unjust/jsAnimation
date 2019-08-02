@@ -1,46 +1,33 @@
 import p5 from 'p5';
-import Liss from 'Framework/Lissajous';
+import Lissajous from 'Framework/Lissajous';
 import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
-class LissVert extends Liss {
-  draw() {
-    this.update();
-    $p5.fill('rgba(0,255,0,0.25)');;
-    $p5.stroke('rgba(0,255,0,0.25)');
-    $p5.beginShape($p5.LINES);
-    this.vertices.forEach((v) => {
-      $p5.vertex(v.x, v.y, 1);
-    });
-    $p5.endShape();
-  }
-};
-
 window.$p5 = new p5((sk) => {
-  let dim = 60;
+  const diameter = 60;
   let cols, rows;
   let lissArray = [];
   let speed = 1;
   let cam;
 
   sk.setup = () => {
-    sk.createCanvas(dim*16, dim*9, sk.WEBGL);
+    sk.createCanvas(diameter * 16, diameter * 9, sk.WEBGL);
     cam = createEasyCam.bind(sk)();
-    cols = Math.floor(sk.width / dim),
-    rows = Math.floor(sk.height / dim)
+    cols = Math.floor(sk.width / diameter),
+    rows = Math.floor(sk.height / diameter)
 
-    
-    for (let i = 0; i < cols * rows; i++){
-      const liss = new LissVert();
+    for (let i = 1; i <= cols * rows; i++) {
+      const liss = new Lissajous();
       liss.id = i;
-      liss.xFactor = i % cols + 1;
-      liss.yFactor = Math.floor(i / cols) + 1;
+      liss.xFactor = (i % cols) + 1; // 1 - cols (16)
+      liss.yFactor = Math.floor(i / cols) + 1; // 1 - 9 
       liss.zFactor = 1;
-      liss.rad = dim/2;
+      liss.radius = diameter / 2;
       lissArray.push(liss);
-      liss.setSpeed((speed + 1 * i)/10);
+      liss.setSpeed((speed + 1 * i) / 10); // (2 * i / 10)
+      liss.setColor('rgba(0, 255, 0, 0.25)');
+      // console.log(liss.xFactor, liss.yFactor, i);
     }
   }
-
 
   sk.update = () => {
     // liss.update();
@@ -54,35 +41,34 @@ window.$p5 = new p5((sk) => {
       return;
     }
     if (sk.key == 'f') {
-      speed += 10;
+      lissArray.forEach((l) => {
+        l.setSpeed(++l.speed)
+      });
     }
     else if (sk.key == 's') {
-      speed -= 10;
+      lissArray.forEach((l) => {
+        l.setSpeed(--l.speed)
+      });
     }
-    lissArray.forEach((l) => {
-      const newSpeed = (speed + (1 * l.id))/1000;
-      l.setSpeed(newSpeed)
-    });
+
   }
 
   sk.draw = () => {
     sk.background('black');
     sk.translate(-sk.width/2, -sk.height/2)
     sk.update();
-    for (let i = 0,
-      x = 0,
-      y = 0; 
+    for (let i = 0, x = 0, y = 0; 
       i < cols * rows;
-      x += dim,
-      i++) 
+      x += diameter, i++
+    ) 
     {
       if (i > 0 && i % cols == 0) {
         x = 0;
-        y += dim;
+        y += diameter; // increase row
       }
       sk.push();
-      sk.translate(x + dim/2, y + dim/2);
-      lissArray[i].draw();
+      sk.translate(x + diameter/2, y + diameter/2);
+      lissArray[i].draw(sk.LINES);
       sk.pop();
     }
   }
