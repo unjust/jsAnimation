@@ -1,49 +1,43 @@
 import p5 from 'p5';
-import Liss from 'Framework/Lissajous';
+import Lissajous from 'Framework/Lissajous';
 import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
-class LissVert extends Liss {
-  draw() {
-    this.update();
-    $p5.fill('rgba(0,255,0,0.25)');;
-    $p5.stroke('rgba(0,255,0,0.25)');
-    $p5.beginShape($p5.LINES);
-    this.vertices.forEach((v) => {
-      $p5.vertex(v.x, v.y, 1);
-    });
-    $p5.endShape();
-  }
-};
-
 window.$p5 = new p5((sk) => {
-  let dim = 60;
-  let liss;
+  let liss, cam;
+
   // controls
-  let speed = 1, 
-      xFactor = 6, 
-      yFactor = 2,
-      height = 500;
+  let xFactor = 1, 
+      yFactor = 1,
+      height,
+      radius;
   
+  let handlesTouch = false;
 
   sk.setup = () => {
-    sk.createCanvas(dim*16, dim*9, sk.WEBGL);
+    sk.createCanvas(sk.windowWidth, sk.windowHeight, sk.WEBGL);
 
-    liss = new LissVert();
-    liss.id = 20;
-    liss.verticeTail = 500;
+    height = Math.min(sk.windowHeight/4, 400);
+    radius = Math.min(sk.windowWidth/3, 200);
+
+    liss = new Lissajous();
+    liss.verticesTail = 300;
+    liss.setColor('rgba(255, 0, 0, 0.25)');
     
     liss.xFactor = xFactor;
     liss.yFactor = yFactor;
     liss.zFactor = 1;
-    liss.rad = 200;
-    //const i = (xFactor - 1) * (yFactor - 1);
-    liss.setSpeed((speed + 1 * 20)/10);
-    let cam = createEasyCam.bind(sk)();
-  }
+    liss.radius = radius;
+    liss.setSpeed(1)
 
+    handlesTouch = 'ontouchstart' in document.documentElement;
 
-  sk.update = () => {
-    // liss.update();
+    if (!handlesTouch) { // cam and touch conflict
+      cam = createEasyCam.bind(sk)();
+    }
+
+    console.log('centered lissajous form. use keys or touches to change it.');
+    console.log('X x Y y H h to affect xFactor yFactor and height');
+    console.log('f or s faster and slower');
   }
 
   sk.keyPressed = () => {
@@ -63,40 +57,64 @@ window.$p5 = new p5((sk) => {
 
     if (sk.key == 'x') {
       xFactor--;
+    } else if (sk.key == 'X') {
+      xFactor++;
     } else if (sk.key == 'y') {
       yFactor--;
-    } if (sk.key == 'X') {
-      xFactor++;
     } else if (sk.key == 'Y') {
       yFactor++;
-    } else if (sk.key == 'H') {
-      height += 10;
     } else if (sk.key == 'h') {
       height -= 10;
+    } else if (sk.key == 'H') {
+      height += 10;
     } else if (sk.key == 'f') {
-      speed += 10;
+      liss.setSpeed(++liss.speed);
     } else if (sk.key == 's') {
-      speed -= 10;
+      liss.setSpeed(--liss.speed);
     }
-  
-    // const newSpeed = (speed + (1 * l.id))/1000;
-    const newSpeed = liss.setSpeed((speed + 1 * (xFactor * yFactor))/1000);
-    liss.setSpeed(newSpeed);
+    
     liss.xFactor = xFactor;
     liss.yFactor = yFactor;
     liss.height = height;
-    console.log(`xfactor ${xFactor} yfactor ${yFactor} newSpeed ${newSpeed} height ${height}`);
+    console.log(`xfactor ${xFactor} yfactor ${yFactor} height ${height}`);
+  }
+
+  sk.touchStarted = () => {
+    sk.mousePressed();
+  }
+
+  sk.mouseWheel = (event) => {
+    //move the square according to the vertical scroll amount
+    liss.verticesTail += event.delta;
+    console.log(liss.verticesTail);
+  }
+
+  sk.mousePressed = () => {
+    if (!handlesTouch) {
+      return;
+    }
+    if (sk.mouseX > sk.width/2) {
+      liss.xFactor += 1;
+    } else {
+      liss.xFactor += 1;
+    }
+    if (sk.mouseY > sk.height/2) {
+      liss.yFactor += 1;
+    } else {
+      liss.yFactor -= 1;
+    }
+  }
+
+  sk.windowResized = () => {
+    sk.resizeCanvas(sk.windowWidth, sk.windowHeight);
   }
 
   sk.draw = () => {
     sk.background('black');
-    sk.update();
   
     sk.push();
-    sk.translate(-liss.rad/4, -liss.rad/4);
-    liss.draw();
+    liss.draw(sk.LINES);
     sk.pop();
-    
   }
 });
 
