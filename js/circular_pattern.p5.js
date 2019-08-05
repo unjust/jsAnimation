@@ -10,18 +10,18 @@ window.$p5 = new p5((sk) => {
   sk.setup = () => {
     sk.createCanvas(dim*16, dim*9, sk.WEBGL);
     cols = Math.floor(sk.width / dim),
-    rows = Math.floor(sk.height / dim)
+    rows = Math.floor(sk.height / dim);
 
     for (let i = 0; i < cols * rows; i++){
       const liss = new Liss();
       liss.id = i;
-      liss.verticeTail = 20;
+      liss.verticesTail = 20;
       liss.xFactor = 1;
       liss.yFactor = 1;
       liss.zFactor = 1;
-      liss.rad = dim/2;
+      liss.radius = dim/2;
       lissArray.push(liss);
-      liss.setSpeed((speed + 1 * i)/1000);
+      liss.setSpeed((speed + 1 * i)/100);
     }
   }
 
