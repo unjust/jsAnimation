@@ -1,26 +1,28 @@
 import p5 from 'p5';
-import Liss from 'Framework/Lissajous';
+import Lissajous from 'Framework/Lissajous';
 import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
 
 Math.fmod = (a,b) => Number((a - (Math.floor(a / b) * b)).toPrecision(8));
 
-class LissVert extends Liss {
+class Liss3D extends Lissajous {
   height = 500;
+
   update() {
-    this.angle += this.speed.x;
-    const nPoints = this.verticeTail;
+    this.angle += this.speed;
+    const nPoints = this.verticesTail;
+
     console.log(this.height);
     for (let point = 1; point < nPoints; point++) {
-        
       let pointRatio = point/nPoints;
       let radPosition = 360 * pointRatio * $p5.PI/180;
       
-      let lissX = Math.cos(radPosition * this.xFactor) * this.rad;
-      let lissY = Math.sin(radPosition * this.yFactor) * this.rad + (this.height * pointRatio * this.angle);
+      let lissX = Math.cos(radPosition * this.xFactor) * this.radius;
+      let lissY = Math.sin(radPosition * this.yFactor) * this.radius + (this.height * pointRatio * this.angle);
       lissY = Math.fmod(lissY, this.height);
-      let lissZ = (Math.sin(radPosition * this.xFactor * this.yFactor) * this.rad);
-      if (this.vertices.length > this.verticeTail) {
+      let lissZ = (Math.sin(radPosition * this.xFactor * this.yFactor) * this.radius);
+      
+      if (this.vertices.length > this.verticesTail) {
         this.vertices.shift();
       }
       this.vertices.push({ x: lissX, y: lissY, z: lissZ });
@@ -60,13 +62,13 @@ window.$p5 = new p5((sk) => {
     dim = 500;
     
     for (let i = 0, rowNum = 0; i < cols * rows; i++){
-      const liss = new LissVert();
+      const liss = new Liss3D();
       liss.id = i;
       liss.xFactor = i % cols + 1;
       liss.yFactor = Math.floor(i / cols) + 1;
       liss.zFactor = 1;
-      liss.verticeTail = 1000;
-      liss.rad = dim/2;
+      liss.verticesTail = 1000;
+      liss.radius = dim/2;
       liss.height = dim;
       lissArray.push(liss);
       liss.setSpeed((speed + 1 * i)/10);
