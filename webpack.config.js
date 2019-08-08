@@ -53,7 +53,7 @@ const entryConfig = entryFiles.reduce((config, item) => {
 const noCanvasDOM = (entryName) => (entryName.indexOf('p5') > -1);
 
 const generateHtmlPluginCalls = () => {
-    return Object.keys(entryConfig).map((entryName, index) => {
+    return  Object.keys(entryConfig).map((entryName, index) => {
         const date = new Date(fs.statSync(entryFiles[index]).ctime);
         const ctime = 
             `${date.getDate()}-${date.getMonth() < 12 ? date.getMonth() + 1 : 12}-${date.getFullYear()}`;
@@ -72,6 +72,17 @@ const generateHtmlPluginCalls = () => {
 const buildPath = path.resolve(__dirname, 'build/');
 const jsBuildPath = path.resolve(__dirname, 'build/js');
 
+const generateIndex = () => {
+    const config = {
+        chunks: [],
+        filename: `index.html`,
+        template: 'templates/index_page.html',
+        title: `jsAnimation Index`,
+        pages: Object.keys(entryConfig),
+    };
+    return new HtmlWebpackPlugin(config);
+};
+
 module.exports = {
     mode: 'development',
     watch: true,
@@ -83,6 +94,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin([ buildPath ]),
         ...generateHtmlPluginCalls(),
+        generateIndex(),
         new CopyWebpackPlugin([{ from: 'img', to: `${buildPath}/img` }])
     ],
     resolve: {
