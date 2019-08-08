@@ -36,8 +36,8 @@ export default class Lissajous {
     this.addVertice();
   }
   addVertice() {
-    const x = this.radius * Math.cos(this.angle * this.xFactor/10);
-    const y = this.radius * Math.sin(this.angle * this.yFactor/10);
+    const x = this.radius * Math.cos(this.angle * this.xFactor);
+    const y = this.radius * Math.sin(this.angle * this.yFactor);
     const z = this.radius * Math.sin(this.angle);
     if (this.vertices.length > this.verticesTail) {
       this.vertices.shift();
