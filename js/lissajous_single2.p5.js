@@ -17,6 +17,7 @@ window.$p5 = new p5((sk) => {
     sk.createCanvas(sk.windowWidth, sk.windowHeight, sk.WEBGL);
 
     liss = new Lissajous();
+    liss.drawZ = true;
     liss.verticesTail = 400;
     liss.radius = diameter / 2;
     liss.xFactor = calculateXFactor(i, divisor1, divisor2); // 1 - cols (16)
@@ -29,7 +30,9 @@ window.$p5 = new p5((sk) => {
       cam = createEasyCam.bind(sk)();
     }
 
-    console.log('use x X to control factor, d D to change divisor, f F to change other divisor');
+    console.log('use x X to control factor');
+    console.log('d D to change divisor, f F to change other divisor, z to toggle z drawing');
+    console.log('number 123 is nice');
     console.log(`i ${i} divisor ${divisor1} divisor2 ${divisor2}`);
   }
   
@@ -59,6 +62,9 @@ window.$p5 = new p5((sk) => {
       divisor2++;
     }
 
+    if (sk.key == 'z') {
+      liss.drawZ = !liss.drawZ;
+    }
     liss.xFactor = calculateXFactor(i, divisor1, divisor2); // 1 - cols (16)
     liss.yFactor = calculateYFactor(i, divisor1, divisor2); // 1 - 9 
     liss.setSpeed((speed + 1 * i) / 10); // (2 * i / 10)
