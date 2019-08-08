@@ -12,7 +12,6 @@ class Liss3D extends Lissajous {
     this.angle += this.speed;
     const nPoints = this.verticesTail;
 
-    console.log(this.height);
     for (let point = 1; point < nPoints; point++) {
       let pointRatio = point/nPoints;
       let radPosition = 360 * pointRatio * $p5.PI/180;
@@ -73,6 +72,11 @@ window.$p5 = new p5((sk) => {
       lissArray.push(liss);
       liss.setSpeed((speed + 1 * i)/10);
     }
+
+    console.log('attempt at a 3D lissajous :-|');
+    console.log('use x X to control factor, y Y to control Y factor');
+    console.log('h H to control height, s and f for slower and faster');
+    
   }
 
 

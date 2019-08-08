@@ -37,7 +37,6 @@ export default class Lissajous {
     if (this.vertices.length > this.verticesTail) {
       this.vertices.shift();
     }
-
     z = this.drawZ ? z : 1;
     this.vertices.push({x, y, z});
   }
@@ -55,7 +54,7 @@ export default class Lissajous {
       $p5.endShape();
     } else {
       this.vertices.forEach((v, i) => {
-        $p5.ellipse(v.x, v.y, v.cosz);
+        $p5.ellipse(v.x, v.y, v.z);
       });
     }
   }

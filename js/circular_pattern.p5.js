@@ -21,8 +21,11 @@ window.$p5 = new p5((sk) => {
       liss.zFactor = 1;
       liss.radius = dim/2;
       lissArray.push(liss);
-      liss.setSpeed((speed + 1 * i)/100);
+      liss.setSpeed((speed + 1 * i)/1000);
     }
+
+    console.log('circular pattern based on lissajous');
+    console.log('press f for faster and s for slower pattern speed');
   }
 
 

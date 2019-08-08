@@ -25,8 +25,11 @@ window.$p5 = new p5((sk) => {
       lissArray.push(liss);
       liss.setSpeed((speed + 1 * i) / 10); // (2 * i / 10)
       liss.setColor('rgba(0, 255, 0, 0.25)');
-      // console.log(liss.xFactor, liss.yFactor, i);
+      
     }
+
+    console.log('PANEL OF PRETTY LISSAJOUS');
+    console.log('s and f for slower and faster, r camera reset');
   }
 
   sk.update = () => {
