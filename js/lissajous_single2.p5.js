@@ -1,6 +1,6 @@
 import p5 from 'p5';
 import Lissajous from 'Framework/Lissajous';
-import handlesTouch from 'Utils/featureTests.js';
+import { handlesTouch } from 'Utils/featureTests.js';
 import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
 window.$p5 = new p5((sk) => {

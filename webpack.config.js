@@ -75,7 +75,7 @@ const jsBuildPath = path.resolve(__dirname, 'build/js');
 const generateIndex = () => {
     const config = {
         chunks: [],
-        filename: `index.html`,
+        filename: `../index.html`,
         template: 'templates/index_page.html',
         title: `jsAnimation Index`,
         pages: Object.keys(entryConfig),
