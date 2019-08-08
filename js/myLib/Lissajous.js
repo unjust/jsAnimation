@@ -9,16 +9,11 @@ export default class Lissajous {
     y: 0,
     z: 0
   }
-  currentPos = { 
-    x: 0,
-    y: 0,
-    z: 0
-  }
-  pct = 0;
   xFactor = 1;
   yFactor = 1;
   zFactor = 1;
   angle = 0.;
+  drawZ = false;
 
   setColor(colorString) {
     this.color = colorString;
@@ -36,12 +31,14 @@ export default class Lissajous {
     this.addVertice();
   }
   addVertice() {
-    const x = this.radius * Math.cos(this.angle * this.xFactor);
+    const x = this.radius * Math.sin(Math.PI/2 + this.angle * this.xFactor);
     const y = this.radius * Math.sin(this.angle * this.yFactor);
-    const z = this.radius * Math.sin(this.angle);
+    let z = this.radius * Math.cos(this.angle);
     if (this.vertices.length > this.verticesTail) {
       this.vertices.shift();
     }
+
+    z = this.drawZ ? z : 1;
     this.vertices.push({x, y, z});
   }
   draw(mode) {
@@ -49,15 +46,16 @@ export default class Lissajous {
     $p5.noFill();
     $p5.stroke(this.color);
     
+
     if (mode) {
-      $p5.beginShape();
+      $p5.beginShape(mode);
       this.vertices.forEach((v) => {
-        $p5.vertex(v.x, v.y, 1);
+        $p5.vertex(v.x, v.y, v.z);
       });
       $p5.endShape();
     } else {
       this.vertices.forEach((v, i) => {
-        $p5.ellipse(v.x, v.y, 1);
+        $p5.ellipse(v.x, v.y, v.cosz);
       });
     }
   }
