@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title><%= htmlWebpackPlugin.options.title %></title>
+      <link rel="icon" href="img/favicon_io/favicon.ico">
+  </head>
+  <style>
+      #container, #myCanvas {
+          margin: 0 auto;
+      }
+      .about {
+          margin: 0 5px;
+          color: darkslategrey;
+          font-family: 'Monaco', Courier, monospace;
+      };
+  </style>
+  <body>
+    <h1>Nothing to see here 👀👀👀</h1>
+    <ul>
+      <% _.forEach(htmlWebpackPlugin.options.pages, function(page) { %>
+        <li><a href="<%= page %>.html"><%= page %></a>
+      <% }); %>
+    </ul>
+  </body>
+</html>

@@ -41,7 +41,6 @@ const entryFiles = glob.sync(`./js/**/${pathPatterns}`, ignoreOptions);
 
 // allows us to dynamically create file names
 const entryConfig = entryFiles.reduce((config, item) => {
-    debugger
     const filename = path.basename(item);
     const name = filename.replace('.js', '');
     config[name] = item;
@@ -52,7 +51,7 @@ const entryConfig = entryFiles.reduce((config, item) => {
 const noCanvasDOM = (entryName) => (entryName.indexOf('p5') > -1);
 
 const generateHtmlPluginCalls = () => {
-    return Object.keys(entryConfig).map((entryName, index) => {
+    return  Object.keys(entryConfig).map((entryName, index) => {
         const date = new Date(fs.statSync(entryFiles[index]).ctime);
         const ctime = 
             `${date.getDate()}-${date.getMonth() < 12 ? date.getMonth() + 1 : 12}-${date.getFullYear()}`;
@@ -68,6 +67,17 @@ const generateHtmlPluginCalls = () => {
     });
 };
 
+const generateIndex = () => {
+    const config = {
+        chunks: [],
+        filename: `index.html`,
+        template: 'templates/index_page.html',
+        title: `jsAnimation Index`,
+        pages: Object.keys(entryConfig),
+    };
+    return new HtmlWebpackPlugin(config);
+};
+
 const buildPath = path.resolve(__dirname, 'build');
 
 module.exports = {
@@ -81,6 +91,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin([ buildPath ]),
         ...generateHtmlPluginCalls(),
+        generateIndex(),
         new CopyWebpackPlugin([{ from: 'img', to: `${buildPath}/img` }])
     ],
     module: {
