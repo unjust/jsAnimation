@@ -52,6 +52,9 @@ const entryConfig = entryFiles.reduce((config, item) => {
 
 const noCanvasDOM = (entryName) => (entryName.indexOf('p5') > -1);
 
+const buildPath = path.resolve(__dirname, 'build');
+const jsBuildPath = path.resolve(__dirname, 'build/js');
+
 const generateHtmlPluginCalls = () => {
     return  Object.keys(entryConfig).map((entryName, index) => {
         const date = new Date(fs.statSync(entryFiles[index]).ctime);
@@ -59,7 +62,7 @@ const generateHtmlPluginCalls = () => {
             `${date.getDate()}-${date.getMonth() < 12 ? date.getMonth() + 1 : 12}-${date.getFullYear()}`;
         const config = {
             chunks: [entryName],
-            filename: `../${entryName}.html`, // at root of build
+            filename: `/${buildPath}/${entryName}.html`, // at root of build
             template: 'templates/template.html',
             title: `${entryName}`,
             noCanvasDOM: noCanvasDOM(entryName),
@@ -69,20 +72,16 @@ const generateHtmlPluginCalls = () => {
     });
 };
 
-<<<<<<< HEAD
 const generateIndex = () => {
     const config = {
         chunks: [],
-        filename: `index.html`,
+        filename: `/${buildPath}/index.html`,
         template: 'templates/index_page.html',
         title: `jsAnimation Index`,
         pages: Object.keys(entryConfig),
     };
     return new HtmlWebpackPlugin(config);
 };
-
-const buildPath = path.resolve(__dirname, 'build/');
-const jsBuildPath = path.resolve(__dirname, 'build/js');
 
 module.exports = {
     mode: 'development',
