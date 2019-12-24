@@ -1,5 +1,6 @@
 import p5 from "p5";
 import Objekt, { shapeTypes } from "./myLib/Objekt";
+import { getTiledCoordinates } from "./myLib/position";
 
 window.$p5 = new p5((sk) => {
   let counter = 0;
@@ -14,10 +15,9 @@ window.$p5 = new p5((sk) => {
 
   sk.setup = () => {
     sk.createCanvas(1020, 720, sk.WEBGL);
-    // createEasyCam.bind(sk)();
     for (let i = 0; i < instanceNum; i++) {
       objects.push(
-        new Objekt("sphere", DIM, DIM, 0, 0, 0, { stroke: 'black', fill: 'white' })
+        new Objekt( shapeTypes[0], DIM, DIM, 0, 0, 0, { stroke: 'black', fill: 'white' })
       );
     }
     console.log("objekt drawing demo. press any key to change shapes")
@@ -29,23 +29,12 @@ window.$p5 = new p5((sk) => {
 
   sk.changeShape = () => {
     shapeNum = (shapeNum == shapeTypes.length - 1) ? 0 : ++shapeNum;
-    console.log(shapeTypes[shapeNum]);
     objects.forEach((obj) => obj.setShapeType(shapeTypes[shapeNum]));
   };
 
   sk.update = () => {
     counter += 0.1;
   };
-
-  const getTiledCoordinates = function(i, w, h, cw, ch) {
-    const tilesPerRow = Math.floor(cw / w);
-      // tilesPerCol = Math.floor(ch / h);
-    const colNum = i % tilesPerRow,
-      rowNum = Math.floor(i / tilesPerRow);
-    const x = w * colNum + w/2,
-      y = h * rowNum + h/2;
-    return { x, y };
-  }
 
   sk.draw = () => {
     sk.clear();
