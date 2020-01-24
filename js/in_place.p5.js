@@ -4,29 +4,23 @@ import Cube from "./myLib/Cube";
 import Cone from "./myLib/Cone";
 import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
-window.$p5 = new p5((sk) => {
+new p5((sk) => {
   let shapeNum = 0;
   let objects = [];
   let counter = 0;
   const objectTypes = 3;
 
   const instanceNum = 300;
-  let marioBox;
-
-  sk.preload = () => {
-    debugger
-    marioBox = sk.loadImage('img/mariobw.png');
-  };
 
   sk.setup = () => {
-
+    console.log("press any key to cycle the shape");
     sk.createCanvas(1280, 720, sk.WEBGL);
-    //createEasyCam.bind(sk)();
+    createEasyCam.bind(sk)();
 
     for (let i = 0; i < instanceNum; i++) {
-      objects.push(new Cube(40, 0, 0, 0));
-      objects.push(new Cone(20, 40, 0, 0, 0));
-      objects.push(new Objekt("sphere", 20, 20, 0, 0, 0, { stroke: 'white', fill: 'white' }));
+      objects.push(new Cube(sk, { side: 40 }));
+      objects.push(new Cone(sk, { w:20, h:40 }));
+      objects.push(new Objekt(sk, "sphere", { w:20, h:20 }, { stroke: 'white', fill: 'white' }));
     }
     sk.changeShape();
   };
@@ -48,6 +42,7 @@ window.$p5 = new p5((sk) => {
   };
 
   sk.draw = () => {
+    sk.angleMode(sk.DEGREES);
 
     sk.clear();
     sk.translate(-sk.width/2, -sk.height/2);

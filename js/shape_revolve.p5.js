@@ -7,7 +7,7 @@ import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 const SET_COUNT = 3;
 let shapeSets = [];
 
-window.$p5 = new p5((sk) => {
+new p5((sk) => {
 
   let point1,
     point2,
@@ -20,7 +20,8 @@ window.$p5 = new p5((sk) => {
   sk.setup = () => {
     canvas = sk.createCanvas(1200, 800, sk.WEBGL);
     createEasyCam.bind(sk)();
-    
+  
+
     const speed = .01;
     let id = 0;
 
@@ -31,12 +32,12 @@ window.$p5 = new p5((sk) => {
         point2 = new p5.Vector(point1.x, point1.y + orbitDiameter, point1.z);
         orbitPoint = p5.Vector.lerp(point1, point2, 0.5);
     
-        const cone = new Cone(12, 25, 0, 0, 0);
+        const cone = new Cone(sk, { w: 12, h:25, x:0, y:0, z:0 });
         Object.assign(cone, OrbitMixin);
         cone.initOrbit(0, speed, point1, orbitPoint);
         cone.id = id++;
   
-        const cube = new Cube(20, 0, 0, 0);
+        const cube = new Cube(sk, { side: 20 });
         Object.assign(cube, OrbitMixin);
         cube.initOrbit(0, speed, point2, orbitPoint);
         cube.id = id++;
@@ -49,10 +50,10 @@ window.$p5 = new p5((sk) => {
   sk.update = () => {}
 
   sk.draw = () => {
-    $p5.clear();
-    $p5.push();
-  
-    $p5.translate(-sk.width/2, -sk.height/2);
+    sk.clear();
+    sk.push();
+    sk.background(0);
+    sk.translate(-sk.width/2, -sk.height/2);
 
     shapeSets.forEach((set, i) => {
       const { cone, cube } = set;
@@ -68,7 +69,7 @@ window.$p5 = new p5((sk) => {
       cube.drawOrbit();
     });
 
-    $p5.pop();
+    sk.pop();
   }
 
 });

@@ -6,29 +6,21 @@ import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
 window.$p5 = new p5((sk) => {
   let shapeNum = 0;
-  let objects = [];
   let counter = 0;
   const objectTypes = 3;
-  let objekt;
+  let marioBox;
 
   let rotate = false, warp = false;
 
-  const instanceNum = 300;
-  let marioBox;
+  let marioImage;
 
   sk.preload = () => {
-    marioBox = sk.loadImage('img/mariobw.png');
+    marioImage = sk.loadImage('img/mariobw.png');
   };
 
   sk.setup = () => {
-    objekt = new Cube(40, 0, 0, 0);
+    marioBox = new Cube(sk, { side: 40 });
     sk.createCanvas(1280, 720, sk.WEBGL);
-   
-    for (let i = 0; i < instanceNum; i++) {
-      objects.push(new Cube(40, 0, 0, 0));
-      objects.push(new Cone(20, 40, 0, 0, 0));
-      objects.push(new Objekt("sphere", 20, 20, 0, 0, 0, { stroke: 'white', fill: 'white' }));
-    }
     sk.changeShape();
     createEasyCam.bind(sk)();
   };
@@ -49,7 +41,7 @@ window.$p5 = new p5((sk) => {
 
   sk.update = () => {
     counter += 0.05;
-    objekt.setCounter(counter);
+    marioBox.setCounter(counter);
   };
 
   sk.draw = () => {
@@ -62,26 +54,6 @@ window.$p5 = new p5((sk) => {
     sk.update();
 
     const DIM = 80;
-
-    // for (
-    //   let i = shapeNum, rowCount = 0;
-    //   i < objects.length; 
-    //   i+=3, rowCount++) {
-    //   let x = DIM * rowCount;
-      
-    //   if (x > sk.width) {
-    //     y += DIM;
-    //     rowCount = 0;
-    //   }
-    //   // console.log(x, y);
-    //   sk.push();
-    //   sk.translate(x, y);
-    //   sk.rotate(counter, sk.createVector(0, 1, 0));
-      
-    //   objects[i].draw();
-      
-    //   sk.pop();
-    // }
     for (
       let i = 0, 
           x = 0, 
@@ -99,7 +71,7 @@ window.$p5 = new p5((sk) => {
       sk.translate(x, y);
       // sk.rotate(counter, sk.createVector(0, 1, 0));
       
-      objekt.draw({ rotate, warp, texture: marioBox });
+      marioBox.draw({ rotate, warp, texture: marioImage });
       // console.log(x, y);
       sk.pop();
     }
