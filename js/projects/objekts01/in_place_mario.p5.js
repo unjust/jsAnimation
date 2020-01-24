@@ -1,7 +1,5 @@
 import p5 from "p5";
-import Objekt from "./myLib/Objekt";
-import Cube from "./myLib/Cube";
-import Cone from "./myLib/Cone";
+import Cube from "Framework/Cube";
 import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
 window.$p5 = new p5((sk) => {

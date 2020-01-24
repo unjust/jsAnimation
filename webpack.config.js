@@ -5,6 +5,7 @@ const argv = require('argv');
 
 const ARG_ARCHIVE = 'archive';
 const ARG_FILEPATH = 'file';
+const ARG_PROJECT = 'project';
 
 argv.option([
     {
@@ -19,6 +20,13 @@ argv.option([
         name: ARG_FILEPATH,
         short: 'f',
         type: 'string'
+    },
+    {
+        name: ARG_PROJECT,
+        short: 'p',
+        type: 'csv,string',
+        description: 'Compile js in the following dirs in projects',
+        example: "'yarn run webpack -p objekt01,project03"
     }
 ]);
 
@@ -34,12 +42,25 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 // don't build lib files individually
 const ignorePaths = ["./js/myLib/**/*.*js", "./js/libs/**/*.*js"];
+
+let pathPatterns = './js/*.*js';
+
+// don't build archive utils unless explicit
 if (!argsOptions[ARG_ARCHIVE]) {
     // ignore archive and utils by default
     ignorePaths.push("./js/archive/*.*js", "./js/utils/*.*js");
 }
 
-const pathPatterns = !(argsOptions[ARG_FILEPATH]) ? './js/**/*.*js' : `./${argsOptions[ARG_FILEPATH]}`;
+if (argsOptions[ARG_FILEPATH]) { 
+    pathPatterns = `./${argsOptions[ARG_FILEPATH]}`;
+} 
+
+if (argsOptions[ARG_PROJECT]) {
+    (argsOptions[ARG_PROJECT]).forEach(
+        (projectName) => pathPatterns.push(`./js/projects/${projectName}/*.*js`)
+    );
+}
+
 const entryFiles = glob.sync(pathPatterns, { "ignore": ignorePaths });
 
 // allows us to dynamically create file names
