@@ -43,5 +43,12 @@ Every build creates a basic index file table of contents that can be seen on git
 
 To create an automated jekyll site, first run 
 `yarn run ghpages` this will push out the compiled js to the ghpages branch in the site repo.
+Uses the ghpages plugin https://github.com/tschaub/gh-pages
 
 Then head over to https://github.com/unjust/unjustio to build the project.
+
+run the command `yarn run ghpages` to push this remotely
+
+run with `LOCAL=true yarn run ghpages` to push to unjustio gh-pages locally (this is done via the remote named local_docs which references unjustio on filesystem)
+
+
