@@ -127,7 +127,7 @@ new p5((sk) => {
       }
     });
     if (replaceTriangles > 0) {
-      console.log("replace", replaceTriangles);
+      // console.log("replace", replaceTriangles);
       sk.createTriangles(replaceTriangles);
     }
   };
