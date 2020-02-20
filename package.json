@@ -11,7 +11,8 @@
     "babel": "babel --presets es2015 js --out-dir build",
     "webpack": "webpack",
     "build": "babel",
-    "ghpages": "node build_docs.js"
+    "ghpages": "node build_docs.js",
+    "ghpages:local": "LOCAL=true node build_docs.js"
   },
   "devDependencies": {
     "argv": "^0.0.2",

@@ -18,9 +18,6 @@ const opts = {
   dest: 'assets/javascript/animation'
 }
 
-console.log(local);
-  
-
 if (local) {
   opts.remote = 'local_docs';
 } else {
