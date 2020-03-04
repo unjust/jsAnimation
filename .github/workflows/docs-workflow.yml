@@ -1,0 +1,23 @@
+name: Docs Workflow
+on:
+  push:
+    branches:
+    - docs
+jobs:
+  build:
+    name: Compile and Push
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - run: yarn install
+    - name: build js
+    - run: yarn run build --if-present
+    - naem: push docs to other repo
+    - run: node build_docs.js
+      env:
+        CI: true
