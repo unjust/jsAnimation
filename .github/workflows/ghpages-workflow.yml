@@ -1,0 +1,12 @@
+name: Update Docs Site
+on:
+  merge:
+    branches:
+    - ghpages
+    paths:
+    - 'js/**.js'
+steps:
+  - name: compile js
+    run: babel
+  - name: push to unjustio
+    run: node build_docs.js
