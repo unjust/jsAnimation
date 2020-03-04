@@ -1,4 +1,4 @@
-![](https://github.com/actions/unjust/jsAnimation/workflows/Docs%20Workflow/badge.svg)
+![](https://github.com/unjust/jsAnimation/workflows/Docs%20Workflow/badge.svg)
   
 # JS animation
 
