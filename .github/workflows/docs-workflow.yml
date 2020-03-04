@@ -14,10 +14,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    - run: yarn install
+    - name: Install dependencies
+      run: yarn install
     - name: build js
-    - run: yarn run build --if-present
+      run: yarn run build --if-present
     - name: push docs to other repo
-    - run: node build_docs.js
+      run: node build_docs.js
       env:
         CI: true
