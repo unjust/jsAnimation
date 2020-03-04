@@ -17,7 +17,7 @@ jobs:
     - run: yarn install
     - name: build js
     - run: yarn run build --if-present
-    - naem: push docs to other repo
+    - name: push docs to other repo
     - run: node build_docs.js
       env:
         CI: true
