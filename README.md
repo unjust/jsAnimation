@@ -1,3 +1,5 @@
+https://github.com/unjust/jsANimation/workflows/Docs%20Workflow/badge.svg
+  
 # JS animation
 
 experiments with drawing and animation in js frameworks  
