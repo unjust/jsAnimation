@@ -5,8 +5,11 @@ on:
     - ghpages
     paths:
     - 'js/**.js'
-steps:
-  - name: compile js
-    run: babel
-  - name: push to unjustio
-    run: node build_docs.js
+jobs:
+  build:
+    name: Compile and Push
+  steps:
+    - name: compile js
+      run: babel
+    - name: push to unjustio
+      run: node build_docs.js
