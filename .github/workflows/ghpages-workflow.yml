@@ -1,6 +1,6 @@
 name: Update Docs Site
 on:
-  merge:
+  push:
     branches:
     - ghpages
     paths:
