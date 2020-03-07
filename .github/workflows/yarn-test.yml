@@ -18,4 +18,15 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: yarn install
+    - name: Build project
     - run: yarn run build
+    - name: Move and name directory
+    - run: cp -r build current
+    - name: Push to unjust.io
+      uses: johno/actions-push-subdirectories@master
+      env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          args: current unjust
+      
