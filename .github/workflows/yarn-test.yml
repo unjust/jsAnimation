@@ -1,10 +1,13 @@
 name: Node.js CI
 
-on: [push]
+on: 
+  push:
+    branches: 
+      - master
 
 jobs:
   build:
-
+    if: github.event.pull_request.merged
     runs-on: macos-latest
 
     strategy:
@@ -19,6 +22,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn install
     - name: Build project
-      run: yarn run build
+      run: yarn run build_js
     - name: Move and name directory
       run: cp -r build current
