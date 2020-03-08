@@ -19,7 +19,7 @@ jobs:
       - name: Check files
         id: check_js_step
         run: js_files=$(find js -maxdepth 1 -type f)
-             echo "::warning ::js_files=${{ $js_files }}"
+             echo "::warning ::js_files=${{ echo $js_files }}"
              echo "::set-env name=HAS_BUILD_FILES::$([ -z "$js_files" ] || echo true)"
       
       - name: Log env var
