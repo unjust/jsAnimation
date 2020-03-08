@@ -40,4 +40,13 @@ jobs:
       
       - name: Move and name directory
         if: ${{ env.HAS_BUILD_FILES }}
-        run: cp -r build current
+        run: mkdir -p assets/javascript/animation
+             cp -r build assets/javascript/animation/current
+
+      - name: Push changes
+        uses: johno/actions-push-subdirectories@master
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: assets unjust unjustio
