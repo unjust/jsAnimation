@@ -5,7 +5,7 @@ on:
     branches: 
       - master
 env:
-  HAS_BUILD_FILES: false
+  HAS_BUILD_FILES: ${{ false }}
 jobs:
   build:
     runs-on: macos-latest
@@ -27,17 +27,17 @@ jobs:
         run:  echo "::warning ::HAS_BUILD_FILES=${{env.HAS_BUILD_FILES}}"
       
       - name: Use Node.js ${{ matrix.node-version }}
-        if: ${{ env.HAS_BUILD_FILES == true }}
+        if: ${{ env.HAS_BUILD_FILES }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       
       - name: Build project
-        if: ${{ env.HAS_BUILD_FILES == true }}
+        if: ${{ env.HAS_BUILD_FILES }}
         run: |
              yarn install
              yarn run build_js
       
       - name: Move and name directory
-        if: ${{ env.HAS_BUILD_FILES == true }}
+        if: ${{ env.HAS_BUILD_FILES }}
         run: cp -r build current
