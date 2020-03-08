@@ -16,9 +16,10 @@ jobs:
     steps:
     - name: Check if js build needed
       id: check_js_step
-      run: echo "::set-output name=has_js_files::'(find js -maxdepth 1 -type f)''"
+      run: |
+        echo ::set-output name=has_js_files::$(find js -maxdepth 1 -type f)
     - name: Checkout code
-      if: steps.check_js_step.outputs.has_js_files == 'false'
+      if: steps.check_js_step.outputs.has_js_files
       uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
