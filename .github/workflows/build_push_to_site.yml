@@ -18,7 +18,8 @@ jobs:
         
       - name: Check files
         id: check_js_step
-        run: js_files=$(find js -maxdepth 1 -type f)
+        run: |
+             js_files=$(find js -maxdepth 1 -type f)
              echo $js_files
              echo "::set-env name=HAS_BUILD_FILES::$([ -z "$js_files" ] || echo true)"
       
@@ -33,7 +34,8 @@ jobs:
       
       - name: Build project
         if: ${{ env.HAS_BUILD_FILES == true }}
-        run: yarn install
+        run: |
+             yarn install
              yarn run build_js
       
       - name: Move and name directory
