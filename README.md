@@ -1,4 +1,4 @@
-
+![Build to Site](https://github.com/unjust/jsAnimation/workflows/Build%20to%20Site/badge.svg)
   
 # JS animation
 
