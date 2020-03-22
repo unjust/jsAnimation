@@ -12,16 +12,6 @@ export  const createRandomVertices = function(num, sk) {
   }, []);
 }
 
-  const interpolate = (v1, v2, pct) => {
-    // two points
-    // calculate distance and next vertice
-    // push and draw
-    
-    const newPoint = ((1 - pct) * v1) + (pct * v2);
-    // can use lerp
-  };
-
-
   export const getStepVertices = (pointsArray, stepResolution=5) => {
     let vectorArray = [];
     const pLength = pointsArray.length;
@@ -49,6 +39,6 @@ export const drawVertices = (verticesArray, sk) => {
 
 export const getContinuousVertices = function(v1, v2, pct) {
   const vertice = p5.Vector.lerp(v1, v2, pct);
-  console.log("getConitnuousVertices", v1, v2, pct, vertice);
+  // console.log("getConitnuousVertices", v1, v2, pct, vertice);
   return vertice;
 }

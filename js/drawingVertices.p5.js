@@ -1,34 +1,85 @@
 import p5 from 'p5';
 import { drawCoordinates } from 'Utils/coordinates';
 import { createRandomVertices, getContinuousVertices } from './myLib/verticesHelpers';
+import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
+
 new p5((sk) => {
 
-  let randomVertices;
-  let drawingBuffer = [];
-  let selectedVertice = 0;
-  let counter = 0,
+  let randomVertices,
+  colorValuesArray = [];
+
+  const vertexCount = 10,
     step = .01;
-  const vertexCount = 10;
+
+  let drawingBuffer = [],
+    allBuffers = [],
+    colorBuffers = [];
+
+  let selectedVertice = 0,
+    counter = 0;
+  
+  let stopDrawing = false;
 
   sk.setup = () => {
     sk.createCanvas(600, 500, sk.WEBGL);
+    (createEasyCam.bind(sk))();
     sk.background(255);
-    drawCoordinates(sk);
-    
+
     randomVertices = createRandomVertices(vertexCount, sk);
+    colorValuesArray = chooseColors();
+
+    // drawCoordinates(sk);
+    console.log('press any key to stop the vectors drawing. can manipulate with easy cam');
   };
 
-  sk.drawVertices = (verticesArray) => {
+  const drawVertices = (verticesArray) => {
     sk.beginShape();
     verticesArray.forEach((v) => sk.vertex(v.x, v.y));
     sk.endShape();
   }
 
+  sk.keyPressed = () => {
+    if (sk.keyCode === 'c') {
+      //clear buffers
+    }
+    stopDrawing = !stopDrawing;
+  };
+
+  const chooseColors = function() {
+    const colorValues = [sk.random(0, 255), sk.random(0, 255), sk.random(0, 255)];
+    colorBuffers.push(colorValues);
+    return colorValues;
+  }
+
   sk.draw = () => {
+    sk.clear();
+    sk.background(255);
     sk.strokeWeight(2);
-    sk.stroke(0);
-    // comment noFill to have weird textures
-    sk.noFill();
+
+    if ( counter > 1 ) {
+      // change vertice and restart counter
+      if (selectedVertice < vertexCount - 2) {
+        selectedVertice++;
+        counter = 0;
+      } else { // out of vertices select new ones       
+        allBuffers.push([...drawingBuffer]);    
+        randomVertices = createRandomVertices(vertexCount, sk);
+        colorValuesArray = chooseColors();
+        selectedVertice = 0;
+        counter = 0;
+        drawingBuffer = [];
+      }
+    } else {
+      if (!stopDrawing) counter += step;
+    }
+    
+    allBuffers.forEach((arr, i) => {
+      sk.stroke(...colorBuffers[i]);
+      sk.fill(...colorBuffers[i], 50);
+      sk.push();
+      drawVertices(arr);
+      sk.pop();
+    });
 
     drawingBuffer.push(
       getContinuousVertices( 
@@ -37,19 +88,10 @@ new p5((sk) => {
         counter)
     );
 
-    console.log("drawingBuffer", drawingBuffer[drawingBuffer.length - 1], drawingBuffer.length);
-
-    if ( counter > 1 ) {
-      // change vertice
-      debugger
-      console.log( "vertice index is now", selectedVertice );
-      if (selectedVertice < vertexCount - 2) {
-        selectedVertice++;
-        counter = 0;
-      } 
-    } else {
-      counter += step;
+    if (selectedVertice < vertexCount - 1) {
+      sk.stroke(...colorValuesArray);
+      sk.fill(...colorValuesArray, 50);
+      drawVertices(drawingBuffer);
     }
-    sk.drawVertices(drawingBuffer);
   };
 });
