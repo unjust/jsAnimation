@@ -1,7 +1,6 @@
 const path = require('path');
 const glob = require('glob');
 const fs = require('fs');
-// const argv = require('argv');
 const yargs = require('yargs');
 
 const merge = require('webpack-merge');
@@ -10,24 +9,23 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ARG_ARCHIVE = 'archive';
 const ARG_FILEPATH = 'file';
 
-yargs.option(ARG_ARCHIVE, {
+yargs.scriptName('jsAnime-webpack-dev')
+    .option(ARG_ARCHIVE, {
     alias: 'a',
-    default: true,
+    default: false,
     type: 'boolean',
     description: 'Compile archive and utils too',
-    example: "'yarn run webpack -a'"
-})
-
-yargs.option(ARG_FILEPATH, {
+    example: "'yarn run dev -a'"
+}).option(ARG_FILEPATH, {
     short: 'f',
     type: 'string'
-});
-
-yargs.usage( `yarn run webpack to build js files, \n
+}).usage( `yarn run webpack to build js files, \n
     use -a to build archive and util dirs as well,
-    use -f for an array of individual files (a little busted)` );
+    use -f for an array of individual files (a little busted)`
+).help();
 
 // let argsOptions = {};
+
 const argsOptions = yargs.argv;
 
 if (argsOptions[ARG_ARCHIVE]) {
