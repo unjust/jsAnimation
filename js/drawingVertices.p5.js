@@ -1,6 +1,6 @@
 import p5 from 'p5';
 import { drawCoordinates } from 'Utils/coordinates';
-import { createRandomVertices, getContinuousVertices } from './myLib/verticesHelpers';
+reateRandomVertices, getContinuousVertices, drawVertices } from './myLib/verticesHelpers';import { c
 import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 new p5((sk) => {
@@ -25,18 +25,18 @@ new p5((sk) => {
     (createEasyCam.bind(sk))();
     sk.background(255);
 
-    randomVertices = createRandomVertices(vertexCount, sk);
+    randomVertices = createRandomVertices(vertexCount, sk, true);
     colorValuesArray = chooseColors();
 
     // drawCoordinates(sk);
     console.log('press any key to stop the vectors drawing. can manipulate with easy cam');
   };
 
-  const drawVertices = (verticesArray) => {
-    sk.beginShape();
-    verticesArray.forEach((v) => sk.vertex(v.x, v.y));
-    sk.endShape();
-  }
+  // const drawVertices = (verticesArray) => {
+  //   sk.beginShape();
+  //   verticesArray.forEach((v) => sk.vertex(v.x, v.y, v.z));
+  //   sk.endShape();
+  // }
 
   sk.keyPressed = () => {
     if (sk.keyCode === 'c') {
@@ -63,7 +63,7 @@ new p5((sk) => {
         counter = 0;
       } else { // out of vertices select new ones       
         allBuffers.push([...drawingBuffer]);    
-        randomVertices = createRandomVertices(vertexCount, sk);
+        randomVertices = createRandomVertices(vertexCount, sk, true);
         colorValuesArray = chooseColors();
         selectedVertice = 0;
         counter = 0;
@@ -77,7 +77,7 @@ new p5((sk) => {
       sk.stroke(...colorBuffers[i]);
       sk.fill(...colorBuffers[i], 50);
       sk.push();
-      drawVertices(arr);
+      drawVertices(arr, sk);
       sk.pop();
     });
 
@@ -91,7 +91,7 @@ new p5((sk) => {
     if (selectedVertice < vertexCount - 1) {
       sk.stroke(...colorValuesArray);
       sk.fill(...colorValuesArray, 50);
-      drawVertices(drawingBuffer);
+      drawVertices(drawingBuffer, sk);
     }
   };
 });
