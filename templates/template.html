@@ -11,20 +11,28 @@
         #container, #myCanvas {
             margin: 0 auto;
         }
+
+        body.noCursor #container {
+            cursor: none;
+        }
+
         .about {
             margin: 0 5px;
             color: darkslategrey;
             font-family: 'Monaco', Courier, monospace;
         };
+    
     </style>
     <body>
         <% if (htmlWebpackPlugin.options.noCanvasDOM) { %>
             <div id="container"></div>
-        <% } else { %> 
+        <% } else { %>
+
             <canvas id="myCanvas" 
                 width="1280"
                 height="720"
                 style="border:1px solid black;"></canvas>
+
         <% } %>
         <div class="about">
             <%= htmlWebpackPlugin.options.title %>
