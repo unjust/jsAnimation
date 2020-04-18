@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import DancingTriangle from './DancingTriangle.js';
+import DancingTriangle from 'Framework/DancingTriangle.js';
 
 new p5((sk) => {
 
