@@ -1,4 +1,5 @@
 import p5 from 'p5';
+// import DancingTriangle from 'Framework/DancingTriangle';
 
 let scroll = 0;
 
@@ -127,7 +128,7 @@ new p5((sk) => {
       t.update();
       if (t.x1 > sk.windowWidth + offscreenMargin || t.y1 > sk.windowHeight + offscreenMargin ) {
         arr.splice(i, 1);
-        replaceTriangles++;
+        // replaceTriangles++;
       } else {
         sk.rotateY(Math.sin(counter)/3);
         t.draw(sk);
