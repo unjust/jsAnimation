@@ -73,7 +73,7 @@ new p5((sk) => {
     // reactive with mouse
     if (motion_type_index === 0) {
 
-      const gridSize = 10;
+      const gridSize = sk.width / tw;
       sk.push();
       triangles.forEach((t, i) => {
         const newRow = (i % gridSize === 0);
