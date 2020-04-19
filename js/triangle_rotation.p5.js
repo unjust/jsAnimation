@@ -18,7 +18,7 @@ new p5((sk) => {
   
   sk.setup = () => {
     rAxis = sk.createVector(0, 1, 0);
-    sk.createCanvas(400, 400, sk.WEBGL);
+    sk.createCanvas(800, 600, sk.WEBGL);
     sk.createTriangles();
   };
 
