@@ -1,6 +1,5 @@
 import p5 from 'p5';
 
-
 new p5((sk) => {
   
   const canvasW = 400,
@@ -10,10 +9,8 @@ new p5((sk) => {
       dest_y = 0;
   
   let shapeWidth = canvasW - 10;
-  let shapeHeight = canvasW - 10;
+  let shapeHeight = canvasH - 10;
   const MIN_SIZE = 10;
-
-  let shape_type = 0;
   
   let draw_counter = 0,
       shape_size_diff_counter = 0;
@@ -27,11 +24,10 @@ new p5((sk) => {
   sk.setup = () => {
     sk.background(100);
     sk.createCanvas(canvasW, canvasH);
-    console.log('objective: one shape that scrolls through forms and shrinks with delayed drawing');
-    console.log('man: hold down key to shrink, move mouse to alter falling direction');
+    console.log('triangle that shrinks with delayed drawing');
   };
 
-  sk.drawShape = (dest_x, dest_y, shape_type, w, h) => {
+  sk.drawShape = (dest_x, dest_y, w, h) => {
     sk.fill('white');
     sk.triangle(dest_x - w/2, dest_y, dest_x, dest_y - h, dest_x + w/2, dest_y);
   }
@@ -59,20 +55,15 @@ new p5((sk) => {
       shape_size_diff_counter += rand;
     }
     
-    // get shapetype
-    shape_type = (shape_type === 2) ? 0 : shape_type + 1;
-
     if (inResetMode) {
       if (drawingHistory.length === 0) {
         inResetMode = false;
       }
     };
-
-    drawingHistory.push({ shape_type, dest_x, dest_y, w, h }); 
-
+    drawingHistory.push({ dest_x, dest_y, w, h }); 
     for (let i = 0; i < drawingHistory.length; i++) {
       const pastShape = drawingHistory[i];
-      sk.drawShape(pastShape.dest_x, pastShape.dest_y, pastShape.shape_type, pastShape.w, pastShape.h);
+      sk.drawShape(pastShape.dest_x, pastShape.dest_y, pastShape.w, pastShape.h);
     }
 
     if (drawingHistory.length > BUFFER_MAX_LENGTH) {

@@ -38,7 +38,8 @@ new p5((sk) => {
   sk.drawShape = (dest_x, dest_y, shape_type, w, h) => {
     sk.fill('white');
     
-    // switch(shape_type) {
+    // another idea with dfferent shapes
+    //  switch(shape_type) {
     //   case 0:
     //     sk.triangle(dest_x - w/2, dest_y, dest_x, dest_y - h, dest_x + w/2, dest_y);
     //     break;
