@@ -11,7 +11,7 @@ const ARG_FILEPATH = 'file';
 
 yargs.option(ARG_ARCHIVE, {
     alias: 'a',
-    default: true,
+    default: false,
     type: 'boolean',
     description: 'Compile archive and utils too',
     example: "'yarn run webpack -a'"
