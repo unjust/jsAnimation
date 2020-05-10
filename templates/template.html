@@ -8,9 +8,11 @@
         <link rel="icon" href="img/favicon_io/favicon.ico">
     </head>
     <style>
+        body canvas {
+            cursor: none;
+        }
         #container, #myCanvas {
             margin: 0 auto;
-            border: 1px solid black;
         }
         .about {
             margin: 0 5px;
@@ -24,8 +26,7 @@
         <% } else { %> 
             <canvas id="myCanvas" 
                 width="1280"
-                height="720"
-                style="border:1px solid black;"></canvas>
+                height="720"></canvas>
         <% } %>
         <div class="about">
             <%= htmlWebpackPlugin.options.title %>
