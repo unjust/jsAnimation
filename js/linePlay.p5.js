@@ -4,7 +4,7 @@ new p5((sk) => {
   let canvasHeight,
     canvasWidth;
 
-  let segmentPoints = 4,
+  let segmentPoints = 8,
     segmentVerts = [],
     counter = 0;
 
@@ -14,7 +14,7 @@ new p5((sk) => {
   let lineSpacing = baseSpacing;
 
   sk.setup = () => {
-    sk.createCanvas(sk.windowWidth + 200, 400, sk.WEBGL);
+    sk.createCanvas(sk.windowWidth + 200, 500, sk.WEBGL);
     canvasHeight = sk.height;
     canvasWidth = sk.width;
     sk.background('white');
@@ -22,7 +22,7 @@ new p5((sk) => {
   };
 
   sk.windowResized = function() {
-    sk.resizeCanvas(sk.windowWidth + 200, 400);
+    sk.resizeCanvas(sk.windowWidth + 200, 500);
     canvasHeight = sk.height;
     canvasWidth = sk.width;
   }
@@ -46,7 +46,7 @@ new p5((sk) => {
     });
 
     const c = 3 * Math.cos(counter/10);
-    lineSpacing = baseSpacing + (Math.cos(counter/100));
+    lineSpacing = baseSpacing + (Math.cos(counter/100) * 10);
   }
   
   sk.mouseClicked = () => {
@@ -63,9 +63,13 @@ new p5((sk) => {
     
     const baseXDistance = canvasWidth/segmentPoints;
 
-    for (let y = 0; 
-        y < canvasHeight - (lineSpacing * 3);
-        y += lineSpacing) {
+    for (
+        let y = 0, j = 1;
+        y < canvasHeight - 200;
+        y += lineSpacing,
+        j++) {
+
+      sk.stroke(100 + (5 * j));
       segmentVerts.forEach((vect, i, arr) => {
         const x = baseXDistance * i;
         sk.beginShape(sk.LINES);
@@ -81,19 +85,3 @@ new p5((sk) => {
     sk.pop();
   };
 }, window.document.getElementById('container'));
-
-
-
-// for (let y = 0; 
-//   y < canvasHeight - (lineSpacing * 3);
-//   y += lineSpacing) {
-// segmentVerts.forEach((v, i, arr) => {
-//   sk.beginShape(sk.LINES);
-//   sk.vertex(v[0], y + v[1]);
-//   if (arr[i + 1]) {
-//     const v2 = arr[i + 1];
-//     sk.vertex(v2[0], y + v2[1]);
-//   }
-//   sk.endShape();
-// });
-// }
