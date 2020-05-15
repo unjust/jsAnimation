@@ -50,11 +50,14 @@ new p5((sk) => {
   }
   
   sk.mouseClicked = () => {
-    isCurved = !!isCurved;
+    isCurved = !(!!isCurved);
+    console.log('isCurved', isCurved);
   }
 
   sk.draw = () => {
     sk.background(255);
+    sk.noFill();
+
     counter += .5;
     segmentMotion(counter);
 
@@ -72,12 +75,21 @@ new p5((sk) => {
       sk.stroke(100 + (5 * j));
       segmentVerts.forEach((vect, i, arr) => {
         const x = baseXDistance * i;
-        sk.beginShape(sk.LINES);
+        sk.beginShape();
         sk.vertex(x + vect.x, y + vect.y);
         // console.log(vect, x + vect.y, y + vect.y);
-        if (arr[i + 1]) { // if next array point exists
-          const nextVect = arr[i + 1];
-          sk.vertex(x + baseXDistance + nextVect.x, y + nextVect.y);
+
+        const nextVect = arr[i + 1];
+        if (nextVect) { // if next array point exist
+          if (isCurved) {
+            sk.bezierVertex(
+              x + vect.x, y + 100,
+              x + baseXDistance + nextVect.x, y + 100,
+              x + baseXDistance + nextVect.x, y + nextVect.y
+            );
+          } else {
+            sk.vertex(x + baseXDistance + nextVect.x, y + nextVect.y);
+          }
         }
         sk.endShape();
       });
