@@ -51,7 +51,7 @@ window.$p5 = new p5((sk) => {
   sk.draw = () => {
     //$p5.clear();
 
-    $p5.background(88);
+    $p5.background(0);
     $p5.push();
     $p5.translate(-sk.width/2, -sk.height/2);
 

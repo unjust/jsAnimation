@@ -19,9 +19,9 @@ window.$p5 = new p5((sk) => {
     createEasyCam.bind(sk)();
 
     for (let i = 0; i < instanceNum; i++) {
-      objects.push(new Cube(40, 0, 0, 0));
-      objects.push(new Cone(20, 40, 0, 0, 0));
-      objects.push(new Objekt("sphere", 20, 20, 0, 0, 0, { stroke: 'white', fill: 'white' }));
+      objects.push(new Cube(sk, { side: 40, x: 0, y: 0, z: 0 }));
+      objects.push(new Cone(sk, { w: 20, h: 40, x: 0, y: 0, z: 0 }));
+      // objects.push(new Objekt("sphere", 20, 20, 0, 0, 0, { stroke: 'white', fill: 'white' }));
     }
     sk.changeShape();
   };
