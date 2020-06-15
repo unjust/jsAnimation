@@ -11,7 +11,7 @@ new p5((sk) => {
   const vertexCount = 10;
 
   sk.setup = () => {
-    sk.createCanvas(600, 500, sk.WEBGL);
+    sk.createCanvas(1600, 800, sk.WEBGL);
     sk.background(255);
     drawCoordinates(sk);
     

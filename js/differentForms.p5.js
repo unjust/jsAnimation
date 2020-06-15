@@ -21,7 +21,7 @@ new p5((sk) => {
   let selectedVertex = 0;
 
   sk.setup = () => {
-    sk.createCanvas(600, 500, sk.WEBGL);
+    sk.createCanvas(1600, 900, sk.WEBGL);
     sk.background(255);
     drawCoordinates(sk);
     
