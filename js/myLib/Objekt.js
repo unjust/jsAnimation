@@ -6,21 +6,22 @@ export const shapeTypes = [
 
 export default class Objekt {
     constructor(
-        shapeType, 
-        w,
-        h,
-        x,
-        y,
-        z,
+        sketch,
+        shapeType,
+        { w, h, x=0, y=0, z=0 },
         colors={ stroke: 'black', fill: 'white' }) 
     {
+
+        this.sk = this.sketch = sketch;
+
         this.setShapeType(shapeType);
+
         this.dim = { w, h };
 
-        this.fillColor = $p5.color(colors.fill);
-        this.strokeColor = $p5.color(colors.stroke);
+        this.fillColor = this.sk.color(colors.fill);
+        this.strokeColor = this.sk.color(colors.stroke);
 
-        this.pos = $p5.createVector(x, y, z);
+        this.pos = this.sk.createVector(x, y, z);
         this.posEnd = this.pos;
 
         this.counter = 0.0;
@@ -29,11 +30,11 @@ export default class Objekt {
     }
 
     setShapeType(shapeType) {
-        this.shapeFn = $p5[shapeType].bind($p5);
+        this.shapeFn = this.sk[shapeType].bind(this.sk);
     }
 
     toInfinity() {
-        this.posEnd = $p5.createVector(x, y, -1 * depth); 
+        this.posEnd = this.sk.createVector(x, y, -1 * depth); 
     }
 
     update() {
@@ -72,18 +73,18 @@ export default class Objekt {
             this.update();
         }
         if (options.texture) {
-            $p5.texture(options.texture);
+            this.sk.texture(options.texture);
         } else {
-            $p5.fill(this.fillColor);
-            $p5.stroke(this.strokeColor);
+            this.sk.fill(this.fillColor);
+            this.sk.stroke(this.strokeColor);
         }
-        $p5.push();
-        $p5.translate(this.pos);
+        this.sk.push();
+        this.sk.translate(this.pos);
         if (options.rotate) {
-            $p5.rotate(this.counter, $p5.createVector(0, 1, 0));
+            this.sk.rotate(this.counter, this.sk.createVector(0, 1, 0));
         };
         this.shapeFn(this.dim.w, this.dim.h);
-        $p5.pop();
+        this.sk.pop();
     }
 };
 

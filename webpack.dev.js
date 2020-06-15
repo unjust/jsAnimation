@@ -1,39 +1,41 @@
 const path = require('path');
 const glob = require('glob');
 const fs = require('fs');
-const argv = require('argv');
+const yargs = require('yargs');
 
+const merge = require('webpack-merge');
+const common = require('./webpack.common.js');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ARG_ARCHIVE = 'archive';
 const ARG_FILEPATH = 'file';
 
-argv.option([
-    {
-        name: ARG_ARCHIVE,
-        short: 'a',
-        default: true,
-        type: 'boolean',
-        description: 'Compile archive and utils too',
-        example: "'yarn run webpack -a'"
-    },
-    {
-        name: ARG_FILEPATH,
-        short: 'f',
-        type: 'string'
-    }
-]);
+yargs.option(ARG_ARCHIVE, {
+    alias: 'a',
+    default: true,
+    type: 'boolean',
+    description: 'Compile archive and utils too',
+    example: "'yarn run webpack -a'"
+})
 
-argv.info( `yarn run webpack to build js files, \n
+yargs.option(ARG_FILEPATH, {
+    short: 'f',
+    type: 'string'
+});
+
+yargs.usage( `yarn run webpack to build js files, \n
     use -a to build archive and util dirs as well,
     use -f for an array of individual files (a little busted)` );
 
-const argsOptions = argv.run().options;
+// let argsOptions = {};
+const argsOptions = yargs.argv;
 
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+if (argsOptions[ARG_ARCHIVE]) {
+    console.log("Building the archive");
+}
 
 // don't build lib files individually
 const ignorePaths = ["./js/myLib/**/*.*js", "./js/libs/**/*.*js"];
+
 if (!argsOptions[ARG_ARCHIVE]) {
     // ignore archive and utils by default
     ignorePaths.push("./js/archive/*.*js", "./js/utils/*.*js");
@@ -53,7 +55,6 @@ const entryConfig = entryFiles.reduce((config, item) => {
 const noCanvasDOM = (entryName) => (entryName.indexOf('p5') > -1);
 
 const buildPath = path.resolve(__dirname, 'build');
-const jsBuildPath = path.resolve(__dirname, 'build/js');
 
 const generateHtmlPluginCalls = () => {
     return  Object.keys(entryConfig).map((entryName, index) => {
@@ -83,48 +84,13 @@ const generateIndex = () => {
     return new HtmlWebpackPlugin(config);
 };
 
-module.exports = {
+const devExports = merge( common, {
     mode: 'development',
     watch: true,
-    entry: entryConfig,
-    output: {
-        path: jsBuildPath,
-        filename: `[name].js`
-    },
-    plugins: [
-        new CleanWebpackPlugin([ buildPath ]),
+    plugins: common.plugins.concat([
         ...generateHtmlPluginCalls(),
-        generateIndex(),
-        new CopyWebpackPlugin([{ from: 'img', to: `${buildPath}/img` }])
-    ],
-    resolve: {
-        alias: {
-            Libraries: path.resolve(__dirname, './js/libs/'),
-            Utils: path.resolve(__dirname, './js/utils/'),
-            Framework: path.resolve(__dirname, './js/myLib/')
-        }
-    },
-    module: {
-        rules: [
-            {
-                test: path.resolve(__dirname, 'js/libs/easycam/p5.easycam.js'),
-                use: "imports-loader?p5=>require('p5')"
-            },
-            {
-                // https://webpack.js.org/guides/shimming/#global-exports
-                test: path.resolve(__dirname, 'js/libs/easycam/p5.easycam.js'),
-                use: 'exports-loader?createEasyCam=p5.prototype.createEasyCam,EasyCamLib=Dw'
-            },
-            {
-                test: /\.js$/,
-                exclude: /libs/,
-                loader: 'babel-loader',
-                options: {
-                    presets: ['@babel/preset-env'],
-                    plugins: ['@babel/plugin-proposal-class-properties'],
-                    sourceMap: true
-                }
-            }
-        ]
-    }
-};
+        generateIndex()
+    ])
+});
+
+module.exports = devExports;
