@@ -5,10 +5,10 @@ on:
     branches: 
       - master
 env:
-  HAS_BUILD_FILES: false
+  HAS_BUILD_FILES: ${{ false }}
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
        matrix:
           node-version: [12.x]
@@ -18,23 +18,36 @@ jobs:
         
       - name: Check files
         id: check_js_step
-        run: js_files=$(find js -maxdepth 1 -type f)
+        run: |
+             js_files=$(find js -maxdepth 1 -type f)
+             echo $js_files
              echo "::set-env name=HAS_BUILD_FILES::$([ -z "$js_files" ] || echo true)"
       
       - name: Log env var
         run:  echo "::warning ::HAS_BUILD_FILES=${{env.HAS_BUILD_FILES}}"
       
       - name: Use Node.js ${{ matrix.node-version }}
-        if: ${{ env.HAS_BUILD_FILES == true }}
+        if: ${{ env.HAS_BUILD_FILES }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       
       - name: Build project
-        if: ${{ env.HAS_BUILD_FILES == true }}
-        run: yarn install
+        if: ${{ env.HAS_BUILD_FILES }}
+        run: |
+             yarn install
              yarn run build_js
       
       - name: Move and name directory
-        if: ${{ env.HAS_BUILD_FILES == true }}
-        run: cp -r build current
+        if: ${{ env.HAS_BUILD_FILES }}
+        run: | 
+             mkdir -p assets/javascript/animation
+             cp -r build assets/javascript/animation/current
+
+      - name: Push changes
+        uses: unjust/actions-push-subdirectories@master
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: assets unjust unjustio gh-pages
