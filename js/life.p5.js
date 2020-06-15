@@ -46,12 +46,12 @@ new p5((sk) => {
   }
   sk.setup = () => {
     sk.createCanvas(size * w, size * h);
-    sk.background(255);
+    sk.background('green');
     setNeighbors();
   }
 
   sk.draw = () => {
-    sk.background(255);
+    sk.background('blue');
     sk.fill(0);
     
     
