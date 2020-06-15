@@ -16,7 +16,6 @@
     "ghpages": "node build_docs.js"
   },
   "devDependencies": {
-    "argv": "^0.0.2",
     "@babel/core": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/preset-env": "^7.1.0",
