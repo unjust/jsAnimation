@@ -1,9 +1,14 @@
+# this script is to build out js file sinto assets and push to 
+# unjustio to be used for jekyll site
+# should run when merged to master TODO: maybe when merged to a 
+# docs branch or unjustio branch
+
 name: Build to Site
 
 on: 
   push:
     branches: 
-      - master
+      - unjustio_website_assets
 env:
   HAS_BUILD_FILES: ${{ false }}
 jobs:
