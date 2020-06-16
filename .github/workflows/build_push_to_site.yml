@@ -8,7 +8,7 @@ name: Build to Site
 on: 
   push:
     branches: 
-      - website_assets
+      - unjustio_website_assets
 env:
   HAS_BUILD_FILES: ${{ false }}
 jobs:
