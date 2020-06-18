@@ -61,22 +61,19 @@ Just builds the compiled js.
 Used by the build_push_to_site.workflow. 
 to share the compiled js to the jekyll site.  
 
-### Building docs
+### Building docs 
 
-Every build creates a basic index file in the master branch that is a table of contents and can be seen here on github docs.
+There is a gh-pages branch that will show an index file with a table of contents of the html files in the build directory.
 
-To push compiled js files to the jekyll site to then be used on the site there, you can run 
-`yarn run ghpages` 
-
+how to build to the gh-pages branch, need to be able to push the build folder...
 which will push out the compiled js of whatever branch you are on to the ghpages branch in the site repo.
 
-Run the command `yarn run ghpages` to push these files remotely. 
-Run with `LOCAL=true yarn run ghpages` to push to unjustio gh-pages locally (this is done via the remote named local_docs which references unjustio on filesystem)
+### Building the jekyll site
 
-The script is [here](https://github.com/unjust/jsAnimation/blob/master/build_docs.js) 
-Uses the ghpages plugin https://github.com/tschaub/gh-pages
+There is a workflow which will run on push to unjustio_website_assets branch.
+This builds the project and pushes the assets over to unjustio.
 
-Then head over to https://github.com/unjust/unjustio to build the project.
+Then head over to https://github.com/unjust/unjustio to design the pages with the new assets.
 
 
 

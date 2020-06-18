@@ -1,0 +1,14 @@
+name: Update Docs Site
+on:
+  push:
+    branches:
+    - ghpages
+    paths:
+    - 'js/**.js'
+jobs:
+  build:
+    name: Compile and Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: compile js
+        run: babel

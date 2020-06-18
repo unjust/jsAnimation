@@ -1,9 +1,14 @@
+# this script is to build out js files into assets and push to 
+# unjustio to be used for jekyll site
+# should run when pushed to unjustio branch
+# note: use push_to_website_assets script
+
 name: Build to Site
 
 on: 
   push:
     branches: 
-      - master
+      - unjustio_website_assets
 env:
   HAS_BUILD_FILES: ${{ false }}
 jobs:
