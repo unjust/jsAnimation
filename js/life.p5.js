@@ -51,7 +51,7 @@ new p5((sk) => {
   }
 
   sk.draw = () => {
-    sk.background(255);
+    sk.background('blue');
     sk.fill(0);
     
     sk.push();
