@@ -1,7 +1,6 @@
-# this script is to build out js file sinto assets and push to 
-# unjustio to be used for jekyll site
-# should run when merged to master TODO: maybe when merged to a 
-# docs branch or unjustio branch
+# this workflow script is to build out js files into assets 
+# and push to unjustio to be used for jekyll site
+# should run when merged to unjustio_website_assets branch
 
 name: Build to Site
 
