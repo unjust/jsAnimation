@@ -20,7 +20,6 @@ const opts = {
 
 console.log(local);
   
-
 if (local) {
   opts.remote = 'local_docs';
 } else {

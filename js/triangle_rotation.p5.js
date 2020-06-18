@@ -20,6 +20,7 @@ new p5((sk) => {
     rAxis = sk.createVector(0, 1, 0);
     sk.createCanvas(800, 600, sk.WEBGL);
     sk.createTriangles();
+    console.log('hello world');
   };
 
   sk.createTriangles = function() {
