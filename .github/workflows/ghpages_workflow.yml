@@ -2,7 +2,7 @@ name: Update Docs Site
 on:
   push:
     branches:
-    - ghpages
+    - gh-pages
     paths:
     - 'js/**.js'
 jobs:
