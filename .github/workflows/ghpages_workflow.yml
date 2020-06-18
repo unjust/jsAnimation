@@ -12,5 +12,3 @@ jobs:
     steps:
       - name: compile js
         run: babel
-      - name: push to unjustio
-        run: node build_docs.js
