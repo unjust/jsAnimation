@@ -11,7 +11,8 @@ Project is built with webpack and using babel so I can use imports/exports and o
 
 ## Starting a project
 
-Branch off of the `project_base` branch which will not contain any animation js, just the tools templates and build process.
+Branch off of the `project_base` branch which will not contain any animation js  
+just the boilerplate tools, templates, and build process.
 
 `master` contains animation projects - both the latest animation and archived animation.
 
@@ -31,11 +32,13 @@ The two templates for html that are used in the webpack build, [one that is used
 
 ## Build process
 
-There are now separate webpack configs for dev and prod.
-dev builds everything and starts to watch the files.
-prod configured more to just compile the js.
+There are separate webpack configs for dev and prod.  
+the `dev` config builds everything and starts to watch the files.  
+`prod` is configured more to just compile the js.  
 
-### `yarn run dev`
+### Commands
+
+#### `yarn run dev`
 
 `yarn run dev`. 
 This will build the js files in the root of js (not archive or utils).
@@ -55,7 +58,7 @@ You can also build with options**:
 
 ** this feature needs to be checked and tested
 
-### `yarn run build_js`
+#### `yarn run build_js`
 
 Just builds the compiled js. 
 Used by the build_push_to_site.workflow. 
@@ -63,15 +66,11 @@ to share the compiled js to the jekyll site.
 
 ### Building docs 
 
-There is a gh-pages branch that will show an index file with a table of contents of the html files in the build directory.
-
-how to build to the gh-pages branch, need to be able to push the build folder...
-which will push out the compiled js of whatever branch you are on to the ghpages branch in the site repo.
+There is a `gh-pages` branch that will show an index file with a table of contents of the html files in the build directory.
 
 ### Building the jekyll site
 
-There is a workflow which will run on push to unjustio_website_assets branch.
-This builds the project and pushes the assets over to unjustio.
+[https://github.com/unjust/jsAnimation/blob/master/.github/workflows/build_push_to_site.yml](There is a workflow) which will run on a push to  `unjustio_website_assets` branch. This workflow builds the project and pushes the assets over to `unjustio` repo.
 
 Then head over to https://github.com/unjust/unjustio to design the pages with the new assets.
 
