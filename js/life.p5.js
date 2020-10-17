@@ -70,7 +70,7 @@ new p5((sk) => {
       if (isAlive) {
         let x = (i % w);
         let y = Math.floor(i / w);
-        console.log(x, y);
+        // console.log(x, y);
         sk.square(x * size, y * size, size);
       }
       const livingNeighbors = (neighbors.filter(n => cellStates[n] === true)).length;

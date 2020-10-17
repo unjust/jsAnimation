@@ -1,6 +1,6 @@
 import p5 from 'p5';
 
-new p5((sk) => {
+const linePlay = new p5((sk) => {
   let canvasHeight,
     canvasWidth;
 
@@ -96,4 +96,6 @@ new p5((sk) => {
     }
     sk.pop();
   };
-}, window.document.getElementById('container'));
+}, window.document.getElementById('animation-container'));
+
+export default linePlay;
