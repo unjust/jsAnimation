@@ -70,7 +70,7 @@ There is a `gh-pages` branch that will show an index file with a table of conten
 
 ### Building the jekyll site
 
-[https://github.com/unjust/jsAnimation/blob/master/.github/workflows/build_push_to_site.yml](There is a workflow) which will run on a push to  `unjustio_website_assets` branch. This workflow builds the project and pushes the assets over to `unjustio` repo.
+[There is a workflow](https://github.com/unjust/jsAnimation/blob/master/.github/workflows/build_push_to_site.yml) which will run on a push to  `unjustio_website_assets` branch. This workflow builds the project and pushes the assets over to `unjustio` repo.
 
 Then head over to https://github.com/unjust/unjustio to design the pages with the new assets.
 
