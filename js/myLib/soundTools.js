@@ -21,7 +21,7 @@ export const initAudioIn = (labelName="iShowU Audio Capture") => {
 }
 
 const setFFTInputSrc = (src=audio) => {
-  debugger
+  // debugger
   fft.setInput(src); // or audio.currentSource
 }
 
