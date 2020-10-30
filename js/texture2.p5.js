@@ -8,39 +8,42 @@ new p5((sk) => {
 
   let midiValue;
   const setMidiValue = (value) => midiValue = value;
-  let cam;
   const bins = 1024;
   const VERTS = 20,
-    LINES = 27;
+        LINES = 27;
+
   let randomBuffer;
+  let animation = 0;
+  let liss;
+  const dim = 60;
 
   const animations = ["lines", "circles", "triangles"];
-  let animation = 0;
 
-  let dim = 60;
-
-  const liss = new Liss();
-  liss.verticeTail = 200;
-  liss.xFactor = 9;
-  liss.yFactor = 4;
-  liss.zFactor = 10;
-  liss.rad = dim/2;
-  liss.setSpeed(10);
-  
   let exportFrame = hasFrameParam();
 
   sk.setup = () => {
     sk.pixelDensity(1);
-    sk.createCanvas(1000, 500, sk.WEBGL);
+    sk.createCanvas(sk.windowWidth, sk.windowHeight, sk.WEBGL);
+
     sk.background('#c6c1b8');
     sk.stroke('black') 
     sk.strokeWeight(1);
     sk.noFill();
+
     initAudioIn();
     initFFT(bins);
     initMIDI(setMidiValue);
-    cam = createEasyCam.bind(sk)();
 
+    createEasyCam.bind(sk)();
+
+    liss = new Liss();
+    liss.verticeTail = 200;
+    liss.xFactor = 9;
+    liss.yFactor = 4;
+    liss.zFactor = 10;
+    liss.rad = dim/2;
+    liss.setSpeed(10);
+    
     randomBuffer = [...new Array(VERTS*LINES)].map(v => sk.random(100));
   };
 
@@ -55,7 +58,8 @@ new p5((sk) => {
   } 
 
   const counter = () => sk.millis() / 1000;
-  const XY = () => Math.sin(sk.millis() / 10000000)*1000;
+
+  const XY = () => Math.sin( sk.millis() / 10000000 ) * 1000;
 
   const drawLine = (x1, x2, y, line) => {
     const dist = (x2 - x1) / VERTS;
@@ -91,7 +95,14 @@ new p5((sk) => {
     exportFrame = false;
   }
 
+  sk.windowResized = () => {
+    sk.resizeCanvas(sk.windowWidth, sk.windowHeight);
+  }
+
   sk.keyPressed = () => {
+    if (sk.key.toLowerCase() === 'f') {
+      sk.fullscreen();
+    }
     (animation < animations.length - 1) ? animation++ : animation = 0;
   }
 
