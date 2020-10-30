@@ -49,6 +49,10 @@ export function onMIDIMessage(e) {
 
 function onMIDISuccess(midiAccess) {
   const inputs = midiAccess.inputs;
+
+  if (inputs.size === 0) {
+    return;
+  }
   // const outputs = midiAccess.outputs;
 
   // for (var input of midiAccess.inputs.values())
