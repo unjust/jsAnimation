@@ -1,7 +1,8 @@
 import p5 from 'p5';
 import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
+import { hasFrameParam } from 'Utils/readParams';
 import {  initFFT, getSpectrum, initAudioIn, initMIDI } from 'Framework/soundTools';
-
+import Liss from 'Framework/Lissajous';
 
 new p5((sk) => {
 
@@ -15,6 +16,18 @@ new p5((sk) => {
 
   const animations = ["lines", "circles", "triangles"];
   let animation = 0;
+
+  let dim = 60;
+
+  const liss = new Liss();
+  liss.verticeTail = 200;
+  liss.xFactor = 9;
+  liss.yFactor = 4;
+  liss.zFactor = 10;
+  liss.rad = dim/2;
+  liss.setSpeed(10);
+  
+  let exportFrame = hasFrameParam();
 
   sk.setup = () => {
     sk.pixelDensity(1);
@@ -69,6 +82,15 @@ new p5((sk) => {
 
   }
 
+  const saveFrame = () => {
+    if (!exportFrame || sk.frameCount < 100) {
+      return;
+    }
+    // sk.saveCanvas('textureFrame', 'png');
+    sk.saveFrames('textureFrame', 'png', 1, 1);
+    exportFrame = false;
+  }
+
   sk.keyPressed = () => {
     (animation < animations.length - 1) ? animation++ : animation = 0;
   }
@@ -76,6 +98,7 @@ new p5((sk) => {
   sk.draw = () => {
     sk.clear();
     sk.background('#c6c1b8');
+  
   
     // let spectrum = getSpectrum(512);
     // console.log(spectrum);
@@ -96,12 +119,20 @@ new p5((sk) => {
         case("lines"):
           drawLines(-sk.canvas.width/2 + 50, sk.canvas.width/2 - 100);
           break;
-        case("circles"):
+        case("circles"):   
+          sk.push();
+          sk.translate(0, 0);
+          liss.draw(sk);
+          sk.pop();
+          break;
         case("triangles"):
         default:
           drawLines(-sk.canvas.width/2 + 50, sk.canvas.width/2 - 100);
           break;
       };
+
+
+      saveFrame();
     }
     
 });
