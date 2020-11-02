@@ -1,5 +1,5 @@
 export default class Liss {
-  data = null;
+  data = [];
   color = 'black';
   rad = 10;
   speed = {
