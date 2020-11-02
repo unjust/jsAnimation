@@ -30,8 +30,8 @@ var initAudioIn = function initAudioIn() {
   //     audio.setSource(newSrcIndex);
   //     setFFTInputSrc();
   //   });
-
-  audio.connect(); // console.log(audio.stream, audio.currentSource);
+  // audio.connect();
+  // console.log(audio.stream, audio.currentSource);
 
   return audio;
 };

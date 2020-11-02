@@ -17,7 +17,7 @@ var Liss = /*#__PURE__*/function () {
   function Liss() {
     _classCallCheck(this, Liss);
 
-    _defineProperty(this, "data", []);
+    _defineProperty(this, "data", null);
 
     _defineProperty(this, "color", 'black');
 

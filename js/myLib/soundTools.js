@@ -16,7 +16,7 @@ export const initAudioIn = (labelName="iShowU Audio Capture") => {
   //     audio.setSource(newSrcIndex);
   //     setFFTInputSrc();
   //   });
-  audio.connect();
+  // audio.connect();
   // console.log(audio.stream, audio.currentSource);
   return audio;
 }

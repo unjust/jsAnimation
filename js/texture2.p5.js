@@ -42,7 +42,7 @@ new p5((sk) => {
 
     initAudioIn();
     initFFT(bins);
-    initMIDI(setMidiValue);
+    // initMIDI(setMidiValue);
 
     cam = createEasyCam.bind(sk)();
 

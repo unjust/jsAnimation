@@ -57,8 +57,8 @@ new _p["default"](function (sk) {
     sk.strokeWeight(1);
     sk.noFill();
     (0, _soundTools.initAudioIn)();
-    (0, _soundTools.initFFT)(bins);
-    (0, _soundTools.initMIDI)(setMidiValue);
+    (0, _soundTools.initFFT)(bins); // initMIDI(setMidiValue);
+
     cam = _p5Easycam.createEasyCam.bind(sk)();
     liss = new _Lissajous["default"]();
     liss.verticeTail = 1000;
