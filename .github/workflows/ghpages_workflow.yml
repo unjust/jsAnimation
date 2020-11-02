@@ -10,5 +10,7 @@ jobs:
     name: Compile and Push
     runs-on: ubuntu-latest
     steps:
+      - name: install
+        run: yarn install
       - name: compile js
         run: yarn babel
