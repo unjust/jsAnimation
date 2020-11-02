@@ -9,19 +9,21 @@ let midiMessageCallback = () => {};
 export const initAudioIn = (labelName="iShowU Audio Capture") => {
   audio = new p5.AudioIn((e) => console.log("error starting audio in"));
   audio.start();
-  audio.getSources().
-    then((sourceList) => { 
-      // console.table(sourceList);
-      const newSrcIndex = sourceList.findIndex((input) => input.label.includes(labelName));
-      audio.setSource(newSrcIndex);
-      setFFTInputSrc();
-    });
+  // audio.getSources().
+  //   then((sourceList) => { 
+  //     console.table(sourceList);
+  //     const newSrcIndex = sourceList.findIndex((input) => input.label.includes(labelName));
+  //     audio.setSource(newSrcIndex);
+  //     setFFTInputSrc();
+  //   });
+  audio.connect();
   // console.log(audio.stream, audio.currentSource);
   return audio;
 }
 
 const setFFTInputSrc = (src=audio) => {
   // debugger
+  console.log(src);
   fft.setInput(src); // or audio.currentSource
 }
 
