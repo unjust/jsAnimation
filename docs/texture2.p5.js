@@ -26,6 +26,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 new _p["default"](function (sk) {
   var midiValue;
+  var fs = false;
 
   var setMidiValue = function setMidiValue(value) {
     return midiValue = value;
@@ -151,7 +152,7 @@ new _p["default"](function (sk) {
 
   sk.keyPressed = function () {
     if (sk.key.toLowerCase() === 'f') {
-      sk.fullscreen();
+      sk.fullscreen(!fs);
     } // else if (sk.key === 's') {
     //   soundClip0.play();
     //   animation = 1;
