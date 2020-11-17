@@ -29,25 +29,25 @@ jobs:
              echo "HAS_BUILD_FILES=$([ -z '$js_files' ] || echo true)" >> $GITHUB_ENV
 
       - name: Log env var
-        run:  echo "::warning ::HAS_BUILD_FILES=${{env.HAS_BUILD_FILES}}"
+        run:  echo "::warning ::HAS_BUILD_FILES=$HAS_BUILD_FILES"
       
       - name: Use Node.js ${{ matrix.node-version }}
-        if: ${{ HAS_BUILD_FILES }}
+        if: ${{ env.HAS_BUILD_FILES }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       
       - name: Build project
-        if: ${{ HAS_BUILD_FILES }}
+        if: ${{ env.HAS_BUILD_FILES }}
         run: |
              yarn install
              yarn run build_js
       
       - name: Move and name directory
-        if: ${{ HAS_BUILD_FILES }}
+        if: ${{ env.HAS_BUILD_FILES }}
         run: | 
-             mkdir -p assets/javascript/animation
-             cp -r build assets/javascript/animation/current
+             mkdir -p assets/animation
+             cp -r build assets/animation/
 
       - name: Push changes
         uses: unjust/actions-push-subdirectories@master
