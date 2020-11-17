@@ -52,7 +52,7 @@ new p5((sk) => {
       }
     }
     indexes = Array.from(Array(triangles.length).keys());
-    console.log(`${triangles.length} triangles created!`);
+    console.log(`... ${triangles.length} triangles created!`);
   };
 
   sk.pickTrianglesToDraw = () => {
