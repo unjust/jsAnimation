@@ -46,8 +46,8 @@ jobs:
       - name: Move and name directory
         if: ${{ env.HAS_BUILD_FILES }}
         run: | 
-             mkdir -p assets/javascript/animation
-             cp -r build assets/javascript/animation/current
+             mkdir -p assets/animation
+             cp -r build assets/animation/
 
       - name: Push changes
         uses: unjust/actions-push-subdirectories@master
