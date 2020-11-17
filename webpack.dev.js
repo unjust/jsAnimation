@@ -85,6 +85,7 @@ const generateIndex = () => {
 };
 
 const devExports = merge( common, {
+    entry: entryConfig,
     mode: 'development',
     watch: true,
     plugins: common.plugins.concat([
@@ -92,5 +93,5 @@ const devExports = merge( common, {
         generateIndex()
     ])
 });
-
+// console.log(common.entry, devExports.entry);
 module.exports = devExports;
