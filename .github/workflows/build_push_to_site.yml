@@ -47,7 +47,7 @@ jobs:
         if: ${{ env.HAS_BUILD_FILES }}
         run: | 
              mkdir -p assets/animation
-             cp -r build assets/animation/
+             mv -r build/* assets/animation/
 
       - name: Push changes
         uses: unjust/actions-push-subdirectories@master
