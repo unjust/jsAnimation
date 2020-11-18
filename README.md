@@ -7,7 +7,7 @@ http://paperjs.org (haven't given paper too much love)
 https://p5js.org
 three js could have a home here too
 
-Project is built with webpack and using babel so I can use imports/exports and other es6 features :hooray:
+Project is built with webpack and using babel so I can use imports/exports and other es6 features 🎉
 
 ## Starting a project
 
@@ -20,7 +20,8 @@ just the boilerplate tools, templates, and build process.
 
 - `templates/` dir: 
 contains a templates for js and html
-The js is meant to be used as an example of a p5 project and non-p5. 
+
+js template is meant to be used as an example of a p5 project and non-p5. 
 The two templates for html that are used in the webpack build, [one that is used for p5 projects](https://github.com/unjust/jsAnimation/blob/master/templates/template_p5.html) because it doesnt require a canvas element in the dom (p5 makes a canvas), the other for paper js.
 
 - `js/` dir: each sketch has its own file - using the extension \*.p5.js right now will generate an html file using the p5 template when the project is built
@@ -66,13 +67,21 @@ to share the compiled js to the jekyll site.
 
 ### Building docs 
 
-There is a `gh-pages` branch that will show an index file with a table of contents of the html files in the build directory.
+There is a `gh-pages` branch in this repo that will show an index file with a table of contents of the html files in the build directory.
+Uses the docs dir of gh-pages.
 
 ### Building the jekyll site
 
 [There is a workflow](https://github.com/unjust/jsAnimation/blob/master/.github/workflows/build_push_to_site.yml) which will run on a push to  `unjustio_website_assets` branch. This workflow builds the project and pushes the assets over to `unjustio` repo.
 
+Using the script [`push_to_website_assets.sh`](https://github.com/unjust/jsAnimation/blob/master/push_to_website_assets.sh) will push to the 
+branch to trigger the workflow.
 Then head over to https://github.com/unjust/unjustio to design the pages with the new assets.
+
+Using the script [`push_to_website_local.sh`](https://github.com/unjust/jsAnimation/blob/master/push_to_website_local.sh) will push to the 
+repo on my compu.
+
+
 
 
 
