@@ -41,17 +41,9 @@ the `dev` config builds everything and starts to watch the files.
 
 #### `yarn run dev`
 
-<<<<<<< HEAD
-This will build just the js files in the root of js.
-
-Options:  
-`--archive` `-a` build the archive directory js
-`--file` `-f` just build one file
-=======
 `yarn run dev`. 
 This will build the js files in the root of js (not archive or utils).
 And will also start watching the files.
->>>>>>> 06ebb179d5c313d10c57423e028bdb52e9ef8e66
 
 webpack looks in the js directory,  
 for every js it creates and entry point based on the file name  
