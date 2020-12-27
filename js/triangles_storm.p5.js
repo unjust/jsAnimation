@@ -1,5 +1,6 @@
 import p5 from 'p5';
 // import DancingTriangle from 'Framework/DancingTriangle';
+import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 let scroll = 0;
 
@@ -90,6 +91,8 @@ new p5((sk) => {
     sk.createCanvas(500, 500, sk.WEBGL);
     console.log("Triangle storm: trying to add a 3D element");
     sk.createTriangles();
+
+    createEasyCam.bind(sk)();
   };
 
   sk.createTriangles = function(count) {
@@ -117,7 +120,7 @@ new p5((sk) => {
   }
 
   sk.draw = () => {
-    sk.background(200);
+    sk.background(100);
     sk.update();
     const offscreenMargin = 10;
 

@@ -25,14 +25,12 @@
     </style>
     <body>
         <% if (htmlWebpackPlugin.options.noCanvasDOM) { %>
-            <div id="container"></div>
+          <div id="container"></div>
         <% } else { %>
-
-            <canvas id="myCanvas" 
-                width="1280"
-                height="720"
-                style="border:1px solid black;"></canvas>
-
+          <canvas id="myCanvas" 
+              width="1280"
+              height="720"
+              style="border:1px solid black;"></canvas>
         <% } %>
         <div class="about">
             <%= htmlWebpackPlugin.options.title %>

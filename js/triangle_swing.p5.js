@@ -1,10 +1,13 @@
 import p5 from 'p5';
+import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 new p5((sk) => {
 
   let shape_type = 0;
   let shapeCount = 1;
 
+  let rotate = true;
+  
   const DIM = 20;
 
   let tw = DIM * 2;
@@ -14,16 +17,22 @@ new p5((sk) => {
 
   sk.setup = () => {
     sk.createCanvas(400, 400, sk.WEBGL);
-    console.log('type s or r to render triangles or squares, hold down key to not clear bg');
+    createEasyCam.bind(sk)();
+
+    // console.log('type s or t to render triangles or squares, hold down key to not clear bg');
+    console.log('type keys to add triangles, r to toggle swing, hold down key to not clear bg');
+ 
   };
 
 
   sk.keyPressed = () => {
     shapeCount++;
-    if (sk.key === 's') {
-      shape_type = 0;
-    } else if (sk.key === 't') {
-      shape_type = 1;
+    // if (sk.key === 's') {
+    //   shape_type = 1;
+    // } else if (sk.key === 't') {
+    //   shape_type = 0;
+    if (sk.key === 'r') {
+      rotate = !rotate;
     }
   };
 
@@ -37,6 +46,7 @@ new p5((sk) => {
 
     } 
     */
+    sk.fill(255);
     if (sk.keyIsPressed && !clearBg) {
       // don't clear
     } else if (clearBg) {
@@ -67,15 +77,15 @@ new p5((sk) => {
       if (shape_type === 0) {
 
         sk.push();
-        sk.translate(x, y);
-
+        sk.translate(x + spacing/2, y);
+        if (rotate) {
+          sk.rotateY(Math.cos(millis) * 2);
+        }
         sk.beginShape();
-
-        sk.rotateY(Math.cos(millis));
         
-        sk.vertex(0, 0);
-        sk.vertex(spacing, 0);
+        sk.vertex(-spacing/2, 0);
         sk.vertex(0, spacing);
+        sk.vertex(spacing/2, 0);
         sk.endShape(sk.CLOSE);
         sk.pop();
 
@@ -83,7 +93,9 @@ new p5((sk) => {
         sk.push();
         sk.translate(x, y);
         sk.beginShape();
-        sk.rotateX(Math.sin(millis));
+        if (rotate) {
+          sk.rotateX(Math.sin(millis));
+        }
         sk.vertex(30, 20);
         sk.vertex(85, 20);
         sk.vertex(85, 75);
