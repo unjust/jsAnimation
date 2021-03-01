@@ -4,7 +4,7 @@
     "@tweenjs/tween.js": "^17.4.0",
     "p5": "0.8.0",
     "paper": "^0.11.5",
-    "three": "^0.105.1",
+    "three": "^0.125.0",
     "webpack": "^4.42.0",
     "webpack-merge": "^4.2.2",
     "yargs": "^15.1.0"
