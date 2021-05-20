@@ -7,11 +7,12 @@ http://paperjs.org (haven't given paper too much love)
 https://p5js.org
 three js could have a home here too
 
-Project is built with webpack and using babel so I can use imports/exports and other es6 features :hooray:
+Project is built with webpack and using babel so I can use imports/exports and other es6 features 🎉
 
 ## Starting a project
 
-Branch off of the `project_base` branch which will not contain any animation js, just the tools templates and build process.
+Branch off of the `project_base` branch which will not contain any animation js  
+just the boilerplate tools, templates, and build process.
 
 `master` contains animation projects - both the latest animation and archived animation.
 
@@ -19,7 +20,8 @@ Branch off of the `project_base` branch which will not contain any animation js,
 
 - `templates/` dir: 
 contains a templates for js and html
-The js is meant to be used as an example of a p5 project and non-p5. 
+
+js template is meant to be used as an example of a p5 project and non-p5. 
 The two templates for html that are used in the webpack build, [one that is used for p5 projects](https://github.com/unjust/jsAnimation/blob/master/templates/template_p5.html) because it doesnt require a canvas element in the dom (p5 makes a canvas), the other for paper js.
 
 - `js/` dir: each sketch has its own file - using the extension \*.p5.js right now will generate an html file using the p5 template when the project is built
@@ -31,11 +33,13 @@ The two templates for html that are used in the webpack build, [one that is used
 
 ## Build process
 
-There are now separate webpack configs for dev and prod.
-dev builds everything and starts to watch the files.
-prod configured more to just compile the js.
+There are separate webpack configs for dev and prod.  
+the `dev` config builds everything and starts to watch the files.  
+`prod` is configured more to just compile the js.  
 
-### `yarn run dev`
+### Commands
+
+#### `yarn run dev`
 
 `yarn run dev`. 
 This will build the js files in the root of js (not archive or utils).
@@ -59,28 +63,29 @@ You can also build with options**:
 
 ** this feature needs to be checked and tested
 
-### `yarn run build_js`
+#### `yarn run build_js`
 
 Just builds the compiled js. 
 Used by the build_push_to_site.workflow. 
 to share the compiled js to the jekyll site.  
 
-### Building docs
+### Building docs 
 
-Every build creates a basic index file in the master branch that is a table of contents and can be seen here on github docs.
+There is a `gh-pages` branch in this repo that will show an index file with a table of contents of the html files in the build directory.
+Uses the docs dir of gh-pages.
 
-To push compiled js files to the jekyll site to then be used on the site there, you can run 
-`yarn run ghpages` 
+### Building the jekyll site
 
-which will push out the compiled js of whatever branch you are on to the ghpages branch in the site repo.
+[There is a workflow](https://github.com/unjust/jsAnimation/blob/master/.github/workflows/build_push_to_site.yml) which will run on a push to  `unjustio_website_assets` branch. This workflow builds the project and pushes the assets over to `unjustio` repo.
 
-Run the command `yarn run ghpages` to push these files remotely. 
-Run with `LOCAL=true yarn run ghpages` to push to unjustio gh-pages locally (this is done via the remote named local_docs which references unjustio on filesystem)
+Using the script [`push_to_website_assets.sh`](https://github.com/unjust/jsAnimation/blob/master/push_to_website_assets.sh) will push to the 
+branch to trigger the workflow.
+Then head over to https://github.com/unjust/unjustio to design the pages with the new assets.
 
-The script is [here](https://github.com/unjust/jsAnimation/blob/master/build_docs.js) 
-Uses the ghpages plugin https://github.com/tschaub/gh-pages
+Using the script [`push_to_website_local.sh`](https://github.com/unjust/jsAnimation/blob/master/push_to_website_local.sh) will push to the 
+repo on my compu.
 
-Then head over to https://github.com/unjust/unjustio to build the project.
+
 
 
 
