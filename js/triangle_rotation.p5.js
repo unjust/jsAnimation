@@ -1,5 +1,7 @@
 import p5 from 'p5';
 
+const containerEl = document.querySelector('#container');
+
 new p5((sk) => {
 
   const MOTION_TYPES = [ 'individual_rotate', 'rotate_y_axis' ];
@@ -8,7 +10,6 @@ new p5((sk) => {
 
   let tw = DIM * 2;
   let th = Math.sqrt((tw*tw) - (tw*tw/4));
-  
 
   let triangles = [];
   let rAxis;
@@ -18,10 +19,13 @@ new p5((sk) => {
   
   sk.setup = () => {
     rAxis = sk.createVector(0, 1, 0);
-    sk.createCanvas(800, 600, sk.WEBGL);
+    sk.createCanvas(containerEl.clientWidth, containerEl.clientHeight, sk.WEBGL);
     sk.createTriangles();
-    console.log('hello world');
   };
+
+  sk.windowResized = () => {
+    sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight); 
+  }
 
   sk.createTriangles = function() {
     let tri_count = 0;
@@ -114,5 +118,5 @@ new p5((sk) => {
       });
     }
   };
-});
+}, containerEl);
 

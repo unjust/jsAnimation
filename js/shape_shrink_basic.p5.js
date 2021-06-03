@@ -1,9 +1,11 @@
 import p5 from 'p5';
 
+const containerEl = document.querySelector('#container');
+
 new p5((sk) => {
   
-  const canvasW = 400,
-        canvasH = 400;
+  const canvasW = containerEl.clientWidth,
+        canvasH = containerEl.clientHeight;
 
   let dest_x = 0,
       dest_y = 0;
@@ -27,6 +29,10 @@ new p5((sk) => {
     console.log('triangle that shrinks with delayed drawing');
   };
 
+  sk.windowResized = () => {
+    sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight); 
+  }
+  
   sk.drawShape = (dest_x, dest_y, w, h) => {
     sk.fill('white');
     sk.triangle(dest_x - w/2, dest_y, dest_x, dest_y - h, dest_x + w/2, dest_y);
@@ -70,5 +76,5 @@ new p5((sk) => {
       drawingHistory.shift();
     }
   };
-});
+}, containerEl);
 

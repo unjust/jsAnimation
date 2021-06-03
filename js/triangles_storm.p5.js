@@ -4,6 +4,8 @@ import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 let scroll = 0;
 
+const containerEl = document.querySelector('#container');
+
 class DancingTriangle {
   posx = 0;
   posy = 0;
@@ -88,12 +90,16 @@ new p5((sk) => {
   let counter = 0;
   
   sk.setup = () => {
-    sk.createCanvas(500, 500, sk.WEBGL);
+    sk.createCanvas(containerEl.clientWidth, containerEl.clientHeight, sk.WEBGL);
     console.log("Triangle storm: trying to add a 3D element");
     sk.createTriangles();
 
     createEasyCam.bind(sk)();
   };
+
+  sk.windowResized = () => {
+    sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight); 
+  }
 
   sk.createTriangles = function(count) {
     for (let x = 0; x < sk.windowWidth; x += tw) {
@@ -140,4 +146,4 @@ new p5((sk) => {
   
     sk.pop();
   };
-});
+}, containerEl);

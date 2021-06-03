@@ -8,14 +8,28 @@
         <link rel="icon" href="img/favicon_io/favicon.ico">
     </head>
     <style>
+        html, body {
+          height: 100%;
+        }
+
         #container, #myCanvas {
             margin: 0 auto;
+            width: 100%;
         }
 
         body.noCursor #container {
             cursor: none;
         }
 
+        .flex {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .primary {
+          flex: 2;
+        }
+  
         .about {
             margin: 0 5px;
             color: darkslategrey;
@@ -23,9 +37,9 @@
         };
     
     </style>
-    <body>
+    <body class="flex">
         <% if (htmlWebpackPlugin.options.noCanvasDOM) { %>
-          <div id="container"></div>
+          <div id="container" class="primary"></div>
         <% } else { %>
           <canvas id="myCanvas" 
               width="1280"

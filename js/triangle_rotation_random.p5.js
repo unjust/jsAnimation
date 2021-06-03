@@ -1,6 +1,8 @@
 import p5 from 'p5';
 import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
+const containerEl = document.querySelector('#container');
+
 new p5((sk) => {
 
   const DIM = 20;
@@ -15,12 +17,16 @@ new p5((sk) => {
   
   sk.setup = () => {
     rAxis = sk.createVector(0, 1, 0);
-    sk.createCanvas(800, 600, sk.WEBGL);
+    sk.createCanvas(containerEl.clientWidth, containerEl.clientHeight ,sk.WEBGL);
     sk.createTriangles();
     sk.pickTrianglesToDraw();
     createEasyCam.bind(sk)();
   };
 
+  sk.windowResized = () => {
+    sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight); 
+  }
+  
   sk.createTriangles = function() {
 
     for (let x = 0; x < sk.width + tw; x += tw) {
@@ -120,5 +126,5 @@ new p5((sk) => {
       sk.pop();
     });
   };
-}, 'container');
+}, containerEl);
 

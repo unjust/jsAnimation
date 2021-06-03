@@ -1,10 +1,11 @@
 import p5 from 'p5';
 
+const containerEl = document.querySelector('#container');
 
 new p5((sk) => {
   
-  const canvasW = 400,
-        canvasH = 400;
+  const canvasW = containerEl.clientWidth,
+        canvasH = containerEl.clientHeight;
 
   let dest_x = 0,
       dest_y = 0;
@@ -27,13 +28,18 @@ new p5((sk) => {
   sk.setup = () => {
     sk.background(100);
     sk.createCanvas(canvasW, canvasH);
-    console.log('objective: one shape that scrolls through forms and shrinks with delayed drawing');
-    console.log('hold down key to shrink, move mouse to alter falling direction');
+    console.log(`objective: one shape that scrolls through forms
+      and shrinks with delayed drawing`);
+    // console.log(`hold down key to shrink, move mouse to alter falling direction`);
   };
 
   sk.keyPressed = () => {};
 
   sk.keyReleased = () => {};
+
+  sk.windowResized = () => {
+    sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight); 
+  }
 
   sk.drawShape = (dest_x, dest_y, shape_type, w, h) => {
     sk.fill('white');
@@ -104,7 +110,6 @@ new p5((sk) => {
     //   sk.background(100);
     // }
 
-
     if (inResetMode) {
       if (drawingHistory.length === 0) {
         inResetMode = false;
@@ -128,5 +133,5 @@ new p5((sk) => {
       drawingHistory.shift();
     }
   };
-});
+}, containerEl);
 
