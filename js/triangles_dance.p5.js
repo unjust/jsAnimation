@@ -1,23 +1,35 @@
 import p5 from 'p5';
 import DancingTriangle from 'Framework/DancingTriangle';
 import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
+import { extendTouchEasycam } from 'Framework/mixins/touchEvents';
 
-let scroll = 0;
-DancingTriangle.motionType = 0;
+const containerEl = document.querySelector('#container');
 
 new p5((sk) => {
+
+  let scroll = 0;
+  DancingTriangle.motionType = 0;
 
   const DIM = 20;
   let th = DIM * 1.5;
   let tw = DIM * 2;
   let triangles = [];
+  let cam;
 
   sk.setup = () => {
-    sk.createCanvas(500, 500, sk.WEBGL);
+    sk.createCanvas(containerEl.clientWidth, containerEl.clientHeight, sk.WEBGL);
     sk.createTriangles(2);
-
-    createEasyCam.bind(sk)();
+    cam = createEasyCam.bind(sk)();
+    extendTouchEasycam(cam, {
+      touchstart: () => {
+        sk.keyPressed();
+      }
+    })
   };
+
+  sk.windowResized = () => {
+    sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight); 
+  }
 
   sk.createTriangles = function() {
     let i = 0;
@@ -28,7 +40,7 @@ new p5((sk) => {
         i++;
       }
     }
-    console.log(i, " triangles created");
+    console.log(`${i} triangles created, tap or hit keys to change motion :)`);
   };
 
   sk.keyPressed = () => {
@@ -53,4 +65,4 @@ new p5((sk) => {
     });
     sk.pop();
   };
-}, document.querySelector('#container'));
+}, containerEl);

@@ -1,11 +1,18 @@
 import p5 from 'p5';
 import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
+import { extendTouchEasycam } from 'Framework/mixins/touchEvents';
+
+const containerEl = document.querySelector('#container');
 
 new p5((sk) => {
 
-  let shape_type = 0;
-  let shapeCount = 1;
+  const shapes = {
+    TRIANGLE: 0,
+    SQUARE: 1,
+  };
 
+  let shape_type = shapes.TRIANGLE;
+  let shapeCount = 1;
   let rotate = true;
   
   const DIM = 20;
@@ -13,49 +20,56 @@ new p5((sk) => {
   let tw = DIM * 2;
   let th = Math.sqrt((tw*tw) - (tw*tw/4));
 
-  let clearBg = false;
+  let easycam;
+
+  const backgroundColor = 100;
+  const fillColor = 255;
 
   sk.setup = () => {
-    sk.createCanvas(400, 400, sk.WEBGL);
-    createEasyCam.bind(sk)();
+    sk.createCanvas(containerEl.clientWidth, containerEl.clientHeight, sk.WEBGL);
+    easycam = createEasyCam.bind(sk)();
+    extendTouchEasycam(easycam, {
+      dbltap: (e) => {
+        sk.keyPressed(e);
+        sk.keyIsPressed = !sk.keyIsPressed;
+      },
+      // touchmoveMulti: (e) => {
+      //   sk.keyIsPressed = true;
+      // }
+    })
 
-    // console.log('type s or t to render triangles or squares, hold down key to not clear bg');
-    console.log('type keys to add triangles, r to toggle swing, hold down key to not clear bg');
- 
+    console.log(`type keys to add triangles,
+      the 'r' to toggle swing/rotation,
+      hold down key while moving mouse to paint`);
   };
 
+  sk.windowResized = () => {
+    sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight); 
+  }
 
   sk.keyPressed = () => {
     shapeCount++;
     // if (sk.key === 's') {
-    //   shape_type = 1;
+    //   shape_type = shapes.SQUARE;
     // } else if (sk.key === 't') {
-    //   shape_type = 0;
+    //   shape_type = shapes.TRIANGLE;
     if (sk.key === 'r') {
       rotate = !rotate;
     }
   };
 
-  sk.keyReleased = () => {
-    clearBg = false;
-  };
+  // sk.keyReleased = () => {
+  //   clearBg = false;
+  // };
 
   sk.draw = () => {
     /* glitching because changing the animation
-    if (sk.keyPressed()) {
-
-    } 
+    if (sk.keyPressed()) {} 
     */
-    sk.fill(255);
-    if (sk.keyIsPressed && !clearBg) {
-      // don't clear
-    } else if (clearBg) {
+    sk.fill(fillColor);
+    if (!sk.keyIsPressed) {
       sk.clear();
-      sk.translate(0, 0, sk.mouseY);
-    }
-    else {
-      sk.clear();
-      sk.background(100);
+      sk.background(backgroundColor);
     }
 
     // upper_left corner
@@ -74,8 +88,7 @@ new p5((sk) => {
       const x = (s % gridX === 0) ? 0 :  (s % gridX) * spacing;
       const y = Math.floor(s / gridY) * spacing;
 
-      if (shape_type === 0) {
-
+      // if (shape_type === shapes.TRIANGLE) {
         sk.push();
         sk.translate(x + spacing/2, y);
         if (rotate) {
@@ -88,8 +101,7 @@ new p5((sk) => {
         sk.vertex(spacing/2, 0);
         sk.endShape(sk.CLOSE);
         sk.pop();
-
-      } else if (shape_type === 1) {
+      /* } else if (shape_type === shapes.SQUARE) {
         sk.push();
         sk.translate(x, y);
         sk.beginShape();
@@ -102,8 +114,8 @@ new p5((sk) => {
         sk.vertex(30, 75);
         sk.endShape(sk.CLOSE);
         sk.pop();
-      }
+      } */
     }
   };
-});
+}, containerEl);
 

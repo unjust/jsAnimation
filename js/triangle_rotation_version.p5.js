@@ -16,11 +16,12 @@ new p5((sk) => {
   let zoom = false;
   let counter = 0;
   
+  const containerEl = document.querySelector('#container');
+
   sk.setup = () => {
     rAxis = sk.createVector(0, 1, 0);
-    sk.createCanvas(800, 600, sk.WEBGL);
+    sk.createCanvas(containerEl.clientWidth, containerEl.clientHeight, sk.WEBGL);
     sk.createTriangles();
-
     createEasyCam.bind(sk)();
   };
 
