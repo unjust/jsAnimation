@@ -26,9 +26,9 @@ new p5((sk) => {
   let drawingHistory = [];
 
   sk.setup = () => {
-    sk.background(100);
+    // sk.background(100);
     sk.createCanvas(canvasW, canvasH);
-    console.log(`objective: one shape that scrolls through forms
+    console.info(`objective: one shape that scrolls through forms
       and shrinks with delayed drawing`);
     // console.log(`hold down key to shrink, move mouse to alter falling direction`);
   };
@@ -102,7 +102,7 @@ new p5((sk) => {
 
     if (inResetMode) {
       sk.clear();
-      sk.background(100);
+      // sk.background(100);
     }
 
     // if (!sk.keyIsPressed) {

@@ -26,7 +26,7 @@ new p5((sk) => {
   sk.setup = () => {
     sk.background(100);
     sk.createCanvas(canvasW, canvasH);
-    console.log('triangle that shrinks with delayed drawing');
+    console.info('A triangle that shrinks with delayed drawing');
   };
 
   sk.windowResized = () => {

@@ -38,9 +38,8 @@ new p5((sk) => {
       // }
     })
 
-    console.log(`type keys to add triangles,
-      the 'r' to toggle swing/rotation,
-      hold down key while moving mouse to paint`);
+    console.info('type keys or tap your finger to add triangles');
+    console.info('hold down key or touch while moving to paint');
   };
 
   sk.windowResized = () => {

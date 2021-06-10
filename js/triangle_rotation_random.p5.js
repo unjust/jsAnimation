@@ -21,6 +21,8 @@ new p5((sk) => {
     sk.createTriangles();
     sk.pickTrianglesToDraw();
     createEasyCam.bind(sk)();
+    console.info('triangles detaching from space');
+    console.info('navigate around with press + hold of mouse, or touch + hold');
   };
 
   sk.windowResized = () => {

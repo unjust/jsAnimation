@@ -95,6 +95,7 @@ new p5((sk) => {
     sk.createTriangles();
 
     createEasyCam.bind(sk)();
+    console.info('rotate around and zoom by moving mouse or touching down');
   };
 
   sk.windowResized = () => {
