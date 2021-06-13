@@ -5,7 +5,7 @@ import { extendTouchEasycam } from 'Framework/mixins/touchEvents';
 
 const containerEl = document.querySelector('#container');
 
-new p5((sk) => {
+const myp5 = new p5((sk) => {
 
   let scroll = 0;
   DancingTriangle.motionType = 0;
@@ -40,7 +40,8 @@ new p5((sk) => {
         i++;
       }
     }
-    console.log(`${i} triangles created, tap or hit keys to change motion :)`);
+    console.info(`${i} triangles created, tap or hit keys to change motion :)`);
+    console.info('navigate with press + hold of mouse, or touch + hold to view the plane from different perspectives.');
   };
 
   sk.keyPressed = () => {
@@ -66,3 +67,5 @@ new p5((sk) => {
     sk.pop();
   };
 }, containerEl);
+
+window.sketches.push(myp5);

@@ -2,7 +2,7 @@ import p5 from 'p5';
 
 const containerEl = document.querySelector('#container');
 
-new p5((sk) => {
+const myp5 = new p5((sk) => {
   
   const canvasW = containerEl.clientWidth,
         canvasH = containerEl.clientHeight;
@@ -28,8 +28,7 @@ new p5((sk) => {
   sk.setup = () => {
     // sk.background(100);
     sk.createCanvas(canvasW, canvasH);
-    console.info(`objective: one shape that scrolls through forms
-      and shrinks with delayed drawing`);
+    console.info(`a moving triangle that shrinks while dodges`);
     // console.log(`hold down key to shrink, move mouse to alter falling direction`);
   };
 
@@ -134,4 +133,6 @@ new p5((sk) => {
     }
   };
 }, containerEl);
+
+window.sketches.push(myp5);
 

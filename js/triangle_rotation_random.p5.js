@@ -3,7 +3,7 @@ import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 const containerEl = document.querySelector('#container');
 
-new p5((sk) => {
+const myp5 = new p5((sk) => {
 
   const DIM = 20;
   let tw = DIM * 2;
@@ -130,3 +130,4 @@ new p5((sk) => {
   };
 }, containerEl);
 
+window.sketches.push(myp5);

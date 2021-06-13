@@ -2,7 +2,7 @@ import p5 from 'p5';
 
 const containerEl = document.querySelector('#container');
 
-new p5((sk) => {
+const myp5 = new p5((sk) => {
 
   const MOTION_TYPES = [ 'individual_rotate', 'rotate_y_axis' ];
   let motion_type_index = 0;
@@ -120,3 +120,4 @@ new p5((sk) => {
   };
 }, containerEl);
 
+window.sketches.push(myp5);

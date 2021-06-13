@@ -1,7 +1,7 @@
 import p5 from 'p5';
 import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
-new p5((sk) => {
+const myp5 = new p5((sk) => {
 
   const MOTION_TYPES = [ 'individual_rotate', 'rotate_y_axis' ];
   let motion_type_index = 0;
@@ -23,6 +23,8 @@ new p5((sk) => {
     sk.createCanvas(containerEl.clientWidth, containerEl.clientHeight, sk.WEBGL);
     sk.createTriangles();
     createEasyCam.bind(sk)();
+    console.info('look around, from close or far away.');
+    console.info('navigate with press + hold of mouse, or touch + hold.');
   };
 
   sk.createTriangles = function() {
@@ -91,3 +93,4 @@ new p5((sk) => {
   };
 }, 'container');
 
+window.sketches.push(myp5);

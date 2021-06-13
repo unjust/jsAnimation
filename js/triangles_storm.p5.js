@@ -79,7 +79,7 @@ class DancingTriangle {
 
 DancingTriangle.motionType = 0;
 
-new p5((sk) => {
+const myp5 = new p5((sk) => {
 
   const DIM = 20;
   let th = DIM * 1.5;
@@ -148,3 +148,5 @@ new p5((sk) => {
     sk.pop();
   };
 }, containerEl);
+
+window.sketches.push(myp5);

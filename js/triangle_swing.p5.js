@@ -4,7 +4,7 @@ import { extendTouchEasycam } from 'Framework/mixins/touchEvents';
 
 const containerEl = document.querySelector('#container');
 
-new p5((sk) => {
+const myp5 = new p5((sk) => {
 
   const shapes = {
     TRIANGLE: 0,
@@ -118,3 +118,4 @@ new p5((sk) => {
   };
 }, containerEl);
 
+window.sketches.push(myp5);
