@@ -2,9 +2,9 @@
  * 
  * The p5.EasyCam library - Easy 3D CameraControl for p5.js and WEBGL.
  *
- *   Copyright 2018 by Thomas Diewald (https://www.thomasdiewald.com)
+ *   Copyright © 2017-2021 by p5.EasyCam authors
  *
- *   Source: https://github.com/diwi/p5.EasyCam
+ *   Source: https://github.com/freshfork/p5.EasyCam
  *
  *   MIT License: https://opensource.org/licenses/MIT
  * 
@@ -33,9 +33,9 @@ var Dw = (function(ext) {
 const INFO = 
 {
   /** name    */ LIBRARY : "p5.EasyCam",
-  /** version */ VERSION : "1.0.9",
-  /** author  */ AUTHOR  : "Thomas Diewald",
-  /** source  */ SOURCE  : "https://github.com/diwi/p5.EasyCam",
+  /** version */ VERSION : "1.2.0",
+  /** author  */ AUTHOR  : "p5.EasyCam authors",
+  /** source  */ SOURCE  : "https://github.com/freshfork/p5.EasyCam",
   
   toString : function(){
     return this.LIBRARY+" v"+this.VERSION+" by "+this.AUTHOR+" ("+this.SOURCE+")";
@@ -76,6 +76,7 @@ class EasyCam {
       console.log("renderer needs to be an instance of p5.RendererGL");
       return;
     }
+    var bounds = renderer.elt.getBoundingClientRect();
     
     // define default args
     args = args || {};
@@ -83,7 +84,7 @@ class EasyCam {
     if(args.center   === undefined) args.center    = [0, 0, 0];
     if(args.rotation === undefined) args.rotation  = Rotation.identity();
     if(args.viewport === undefined) args.viewport  = [0, 0, renderer.width, renderer.height];
-   
+    if(args.offset   === undefined) args.offset    = [bounds.x + window.scrollX, bounds.y + window.scrollY];
 
     // library info
     this.INFO = INFO;
@@ -149,9 +150,14 @@ class EasyCam {
     // viewport for the mouse-pointer [x,y,w,h]
     this.viewport = args.viewport.slice();
     
-
+    // offset of the canvas in the container
+    this.offset = args.offset.slice();
     
-    
+    // add a handler for window resizing
+    window.addEventListener('resize', function (e){
+      let p = renderer.elt.getBoundingClientRect();
+      cam.offset = [p.x + window.scrollX, p.y + window.scrollY];
+    });
     
     // mouse/touch/key action handler
     this.mouse = {
@@ -229,13 +235,16 @@ class EasyCam {
 
       mousedown : function(event){
         var mouse = cam.mouse;
+        // Account for canvas shift:
+        var offX = cam.offset[0] - window.scrollX,
+            offY = cam.offset[1] - window.scrollY;
         
         if(event.button === 0) mouse.button |= mouse.BUTTON.LMB;
         if(event.button === 1) mouse.button |= mouse.BUTTON.MMB;
         if(event.button === 2) mouse.button |= mouse.BUTTON.RMB;
         
-        if(mouse.insideViewport(event.x, event.y)){
-          mouse.updateInput(event.x, event.y, event.y);
+        if(mouse.insideViewport(event.x - offX, event.y - offY)){
+          mouse.updateInput(event.x - offX, event.y - offY, event.y - offY);
           mouse.ismousedown = mouse.button > 0;
           mouse.isPressed   = mouse.ismousedown;
           cam.SHIFT_CONSTRAINT = 0;
@@ -278,9 +287,11 @@ class EasyCam {
       },
       
       dblclick : function(event){
-        var x = event.x;
-        var y = event.y;
-        if(cam.mouse.insideViewport(x, y)){
+        // Account for canvas shift:
+        var offX = cam.offset[0] - window.scrollX,
+            offY = cam.offset[1] - window.scrollY;
+
+        if(cam.mouse.insideViewport(event.x - offX, event.y - offY)){
           cam.reset();
         }
       },
@@ -307,19 +318,22 @@ class EasyCam {
         var avg_y = 0.0;
         var avg_d = 0.0;
         var i, dx, dy, count = touches.length;
+        // Account for canvas shift:
+        var offX = cam.offset[0] - window.scrollX,
+            offY = cam.offset[1] - window.scrollY;
 
         // center, averaged touch position
         for(i = 0; i < count; i++){
-          avg_x += touches[i].clientX;
-          avg_y += touches[i].clientY;
+          avg_x += touches[i].clientX - offX;
+          avg_y += touches[i].clientY - offY;
         }
         avg_x /= count;
         avg_y /= count;
         
         // offset, mean distance to center
         for(i = 0; i < count; i++){
-          dx = avg_x - touches[i].clientX;
-          dy = avg_y - touches[i].clientY;
+          dx = avg_x - (touches[i].clientX - offX);
+          dy = avg_y - (touches[i].clientY - offY);
           avg_d += Math.sqrt(dx*dx + dy*dy);
         }
         avg_d /= count;
@@ -366,6 +380,7 @@ class EasyCam {
 		    event.stopPropagation();
         
         var mouse = cam.mouse;
+
         mouse.istouchdown = false,
         mouse.isPressed = (mouse.istouchdown || mouse.ismousedown);
         cam.SHIFT_CONSTRAINT = 0;
@@ -605,10 +620,14 @@ class EasyCam {
       this.camLAT = this.getCenter  (this.camLAT);
       this.camRUP = this.getUpVector(this.camRUP);
       
-      // https://github.com/diwi/p5.EasyCam/pull/6/files
-      renderer._curCamera.camera(this.camEYE[0], this.camEYE[1], this.camEYE[2],
-                      this.camLAT[0], this.camLAT[1], this.camLAT[2],
-                      this.camRUP[0], this.camRUP[1], this.camRUP[2]);
+      if(undefined===renderer._curCamera)
+        renderer.camera(this.camEYE[0], this.camEYE[1], this.camEYE[2],
+                        this.camLAT[0], this.camLAT[1], this.camLAT[2],
+                        this.camRUP[0], this.camRUP[1], this.camRUP[2]);
+      else
+        renderer._curCamera.camera(this.camEYE[0], this.camEYE[1], this.camEYE[2],
+                        this.camLAT[0], this.camLAT[1], this.camLAT[2],
+                        this.camRUP[0], this.camRUP[1], this.camRUP[2]);
     }
 
   }
@@ -1022,7 +1041,7 @@ class EasyCam {
     renderer = renderer || cam.renderer;
     
     if(!renderer) return;
-    renderer.push();
+    this.pushed_rendererState = renderer.push();
     
     var gl = renderer.drawingContext;
     var w = (w !== undefined) ? w : renderer.width;
@@ -1042,7 +1061,7 @@ class EasyCam {
     // 3) set new modelview (identity)
     renderer.resetMatrix();
     // 4) set new projection (ortho)
-    renderer.ortho(0, w, -h, 0, -d, +d);
+    renderer._curCamera.ortho(0, w, -h, 0, -d, +d);
     // renderer.ortho();
     // renderer.translate(-w/2, -h/2);
 
@@ -1071,7 +1090,7 @@ class EasyCam {
     renderer.uPMatrix .set(this.pushed_uPMatrix );
     // 1) enable DEPTH_TEST
     gl.enable(gl.DEPTH_TEST);
-    renderer.pop();
+    renderer.pop(this.pushed_rendererState);
   }
 
   
@@ -1645,29 +1664,10 @@ return ext;
 
 
 
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-//
-// p5 patches, bug fixes, workarounds, ...
-//
-////////////////////////////////////////////////////////////////////////////////
-
-
 /**
  * @submodule Camera
  * @for p5
  */
-
-
-
 
 if(p5){
   
@@ -1689,73 +1689,4 @@ if(p5){
     
     return new Dw.EasyCam(renderer, args); 
   }
-  
-  
-
-  /**
-   * Overriding the current p5.ortho();
-   *
-   * p5 v0.5.16
-   * temporary bugfix for https://github.com/processing/p5.js/pull/2463.
-   *
-   * @param  {Number} left   camera frustum left plane
-   * @param  {Number} right  camera frustum right plane
-   * @param  {Number} bottom camera frustum bottom plane
-   * @param  {Number} top    camera frustum top plane
-   * @param  {Number} near   camera frustum near plane
-   * @param  {Number} far    camera frustum far plane
-   * @return {p5}            the p5 object
-   */
-  p5.prototype.ortho = function(){
-    this._renderer.ortho.apply(this._renderer, arguments);
-    return this;
-  };
-  
-
-  
-  p5.RendererGL.prototype.ortho = function(left, right, bottom, top, near, far) {
-
-    if(left   === undefined) left   = -this.width  / 2;
-    if(right  === undefined) right  = +this.width  / 2;
-    if(bottom === undefined) bottom = -this.height / 2;
-    if(top    === undefined) top    = +this.height / 2;
-    if(near   === undefined) near   =  0;
-    if(far    === undefined) far    =  Math.max(this.width, this.height);
-
-    var w = right - left;
-    var h = top - bottom;
-    var d = far - near;
-
-    var x = +2.0 / w;
-    var y = +2.0 / h;
-    var z = -2.0 / d;
-
-    var tx = -(right + left) / w;
-    var ty = -(top + bottom) / h;
-    var tz = -(far + near) / d;
-
-    this.uPMatrix = p5.Matrix.identity();
-    this.uPMatrix.set(  x,  0,  0,  0,
-                        0, -y,  0,  0,
-                        0,  0,  z,  0,
-                       tx, ty, tz,  1);
-
-    this._curCamera = 'custom';
-    
-  };
-    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
