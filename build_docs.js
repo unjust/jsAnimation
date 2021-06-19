@@ -1,5 +1,8 @@
 
 /**
+ # deprecated and replaced by the workflow?
+ # maybe this will be good to return to
+
  * uses gh-pages 
  * push babel/webpack compiled animation js to unjustio
  * to build individual project pages

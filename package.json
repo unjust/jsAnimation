@@ -11,9 +11,9 @@
   },
   "scripts": {
     "babel": "babel --presets es2015 js --out-dir build",
+    "ghpages": "node build_docs.js",
     "dev": "webpack --config webpack.dev.js",
-    "build_js": "webpack --config webpack.prod.js",
-    "ghpages": "node build_docs.js"
+    "build_js": "webpack --config webpack.prod.js"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

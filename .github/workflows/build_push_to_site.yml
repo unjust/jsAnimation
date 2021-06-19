@@ -1,9 +1,14 @@
+# this script is to build out js files into assets and push to 
+# unjustio to be used for jekyll site
+# should run when pushed to unjustio branch
+# note: use push_to_website_assets script
+
 name: Build to Site
 
 on: 
   push:
     branches: 
-      - master
+      - unjustio_website_assets
 env:
   HAS_BUILD_FILES: ${{ false }}
 jobs:
@@ -21,10 +26,10 @@ jobs:
         run: |
              js_files=$(find js -maxdepth 1 -type f)
              echo $js_files
-             echo "::set-env name=HAS_BUILD_FILES::$([ -z "$js_files" ] || echo true)"
-      
+             echo "HAS_BUILD_FILES=$([ -z '$js_files' ] || echo true)" >> $GITHUB_ENV
+
       - name: Log env var
-        run:  echo "::warning ::HAS_BUILD_FILES=${{env.HAS_BUILD_FILES}}"
+        run:  echo "::warning ::HAS_BUILD_FILES=$HAS_BUILD_FILES"
       
       - name: Use Node.js ${{ matrix.node-version }}
         if: ${{ env.HAS_BUILD_FILES }}
@@ -41,8 +46,8 @@ jobs:
       - name: Move and name directory
         if: ${{ env.HAS_BUILD_FILES }}
         run: | 
-             mkdir -p assets/javascript/animation
-             cp -r build assets/javascript/animation/current
+             mkdir -p assets/animation
+             mv build/* assets/animation/
 
       - name: Push changes
         uses: unjust/actions-push-subdirectories@master

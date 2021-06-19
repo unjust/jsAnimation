@@ -37,6 +37,7 @@ const ignorePaths = ["./js/myLib/**/*.*js", "./js/libs/**/*.*js"];
 
 if (!argsOptions[ARG_ARCHIVE]) {
     // ignore archive and utils by default
+    console.log("Ignoring the archive");
     ignorePaths.push("./js/archive/*.*js", "./js/utils/*.*js");
 }
 
@@ -51,7 +52,7 @@ const entryConfig = entryFiles.reduce((config, item) => {
     return config;
 }, {});
 
-const noCanvasDOM = (entryName) => (entryName.indexOf('p5') > -1);
+const isP5 = (entryName) => (entryName.indexOf('p5') > -1);
 
 const buildPath = path.resolve(__dirname, 'build');
 
@@ -60,12 +61,13 @@ const generateHtmlPluginCalls = () => {
         const date = new Date(fs.statSync(entryFiles[index]).ctime);
         const ctime = 
             `${date.getDate()}-${date.getMonth() < 12 ? date.getMonth() + 1 : 12}-${date.getFullYear()}`;
+        const noCanvasDOM = isP5(entryName); // if p5 don't add canvas
         const config = {
             chunks: [entryName],
             filename: `/${buildPath}/${entryName}.html`, // at root of build
             template: 'templates/template.html',
             title: `${entryName}`,
-            noCanvasDOM: noCanvasDOM(entryName),
+            noCanvasDOM,
             ctime
         };
         return new HtmlWebpackPlugin(config);
@@ -84,6 +86,7 @@ const generateIndex = () => {
 };
 
 const devExports = merge( common, {
+    entry: entryConfig,
     mode: 'development',
     watch: true,
     plugins: common.plugins.concat([
@@ -91,5 +94,5 @@ const devExports = merge( common, {
         generateIndex()
     ])
 });
-
+// console.log(common.entry, devExports.entry);
 module.exports = devExports;
