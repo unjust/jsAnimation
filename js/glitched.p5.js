@@ -1,4 +1,5 @@
 import p5 from 'p5';
+import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 new p5((sk) => {
   const objectVertices = [];
@@ -6,20 +7,22 @@ new p5((sk) => {
   let index = 0;
 
   sk.setup = () =>  {
-    sk.createCanvas(400, 400, sk.WEBGL);
+    sk.createCanvas(800, 400, sk.WEBGL);
+    (createEasyCam.bind(sk))();
   };
 
   const squarePoints = [
-    sk.createVector(0, 200),
-    sk.createVector(200, 200),
-    sk.createVector(200, 0),
-    sk.createVector(0, 0)
+    sk.createVector(0, 200, 200),
+    sk.createVector(200, 200, 0),
+    sk.createVector(200, 0, 200),
+    sk.createVector(0, 0, 200)
   ];
 
   const interp = (a, b, currentPercentage) => {
     const x = (1 - currentPercentage) * a.x + (currentPercentage * b.x);
     const y = (1 - currentPercentage) * a.y + (currentPercentage * b.y);
-    objectVertices.push(sk.createVector(x, y));
+    const z = (1 - currentPercentage) * a.z + (currentPercentage * b.z);
+    objectVertices.push(sk.createVector(x, y, z));
   };
 
   sk.draw = () => {
@@ -37,17 +40,17 @@ new p5((sk) => {
     if (index < squarePoints.length - 2) {
       index += 1;
     } else {
-      debugger
+      // debugger
       index = 0;
     }
     
-    sk.beginShape(sk.LINE_LOOP);
+    sk.beginShape();
     for (let v = 0; v < objectVertices.length; v++) {
       const vert = objectVertices[v];
       // console.log(vert.x, vert.y);
-      sk.vertex(vert.x, vert.y);
+      sk.vertex(vert.x, vert.y, vert.z);
     }
     sk.endShape();
   };
 
-});
+}, document.querySelector('#container'));
