@@ -5,6 +5,7 @@ new p5((sk) => {
   const objectVertices = [];
   let counter = 0.0;
   let index = 0;
+  let shapeIsFinished = false;
 
   sk.setup = () =>  {
     sk.createCanvas(800, 400, sk.WEBGL);
@@ -12,45 +13,69 @@ new p5((sk) => {
   };
 
   const squarePoints = [
-    sk.createVector(0, 200, 200),
-    sk.createVector(200, 200, 0),
+    sk.createVector(0, 0, 200),
     sk.createVector(200, 0, 200),
-    sk.createVector(0, 0, 200)
+    sk.createVector(200, 0, 0),
+    sk.createVector(0, 0, 0),
+    sk.createVector(0, 0, 200),
   ];
 
   const interp = (a, b, currentPercentage) => {
     const x = (1 - currentPercentage) * a.x + (currentPercentage * b.x);
     const y = (1 - currentPercentage) * a.y + (currentPercentage * b.y);
     const z = (1 - currentPercentage) * a.z + (currentPercentage * b.z);
-    objectVertices.push(sk.createVector(x, y, z));
+    return sk.createVector(x, y, z);
   };
 
   sk.draw = () => {
     sk.background(255);
+    sk.noFill();
     sk.strokeWeight(1);
     sk.stroke(0);
 
     if (counter < 1.0) {
       counter += 0.01;
     } else {
+      // reset
       counter = 0;
-    }
-    interp(squarePoints[index], squarePoints[index + 1], counter);
-
-    if (index < squarePoints.length - 2) {
-      index += 1;
-    } else {
-      // debugger
-      index = 0;
+      objectVertices.splice(0, objectVertices.length); // flush vertices
+      // if index < 2
+      if (index <= squarePoints.length - 2) {
+        index += 1;
+      }
+      // } else {
+      //   // debugger
+      //   index = -1; //we done
+      // }
     }
     
-    sk.beginShape();
-    for (let v = 0; v < objectVertices.length; v++) {
-      const vert = objectVertices[v];
-      // console.log(vert.x, vert.y);
-      sk.vertex(vert.x, vert.y, vert.z);
+    if (index <= squarePoints.length - 2) {
+      console.log("drawing dynamically");
+      objectVertices.push(interp(squarePoints[index], squarePoints[index + 1], counter));
     }
-    sk.endShape();
+
+    if (index > 0) {
+      sk.beginShape();
+      for (let i = 0; i <= index; i++) {
+        const { x, y, z } = squarePoints[i];
+        sk.vertex(x, y, z);
+      }
+      sk.endShape();
+    }
+
+    if (!shapeIsFinished) {
+      sk.beginShape();
+      for (let v = 0; v < objectVertices.length; v++) {
+        const vert = objectVertices[v];
+        // console.log(vert.x, vert.y);
+        sk.vertex(vert.x, vert.y, vert.z);
+      }
+      sk.endShape();
+    }
+
+    if (index === squarePoints.length - 1) {
+        shapeIsFinished = true;
+    }
   };
 
 }, document.querySelector('#container'));
