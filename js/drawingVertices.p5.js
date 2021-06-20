@@ -1,5 +1,4 @@
 import p5 from 'p5';
-import { drawCoordinates } from 'Utils/coordinates';
 import { createRandomVertices, getContinuousVertices, drawVertices } from './myLib/verticesHelpers';
 import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 

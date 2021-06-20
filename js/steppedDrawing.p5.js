@@ -4,6 +4,7 @@ import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 import { 
   getStepVertices,
   getContinuousVertices,
+  createRandomVertices,
   drawVertices 
 } from 'Framework/verticesHelpers';
 
