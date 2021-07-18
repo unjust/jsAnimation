@@ -21,6 +21,7 @@ new p5((sk) => {
   ];
 
   const interp = (a, b, currentPercentage) => {
+    // could use lerp ?
     const x = (1 - currentPercentage) * a.x + (currentPercentage * b.x);
     const y = (1 - currentPercentage) * a.y + (currentPercentage * b.y);
     const z = (1 - currentPercentage) * a.z + (currentPercentage * b.z);
@@ -36,17 +37,15 @@ new p5((sk) => {
     if (counter < 1.0) {
       counter += 0.01;
     } else {
-      // reset
+      // reset counter
       counter = 0;
-      objectVertices.splice(0, objectVertices.length); // flush vertices
-      // if index < 2
+      // flush vertices, because we already drew them
+      objectVertices.splice(0, objectVertices.length);
+
+      // if we are up until one before the las vertice
       if (index <= squarePoints.length - 2) {
         index += 1;
       }
-      // } else {
-      //   // debugger
-      //   index = -1; //we done
-      // }
     }
     
     if (index <= squarePoints.length - 2) {
@@ -54,6 +53,7 @@ new p5((sk) => {
       objectVertices.push(interp(squarePoints[index], squarePoints[index + 1], counter));
     }
 
+    // if we are after the first index, start drawing with lines
     if (index > 0) {
       sk.beginShape();
       for (let i = 0; i <= index; i++) {
@@ -63,16 +63,20 @@ new p5((sk) => {
       sk.endShape();
     }
 
-    if (!shapeIsFinished) {
-      sk.beginShape();
-      for (let v = 0; v < objectVertices.length; v++) {
-        const vert = objectVertices[v];
-        // console.log(vert.x, vert.y);
-        sk.vertex(vert.x, vert.y, vert.z);
+    // if we have vertices in the buffer, we are still in drawing mode
+    for (let v = 0; v < objectVertices.length; v++) {
+      if (v === 0) {
+        sk.beginShape();
       }
-      sk.endShape();
+      const vert = objectVertices[v];
+      // console.log(vert.x, vert.y);
+      sk.vertex(vert.x, vert.y, vert.z);
+      if (v === objectVertices.length - 1) {
+        sk.endShape();
+      }
     }
 
+    // if we are at the last vertex
     if (index === squarePoints.length - 1) {
         shapeIsFinished = true;
     }
