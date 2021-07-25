@@ -1,6 +1,6 @@
 import p5 from 'p5';
 import TWEEN from '@tweenjs/tween.js';
-// import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
+import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
 // returns an array of xy coords for a given grid with screen dims
 const gridLayout = (rows, cols, w, h) => {
@@ -24,52 +24,38 @@ new p5((sk) => {
   const RECT_TOTAL = 12; //TODO dinamica con rows cols
   const currentRects = [];
 
-  const pattern_w = 400;
-  const pattern_h = 400;
+  const pattern_w = 800;
+  const pattern_h = 500;
   let counter = 0;
   let pattern;
-
-  let angles = [];
-  // let recentlyDeadRect;
+  const patternAngles = [];
+  
   let gridCoords;
 
   sk.setup = () => {
     sk.createCanvas(1200, 400, sk.WEBGL);
     pattern = sk.createGraphics(pattern_w, pattern_h, sk.WEBGL);
-    // createEasyCam.bind(sk)();
+    pattern.angleMode(sk.DEGREES);
+    createEasyCam.bind(sk)();
     for (let i = 0; i < RECT_TOTAL; i++) {
-      angles.push(sk.random(0, 100));
+      patternAngles.push(sk.random(90, 270));
     }
     gridCoords = gridLayout(3, 4, sk.width, sk.height);
+    console.log('hello world', sk.VERSION);
 
-    console.log(sk.VERSION);
+    for (let r = 0; r < RECT_TOTAL; r++) {
+      const rect = createRect(currentRects.length, gridCoords[currentRects.length || 0]);
+      currentRects.push(rect);
+    }
   };
-
-  const drawPattern = (n) => {
-    pattern.clear();
-    pattern.stroke(255);
-    pattern.strokeWeight(3);
-    pattern.noFill();
-
-    pattern.push();
-    if (n % 2 !== 0) {
-      pattern.rotateZ(angles[n] + counter);
-    }
-  
-    const lines = 50;
-    for (let i = 0; i < lines; i++) {
-      pattern.line(0, i * 10, pattern_w, i * 10);
-    }
-    pattern.pop();
-  }
 
   const rectProps = (x, y, endX, endY) => {
     return {
       x: sk.random(x, endX),
       y: sk.random(y, endY),
       z: sk.random(-100, 100),
-      w: sk.random(100, endX - x),
-      h: sk.random(100, endY - y),
+      w: sk.random(100, 600),
+      h: sk.random(100, 400),
       opacity: 1,
       lifeSpan: sk.random(100, 1000),
       isMoving: false
@@ -105,68 +91,73 @@ new p5((sk) => {
         updateRect(rect);
       }
     );
-    // rect.tween.start();
     return rect;
   }
 
+  const drawPattern = (n, counter) => {
+    pattern.clear();
+    pattern.stroke(255);
+    pattern.strokeWeight(2);
+    pattern.noFill();
 
-
-  sk.draw = () => {
-    sk.clear();
-    counter += .03;
-  
-    while (currentRects.length < RECT_TOTAL) {
-      // let rect;
-      // if (recentlyDeadRect) {
-      //   rect = updateRect(recentlyDeadRect);
-      // } else {
-      const rect = createRect(currentRects.length, gridCoords[currentRects.length || 0]);
-      //}
-      currentRects.push(rect);
+    pattern.push();
+    if (n % 2 !== 0) {
+      // pattern.push();
+      // pattern.translate(0, 0);
+      pattern.rotateZ(patternAngles[n] + counter);
+    } else {
+      // pattern.rotateZ(sk.random([0, 90]));
     }
 
-    // if (currentRects[0].lifeSpan <= 0 ) { // not lifespan, but if tween ended
-    //   const rect = currentRects.shift();
-    //   recentlyDeadRect = rect.index;
-    // } else {
-    //   // currentRects[0].opacity = currentRects[0].opacity === 0 ? 1 : 0;
-    //   currentRects[0].lifeSpan -= 1;
-    // }
-
+    pattern.translate(-pattern.width/2, -pattern.height/2);
+    const lines = 100;
+    for (let i = 0; i < lines; i++) {
+      const y = i * 10;
+      pattern.line(0, y, pattern_w, y);
+    }
+    pattern.pop();
+  }
+  
+  sk.draw = () => {
+    sk.clear();
+    counter += .3;
+  
     sk.push();
     sk.translate(-sk.width/2, -sk.height/2);
 
-   
     currentRects.forEach((rect, i) => {
-      drawPattern(i);
-      // sk.texture(pattern);
-
       const { x, y, z, w, h, isMoving, tween } = rect;
-      // const willMove = sk.random([true, false]);
 
-      // if (!isMoving && willMove) {
-        if (!isMoving) {
+      if (!isMoving) {
         rect.isMoving = true;
         // debugger
         tween.start();
       }
       TWEEN.update();
+
       // sk.fill(0);
-      sk.stroke(255);
+      // sk.stroke(255);
+
+      // sk.beginShape();
+      // sk.vertex(x, y, z);
+      // sk.vertex(x + w, y, z);
+      // sk.vertex(x + w, y + h, z);
+      // sk.vertex(x, y + h, z);
+      // sk.endShape(sk.CLOSE);
+
+      drawPattern(i, counter);
+      sk.texture(pattern);
 
       sk.beginShape();
-      // sk.vertex(x, y, z, x + w, y + y);
-      // sk.vertex(x + w, y, z, x + w, y);
-      // sk.vertex(x + w, y + h, z, x + w, y + h);
-      // sk.vertex(x, y + h, z, x, y + h);
-      sk.vertex(x, y, z);
-      sk.vertex(x + w, y, z);
-      sk.vertex(x + w, y + h, z);
-      sk.vertex(x, y + h, z);
+      sk.vertex(x, y, z, x, y);
+      sk.vertex(x + w, y, z, x + w, y);
+      sk.vertex(x + w, y + h, z, x + w, y + h);
+      sk.vertex(x, y + h, z, x, y + h);
       sk.endShape(sk.CLOSE);
+
     });
     sk.pop();
   };
 }, document.querySelector('#animation-container'));
 
-document.querySelector("body").style.backgroundColor = 'red';
+// document.querySelector("body").style.backgroundColor = 'red';
