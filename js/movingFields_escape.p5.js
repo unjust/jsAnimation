@@ -2,6 +2,8 @@ import p5 from 'p5';
 import TWEEN from '@tweenjs/tween.js';
 import { createEasyCam } from "Libraries/easycam/p5.easycam.js";
 
+const containerEl = document.querySelector('[data-animation-container="true"]');
+
 // returns an array of xy coords for a given grid with screen dims
 const gridLayout = (rows, cols, w, h) => {
   const coordsArray = [];
@@ -33,7 +35,7 @@ new p5((sk) => {
   let gridCoords;
 
   sk.setup = () => {
-    sk.createCanvas(1200, 400, sk.WEBGL);
+    sk.createCanvas(containerEl.clientWidth, containerEl.clientHeight, sk.WEBGL);
     pattern = sk.createGraphics(pattern_w, pattern_h, sk.WEBGL);
     pattern.angleMode(sk.DEGREES);
     createEasyCam.bind(sk)();
@@ -48,6 +50,10 @@ new p5((sk) => {
       currentRects.push(rect);
     }
   };
+
+  sk.windowResized = () => {
+    sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight);
+  }
 
   const rectProps = (x, y, endX, endY) => {
     return {
@@ -158,6 +164,6 @@ new p5((sk) => {
     });
     sk.pop();
   };
-}, document.querySelector('#animation-container'));
+}, containerEl);
 
 // document.querySelector("body").style.backgroundColor = 'red';
