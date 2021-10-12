@@ -2,7 +2,7 @@ import p5 from 'p5';
 
 new p5((sk) => {
   sk.setup = () => {
-    sk.createCanvas(400, 400, sk.WEBGL);
+    sk.createCanvas(800, 800, sk.WEBGL);
   };
 
   sk.draw = () => {
@@ -11,4 +11,4 @@ new p5((sk) => {
     sk.box(100);
     sk.pop();
   };
-});
+}, document.querySelector("#animation-container"));

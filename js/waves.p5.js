@@ -14,7 +14,6 @@ class Wave {
   calculate(x) {
     return Math.sin(this.phase + (Math.PI * 2) * x / this.period) * this.amp/2;
   }
-
   update() {
     this.phase += this.phaseRate/10;
   }
@@ -22,8 +21,8 @@ class Wave {
 
 new p5((sk) => {
   const angles = [];
-  // const waveHistory = [];
-  // const waveMax = 5;
+  const waveHistory = [];
+  const waveHistoryMax = 15;
   let total;
   const r = 3;
   const angleV = [];
@@ -50,12 +49,12 @@ new p5((sk) => {
     sk.resizeCanvas(containerEl.clientWidth, containerEl.clientHeight);
   }
 
-  // const pushWave = () => {
-  //   if (waveHistory.length > waveMax) {
-  //     waveHistory.shift();
-  //   }
-  //   waveHistory.push();
-  // }
+  const pushWave = (wave) => {
+    if (waveHistory.length > waveHistoryMax) {
+      waveHistory.shift();
+    }
+    waveHistory.push(wave);
+  }
 
   sk.draw = () => {
     sk.clear();
@@ -63,7 +62,7 @@ new p5((sk) => {
     sk.translate(-sk.width/2, 0);
     sk.stroke(255, 255, 255);
     sk.strokeWeight(1);
-    sk.beginShape();
+    
     sk.noFill();
     // for (let i = 0; i < angles.length; i++) {
     //   //sk.push();
@@ -76,16 +75,32 @@ new p5((sk) => {
     //   angles[i] += 0.02;
     // }
 
+    sk.beginShape();
+    const tempWave = [];
     for (let x = 0; x < sk.width; x+=10) {
       let y = 0;
       for (let wave of waves) {
         y += wave.calculate(x);
         //sk.circle(x, y, r * 2);
       }
-      sk.vertex(x, y);  
-        
+      sk.vertex(x, y);
+      tempWave.push([x, y])
     }
     sk.endShape();
+    pushWave(tempWave);
+
+    for (let w = 0; w < waveHistory.length; w++) {
+      const color = `rgba(255,255,255,${1/w})`;
+      //  
+      sk.stroke(color);
+      sk.beginShape();
+        for (let v = 0; v < waveHistory[w].length; v++) {
+          const [x, y] = waveHistory[w][v];
+          sk.vertex(x, y);
+        }
+      sk.endShape();
+    }
+
     for (let wave of waves) {
       wave.update();
     }

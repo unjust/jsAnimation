@@ -14,10 +14,9 @@ const linePlay = new p5((sk) => {
   let lineSpacing = baseSpacing;
 
   sk.setup = () => {
-    sk.createCanvas(sk.windowWidth + 200, 500, sk.WEBGL);
+    sk.createCanvas(sk.windowWidth + 200, 500);
     canvasHeight = sk.height;
     canvasWidth = sk.width;
-    sk.background('white');
     chooseVertices();
   };
 
@@ -55,14 +54,12 @@ const linePlay = new p5((sk) => {
   }
 
   sk.draw = () => {
-    sk.background(255);
-    sk.noFill();
-
+    sk.clear();
     counter += .5;
     segmentMotion(counter);
 
     sk.push();
-    sk.translate(-canvasWidth/2, -canvasHeight/2);
+    // sk.translate(-canvasWidth/2, -canvasHeight/2);
     
     const baseXDistance = canvasWidth/segmentPoints;
 
@@ -72,10 +69,11 @@ const linePlay = new p5((sk) => {
         y += lineSpacing,
         j++) {
 
-      sk.stroke(100 + (5 * j));
+      sk.stroke(150);
+      // sk.noFill();
       segmentVerts.forEach((vect, i, arr) => {
         const x = baseXDistance * i;
-        sk.beginShape();
+        sk.beginShape(sk.LINES);
         sk.vertex(x + vect.x, y + vect.y);
         // console.log(vect, x + vect.y, y + vect.y);
 
