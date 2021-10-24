@@ -75,6 +75,6 @@ window.$p5 = new p5((sk) => {
       sk.pop();
     }
   }
-});
+}, document.querySelector('#container'));
 
 

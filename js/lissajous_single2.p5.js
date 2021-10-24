@@ -102,6 +102,6 @@ window.$p5 = new p5((sk) => {
     liss.draw(sk.LINES);
     sk.pop();
   }
-});
+}, document.querySelector('#container'));
 
 

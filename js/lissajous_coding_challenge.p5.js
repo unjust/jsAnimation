@@ -87,4 +87,4 @@ window.$p5 = new p5((sk) => {
     }
     curves.forEach((c) => c.draw());
   }
-});
+}, document.querySelector('#container'));
