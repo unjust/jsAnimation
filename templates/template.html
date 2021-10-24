@@ -8,28 +8,59 @@
         <link rel="icon" href="img/favicon_io/favicon.ico">
     </head>
     <style>
+        html, body {
+          height: 100%;
+          margin: 0;
+        }
+
         #container, #myCanvas {
             margin: 0 auto;
+            width: 100%;
         }
+
+        /* noCursor can be used in the code to hide cursor 
+        const toggleCursor = () => {
+            document.body.classList.toggle('noCursor')
+        }
+        */
+        body.noCursor #container {
+            cursor: none;
+        }
+
+        .flex {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .primary {
+          flex: 2;
+        }
+  
         .about {
             margin: 0 5px;
             color: darkslategrey;
             font-family: 'Monaco', Courier, monospace;
         };
+    
     </style>
-    <body>
+    <body class="flex">
         <% if (htmlWebpackPlugin.options.noCanvasDOM) { %>
-            <div id="container"></div>
-        <% } else { %> 
-            <canvas id="myCanvas" 
-                width="1280"
-                height="720"
-                style="border:1px solid black;"></canvas>
+          <div id="container" class="primary"></div>
+        <% } else { %>
+          <canvas id="myCanvas" 
+              width="1280"
+              height="720"
+              style="border:1px solid black;"></canvas>
         <% } %>
         <div class="about">
             <%= htmlWebpackPlugin.options.title %>
             <%= htmlWebpackPlugin.options.ctime %>
         </div>
+        <script>
+          // sketches array allows us to access sketeches and add capabilities 
+          // like take screenshot in web project
+          window.sketches = [];
+        </script>
     </body>
 
 </html>
