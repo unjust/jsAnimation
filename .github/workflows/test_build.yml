@@ -1,0 +1,24 @@
+# this script is to build out js files and check that build works
+name: Check build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+       matrix:
+          node-version: [14.x]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Build project
+        run: |
+             yarn install
+             yarn run build_js
