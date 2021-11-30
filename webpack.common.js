@@ -30,7 +30,7 @@ const baseExports = {
     },
     plugins: [
         new CleanWebpackPlugin([ buildPath ]),
-        new CopyWebpackPlugin([{ from: 'img', to: `${buildPath}/img` }])
+        new CopyWebpackPlugin({ patterns: [{ from: 'img', to: `${buildPath}/img` }] })
     ],
     resolve: {
         alias: {

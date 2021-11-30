@@ -86,7 +86,7 @@ const generateIndex = () => {
     return new HtmlWebpackPlugin(config);
 };
 
-const devExports = merge( common, {
+const devExports = merge(common, {
     entry: entryConfig,
     mode: 'development',
     watch: true,
