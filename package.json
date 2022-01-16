@@ -14,6 +14,7 @@
     "babel": "babel --presets es2015 js --out-dir build",
     "ghpages": "node build_docs.js",
     "dev": "webpack --config webpack.dev.js & serve build",
+    "build:archive": "webpack --config webpack.dev.js --env archive=true & serve build",
     "build_js": "webpack --config webpack.prod.js"
   },
   "devDependencies": {
