@@ -153,7 +153,7 @@ const createShape = function() {
     const h = random(5, 10) * 8;
     const rate = random(0.0001, 0.0008);
 
-    console.log("i am god", x, y, z, w, h, rate);
+    // console.log("i am god", x, y, z, w, h, rate);
 
     Shapes.push(
         new Shape(w, h, x, y, z, 0.0)
@@ -174,6 +174,8 @@ window.setup = () => {
     canvas.mouseClicked(createShape);
     
     background(0);
+
+    console.info('click canvas to create a shape. move around with the camera. press a key to warp');
 };
 
 window.draw = () => {

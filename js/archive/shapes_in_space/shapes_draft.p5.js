@@ -115,7 +115,7 @@ const createShape = function() {
     const h = random(5, 10) * 5;
     const rate = random(0.0001, 0.0008);
 
-    console.log("i am god", x, y, z, w, h, rate);
+    // console.log("i am god", x, y, z, w, h, rate);
 
     Shapes.push(
         new Object(shapeType, 
@@ -133,6 +133,8 @@ window.setup = () => {
     perspective(PI/3, width/height, 70, depth);	
    
     canvas.mouseClicked(createShape);
+
+    console.info('click canvas to create a shape. move around with the camera');
 };
 
 const timeBtwn = [];

@@ -232,7 +232,7 @@ const createShape = function() {
     const h = random(5, 10) * 8;
     const rate = random(0.0001, 0.0008);
 
-    console.log("i am god", x, y, z, w, h, rate);
+    // console.log("i am god", x, y, z, w, h, rate);
 
     Shapes.push(
         new Shape(w, h, x, y, z, 0.0)
@@ -253,6 +253,8 @@ window.setup = () => {
     canvas.mouseClicked(createShape);
     setupText();
     background(0);
+
+    console.info('click th ecanvas to create shapes. press = to spin the world. you can also type words')
 };
 
 window.draw = () => {
