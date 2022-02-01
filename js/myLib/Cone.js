@@ -27,14 +27,15 @@ export default class Cone extends Objekt {
         this.sk.stroke(this.strokeColor);
 
         this.sk.angleMode(this.sk.DEGREES);
-        this.sk.beginShape(this.sk.LINES);
+        // this.sk.beginShape(this.sk.LINES);
 
-        for (let i = 0; i < 360; i++) {
-            let px = (Math.cos(i) * this.dim.w);
-            let py = (Math.sin(i) * this.dim.w);
-            this.sk.vertex(px, py);
-        }
-        this.sk.endShape();
+        // for (let i = 0; i < 360; i++) {
+        //     let px = (Math.cos(i) * this.dim.w);
+        //     let py = (Math.sin(i) * this.dim.w);
+        //     this.sk.vertex(px, py);
+        // }
+        // this.sk.endShape();
+        this.sk.circle(0, 0, this.dim.w * 2)
     }
 
     draw(warp) {
