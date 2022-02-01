@@ -30,13 +30,13 @@ window.$p5 = new p5((sk) => {
         point1 = sk.createVector(x, y, 0);
         point2 = new p5.Vector(point1.x, point1.y + orbitDiameter, point1.z);
         orbitPoint = p5.Vector.lerp(point1, point2, 0.5);
-    
-        const cone = new Cone(12, 25, 0, 0, 0);
+        // cone is super slow TODO
+        const cone = new Cone(sk, { w: 12, h: 25, x: 0, y: 0, z: 0 });
         Object.assign(cone, OrbitMixin);
         cone.initOrbit(0, speed, point1, orbitPoint);
         cone.id = id++;
   
-        const cube = new Cube(20, 0, 0, 0);
+        const cube = new Cube(sk, { side: 20, x: 0, y: 0, z: 0 });
         Object.assign(cube, OrbitMixin);
         cube.initOrbit(0, speed, point2, orbitPoint);
         cube.id = id++;

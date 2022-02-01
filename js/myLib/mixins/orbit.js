@@ -15,6 +15,7 @@ const OrbitMixin = {
     position=p5.Vector.random3D(),
     orbitPoint=p5.Vector(1, 1, 1)) {
 
+    this.sk = this.sketch;
     this.orbitAngle = angle;
     this.orbitSpeed = speed;
     this.orbitPoint = orbitPoint;
@@ -46,11 +47,11 @@ const OrbitMixin = {
   // },
 
   drawDebug() {
-    $p5.stroke('green');
-    $p5.sphere(5);
+    this.sk.stroke('green');
+    this.sk.sphere(5);
 
-    $p5.stroke('blue');
-    $p5.line(
+    this.sk.stroke('blue');
+    this.sk.line(
       0,
       0,
       0,
@@ -63,26 +64,26 @@ const OrbitMixin = {
     // debugger
     this.update();
 
-    $p5.push();
+    this.sk.push();
   
-    $p5.translate(
+    this.sk.translate(
       this.orbitPoint.x, 
       this.orbitPoint.y,
       this.orbitPoint.z);
 
-    $p5.rotate($p5.degrees(this.orbitAngle), constants.at); 
+    this.sk.rotate(this.sk.degrees(this.orbitAngle), constants.at); 
 
     // this.drawDebug();
     
-    $p5.translate(
+    this.sk.translate(
       this.distanceVector.x, 
       this.distanceVector.y,
       this.distanceVector.z);
 
-    $p5.rotate($p5.degrees(this.rotateCounter), this.rotateVector); // rotate shape individually?
+    this.sk.rotate(this.sk.degrees(this.rotateCounter), this.rotateVector); // rotate shape individually?
 
     this.draw();
-    $p5.pop();
+    this.sk.pop();
   }
 }
 export default OrbitMixin;

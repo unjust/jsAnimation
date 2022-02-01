@@ -1,0 +1,58 @@
+# this script is to build out js files into assets and push to 
+# unjustio to be used for jekyll site
+# should run when pushed to unjustio branch
+# note: use push_to_website_assets script
+
+name: Build to Site
+
+on: 
+  push:
+    branches: 
+      - unjustio_website_assets
+env:
+  HAS_BUILD_FILES: ${{ false }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+       matrix:
+          node-version: [12.x]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Check files
+        id: check_js_step
+        run: |
+             js_files=$(find js -maxdepth 1 -type f)
+             echo $js_files
+             echo "HAS_BUILD_FILES=$([ -z '$js_files' ] || echo true)" >> $GITHUB_ENV
+
+      - name: Log env var
+        run:  echo "::warning ::HAS_BUILD_FILES=$HAS_BUILD_FILES"
+      
+      - name: Use Node.js ${{ matrix.node-version }}
+        if: ${{ env.HAS_BUILD_FILES }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Build project
+        if: ${{ env.HAS_BUILD_FILES }}
+        run: |
+             yarn install
+             yarn run build_js
+      
+      - name: Move and name directory
+        if: ${{ env.HAS_BUILD_FILES }}
+        run: | 
+             mkdir -p assets/animation
+             mv build/* assets/animation/
+
+      - name: Push changes
+        uses: unjust/actions-push-subdirectories@master
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: assets unjust unjustio gh-pages
