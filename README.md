@@ -53,11 +53,10 @@ https://github.com/jantimon/html-webpack-plugin
 the the html plugin uses those entry points and creates an html file based on the appropriate html template in `templates/`.     
 it appends the script tag to the bottom and interpolates basic template vars.
 
-You can also build with options**:  
-  `--archive` `-a` build the archive directory js 
-  `--file` `-f` just build one file 
+#### `yarn run build:archive`
 
-** this feature needs to be checked and tested
+Builds the archive files as well   
+TODO: select specific projects in the archive to build
 
 #### `yarn run build_js`
 
@@ -80,9 +79,4 @@ Then head over to https://github.com/unjust/unjustio to design the pages with th
 
 Using the script [`push_to_website_local.sh`](https://github.com/unjust/jsAnimation/blob/master/push_to_website_local.sh) will push to the 
 repo on my compu.
-
-
-
-
-
 
