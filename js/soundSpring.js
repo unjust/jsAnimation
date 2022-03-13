@@ -1,6 +1,6 @@
 // paper js waveform sound responsive
 import { paper, Path, Point, Shape } from 'paper';
-import AudioDetect from 'Utils/AudioDetect.js';
+import AudioDetect, { AudioDraw } from 'Utils/AudioDetect.js';
 
 (function soundSpring() {
 
@@ -107,8 +107,9 @@ import AudioDetect from 'Utils/AudioDetect.js';
     update();
     draw();
 
-    //AudioDetect.drawOscilloscope(viewWidth, viewHeight);
-    AudioDetect.drawFFT(viewWidth, viewHeight);
+    // AudioDetect.drawOscilloscope(viewWidth, viewHeight);
+    // AudioDetect.drawFFT(viewWidth, viewHeight);
+    AudioDraw.paper.drawData(AudioDetect.getTimeData(),viewWidth, viewHeight);
   }
 
   paper.view.onMouseMove = (event) => {

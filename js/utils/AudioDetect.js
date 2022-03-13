@@ -10,38 +10,42 @@ const AudioDetect = {
   analyzer: null,
   timeDataArray: [],
   history: [],
-
+  devices: [],
   checkDevices() {
-    window.navigator.mediaDevices.enumerateDevices().then((devices) => {
-      console.log(devices);
-      devices = devices.filter((d) => d.kind === 'audioinput');
+    return window.navigator.mediaDevices.enumerateDevices().then((devices) => {
+      console.log('media devices', devices, window.navigator.mediaDevices.getSupportedConstraints());
+      this.devices = devices.filter((d) => d.kind === 'audioinput');
     });
   },
 
   init() {
-    this.checkDevices();
-    window.navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      .then((stream) => {
-        const context = new (window.AudioContext || window.webkitAudioContext);
-        const src = context.createMediaStreamSource(stream);
-        const processor = context.createScriptProcessor(WINDOW_SIZE, 1, 1);
+    this.checkDevices().then(() => {
+    // https://developer.mozilla.org/en-US/docs/Web/API/Media_Streams_API/Constraints
+    // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/deviceId
+      const iShowYouCaptureId = 5;
+      const constraints =  { deviceId: { exact: this.devices[iShowYouCaptureId].deviceId } };
+      window.navigator.mediaDevices.getUserMedia({ audio: constraints, video: false })
+        .then((stream) => {
+          const context = new (window.AudioContext || window.webkitAudioContext);
+          const src = context.createMediaStreamSource(stream);
+          const processor = context.createScriptProcessor(WINDOW_SIZE, 1, 1);
 
-        this.analyzer = context.createAnalyser();
-        src.connect(this.analyzer);
-        this.analyzer.fftSize = WINDOW_SIZE * 2;
-        this.analyzer.smoothingTimeConstant = 0.25;
+          this.analyzer = context.createAnalyser();
+          src.connect(this.analyzer);
+          this.analyzer.fftSize = WINDOW_SIZE * 2;
+          this.analyzer.smoothingTimeConstant = 0.25;
 
-        const bufferLength = this.analyzer.frequencyBinCount;
-        this.timeDataArray = new Uint8Array(bufferLength); // should be size * 2
-        this.freqDataArray = new Uint8Array(bufferLength);
-        //processor.onaudioprocess = (e) => {};
+          const bufferLength = this.analyzer.frequencyBinCount;
+          this.timeDataArray = new Uint8Array(bufferLength); // should be size * 2
+          this.freqDataArray = new Uint8Array(bufferLength);
+          //processor.onaudioprocess = (e) => {};
 
-        HISTORY_MAX = Math.floor(context.sampleRate / WINDOW_SIZE);
-        BAND_SIZE = context.sampleRate / WINDOW_SIZE;
-        CHANNEL_COUNT = this.analyzer.channelCount;
+          HISTORY_MAX = Math.floor(context.sampleRate / WINDOW_SIZE);
+          BAND_SIZE = context.sampleRate / WINDOW_SIZE;
+          CHANNEL_COUNT = this.analyzer.channelCount;
 
+        });
       });
-
     return this;
   },
 
@@ -140,8 +144,68 @@ const AudioDetect = {
       let h = v * viewHeight / 2;
       r.size.height = h;
     });
+  },
+
+  getFrequencyData() {
+    return this.freqDataArray;
+  },
+
+  getTimeData() {
+    return this.timeDataArray;
   }
 };
 
 export default AudioDetect;
 
+export const AudioDraw = {
+  paper: {
+    drawData: function(dataArray=[], viewWidth=100, viewHeight=100) {
+      if (!dataArray.length) {
+        return;
+      }
+      if (!this.rects) {
+        this.rects = [];
+        const bufferLength = dataArray.length;
+        const barWidth = viewWidth / bufferLength;
+        for (let i = 0; i < bufferLength; i++) {
+          const r = new Shape.Rectangle({
+            point: [i * barWidth, viewHeight],
+            size: [barWidth,20],
+            strokeColor: 'black'
+          })
+          this.rects.push(r);
+        }
+      }
+      this.rects.forEach((r, i) => { 
+        let v = dataArray[i] / 128.0;
+        let h = v * viewHeight / 2;
+        r.size.height = h;
+      });
+    }
+  },
+
+  p5: {
+    drawData: function(dataArray=[], viewWidth=100, viewHeight=100, sk) {
+      if (!dataArray.length) {
+        return [];
+      }
+      if (!this.rects) {
+        this.rects = [];
+        const bufferLength = dataArray.length;
+        const barWidth = viewWidth / bufferLength;
+        for (let i = 0; i < bufferLength; i++) {
+          const coords = sk.createVector(i * barWidth, viewHeight);
+          const dims = sk.createVector(barWidth, 20);
+          this.rects.push([coords, dims]);
+        }
+      }
+      this.rects.forEach((r, i) => { 
+        let v = dataArray[i] / 128.0;
+        let h = v * viewHeight / 2;
+        // console.log(dataArray[i], h);
+        r[1].y = h;
+      });
+      return this.rects;
+    }
+  }
+}
