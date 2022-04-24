@@ -30,7 +30,7 @@ const baseExports = {
     },
     plugins: [
         new CleanWebpackPlugin([ buildPath ]),
-        new CopyWebpackPlugin({ patterns: [{ from: 'img', to: `${buildPath}/img` }] })
+        new CopyWebpackPlugin({ patterns: [{ from: 'img', to: `${buildPath}/img` }, { from: 'shaders', to: `${buildPath}/shaders` }] })
     ],
     resolve: {
         alias: {
@@ -42,8 +42,16 @@ const baseExports = {
     module: {
         rules: [
             {
-                test: path.resolve(__dirname, 'js/libs/easycam/p5.easycam.js'),
-                use: "imports-loader?p5=>require('p5')"
+              test: path.resolve(__dirname, 'js/libs/easycam/p5.easycam.js'),
+              use: "imports-loader?p5=>require('p5')"
+            },
+            {
+              test: path.resolve(__dirname, 'node_modules/p5/lib/addons/p5.sound.js'),
+              use: "imports-loader?p5=>require('p5')"
+            },
+            {
+              test: path.resolve(__dirname, 'node_modules/p5/lib/addons/p5.sound.min.js'),
+              use: "imports-loader?p5=>require('p5')"
             },
             {
                 // https://webpack.js.org/guides/shimming/#global-exports
