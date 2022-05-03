@@ -20,7 +20,7 @@ const entryConfig = (includeArchive=false) => entryFiles(includeArchive).reduce(
     return config;
 }, {});
 
-const isP5 = (entryName) => (entryName.indexOf('p5') > -1);
+const isP5 = (entryName) => (entryName.indexOf('p5') > -1 || entryName.indexOf('three') > -1);
 
 const buildPath = path.resolve(__dirname, 'build');
 
