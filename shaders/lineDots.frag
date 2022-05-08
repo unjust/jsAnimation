@@ -2,8 +2,12 @@
 precision mediump float;
 #endif
 
-uniform vec3      iResolution;  // viewport resolution (in pixels)
-uniform float     iTime;        // shader playback time (in seconds)
+uniform vec2  u_resolution;  // viewport resolution (in pixels)
+uniform float u_time;        // shader playback time (in seconds)
+
+float random (in float x) {
+    return fract(sin(x)*43758.5453123);
+}
 
 float segment(vec2 p, vec2 a, vec2 b)
 {
@@ -16,30 +20,29 @@ float segment(vec2 p, vec2 a, vec2 b)
 	return smoothstep(.9, .7, 100.*length(ap - ab*h));
 }
 
-const float count = 30.0;
+float count = 30.0;
 
 void main()
 {
-	// vec2 p0 = (gl_FragCoord.xy * 2.0 - iResolution.xy) / min(iResolution.x, iResolution.y); // why min?
-
-  vec2 uv = (1.0 * gl_FragCoord.xy - iResolution.xy) / iResolution.y;
+	vec2 st = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y); // why min?
 
   vec2 p0 = vec2(0);
   float r = 0.0;
   float g = 0.0;
-	float b = smoothstep(1.0, 0.9, length(uv-p0)*25.);
+	float b = smoothstep(1.0, 0.9, length(st-p0)*25.);
 
-  for (float i = 0.0; i < count; i++) {
-    float s1 = sin(iTime*(1.0+i)/4.0);
-    float c1 = cos(iTime*(1.0+i)/4.0);
+  for (float i = 0.0; i < count; i += 1.0 ) {
+    float s1 = sin(u_time*(1.0+i)/4.0);
+    float c1 = cos(u_time*(1.0+i)/4.0);
     mat2 r1 = mat2(+c1, -s1, +s1, +c1);
     vec2 p1 = r1 * vec2(0., (count-i)/(count+1.0));
   
-    r += segment(uv, p0, p1);
-    float t = smoothstep(1.0, 0.9, length(uv-p1)*25.);
+    r += segment(st, p0, p1);
+    float t = smoothstep(1.0, 0.9, length(st-p1)*25.);
     g += t;
     b += mix(0.3, 1.0, i / count) * t;
   }
     
 	gl_FragColor = vec4(r, g, b, 1.);
+  //gl_FragColor = vec4(sin(u_time), 0., 0, 1.);
 }

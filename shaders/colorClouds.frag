@@ -2,7 +2,7 @@
 precision mediump float;
 #endif
 
-uniform vec3     u_resolution;  // viewport resolution (in pixels)
+uniform vec2     u_resolution;  // viewport resolution (in pixels)
 uniform float    u_time;        // shader playback time (in seconds)
 
 float noise1d(float value) {
