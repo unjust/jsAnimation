@@ -5,13 +5,14 @@ export default class Cube extends Objekt {
   constructor(
     sketch,
     { 
-      side,
+      w,
+      h,
       x,
       y,
       z
     },
     colors) {
-      super(sketch, "box", { w: side, h: side, x, y, z }, colors );
+      super(sketch, "box", { w, h, x, y, z }, colors );
   }
 
 };

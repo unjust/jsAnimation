@@ -1,6 +1,9 @@
 import { accessMIDI } from "Utils/Midi.js"
 import p5 from 'p5';
 import 'p5/lib/addons/p5.sound';
+import Cube from 'Framework/Cube';
+import Cone from 'Framework/Cone';
+import { ConeGeometry } from "three";
 
 // 137, 153 ch 10 note on/off 
 // https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
@@ -32,11 +35,25 @@ const colors = {
   51: 'purple',
  }
 
+ const objects = {
+  36: Cube,
+  38: Cube,
+  43: Cone,
+  47: Cone,
+  50: Cone,
+  37: Cone,
+  39: Cone,
+  42: Cube,
+  46: Cone,
+  49: Cone,
+  51: Cone,
+ }
+
 // 185 is control change channel 10
 
 new p5((sk) => {
 
-  const cellWidth = 40, cellHeight = 40;
+  const cellWidth = 60, cellHeight = 60;
   let gridLength = 0, replaceIndex = 0;
   const shapeQueue = [], noteQueue = [];
 
@@ -94,30 +111,38 @@ new p5((sk) => {
       while (noteQueue.length > shapeQueue.length) {
         // determine shape
         // console.log('while');
-        const value = colors[noteQueue[shapeQueue.length]];
-        shapeQueue.push(value)
+        const note = noteQueue[shapeQueue.length];
+        const color = colors[note];
+        const shape = objects[note]
+        shapeQueue.push(new shape(sk, { w: cellWidth * .2, h: cellHeight * .8, x: 0, y: 0 }, { fill: color, stroke: 'black' }));
       }
     } else {
-      const value = colors[noteQueue[noteQueue.length - 1]];
+      const note = noteQueue[noteQueue.length - 1];
+      const color = colors[note];
+      const shape = objects[note];
       // console.log('shift')
       // shapeQueue.unshift(value);
-      shapeQueue[replaceIndex] = value;
+      shapeQueue[replaceIndex] = new shape(sk,  { w: cellWidth * .2, h: cellHeight * .8, x: 0, y: 0 }, { fill: color, stroke: 'black' });
       replaceIndex = replaceIndex < gridLength ? replaceIndex + 1 : 0;
     }
   }
 
   sk.draw = () => {
-    
+    sk.clear();
+    sk.background(0);
     const cellsX = (sk.width/cellWidth);
-    const cellsY = (sk.height/cellHeight);
     // divide the canvas into a grid
     // with every new note, select a shape and put it in the next spot on the grid
     // when done with last row and last column, restart
     sk.push();
     sk.translate(-sk.width/2, -sk.height/2);
-    shapeQueue.forEach((el, i, arr) => {
-      sk.fill(el);
-      sk.circle((i % cellsX) * cellWidth, Math.floor(i/cellsX) * cellHeight, cellWidth / 2)
+    shapeQueue.forEach((shape, i) => {
+      //sk.fill(el);
+      //sk.circle((i % cellsX) * cellWidth, Math.floor(i/cellsX) * cellHeight, cellWidth / 2)
+      shape.pos.x = (i % cellsX) * cellWidth
+      shape.pos.y = Math.floor(i/cellsX) * cellHeight 
+      // shape.setPosition({ x: (i % cellsX) * cellWidth, y: Math.floor(i/cellsX) * cellHeight });
+      shape.draw({ warp: false, rotate: true });
     });
     sk.pop();
   };
