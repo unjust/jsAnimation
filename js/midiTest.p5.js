@@ -2,22 +2,6 @@ import { accessMIDI } from "Utils/Midi.js"
 import p5 from 'p5';
 import 'p5/lib/addons/p5.sound';
 
-// 137, 153 ch 10 note on/off 
-// https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
-const TR8s = {
- BD: 36,
- SD: 38,
- LT: 43,
- MT: 47,
- HT: 50,
- RS: 37,
- HC: 39,
- CH: 42,
- OH: 46 ,
- CC: 49,
- RC: 51,
-}
-// 185 is control change channel 10
 
 new p5((sk) => {
 
