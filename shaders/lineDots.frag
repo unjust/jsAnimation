@@ -5,7 +5,7 @@ precision mediump float;
 uniform vec2  u_resolution;  // viewport resolution (in pixels)
 uniform float u_time;        // shader playback time (in seconds)
 
-float random (in float x) {
+float random (float x) {
     return fract(sin(x)*43758.5453123);
 }
 
