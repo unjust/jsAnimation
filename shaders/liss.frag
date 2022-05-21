@@ -9,9 +9,9 @@ uniform float u_radius;
 uniform float u_time; // angle
 uniform float u_speed;
 uniform vec2 u_xy_factor;
+uniform vec2 u_mouse;
 uniform int u_length;
 
-in vec3 aPos;
 
 float smoothedge(float v) {
     return smoothstep(0.0, 1.0 / u_resolution.x, v);
@@ -101,7 +101,7 @@ void main() {
   //   // increase v's brightness in an eponential way to cause a gradient
   // }
 
-  float v = liss(pos, 0.5, u_time, u_xy_factor);
+  float v = liss(pos, 0.5, u_time, u_mouse); // u_xy_factor
   gl_FragColor = 1.0 * vec4(0.0, v, 0.0, 1.0); // why do we multiply this by 1.0?
   
 }
@@ -114,4 +114,5 @@ void main() {
 //       this.vertices.shift();
 //     }
 //     z = this.drawZ ? z : 1;
+
 //     this.vertices.push({x, y, z});

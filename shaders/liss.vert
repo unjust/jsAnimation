@@ -2,7 +2,7 @@
 precision mediump float;
 #endif
 
-https://itp-xstory.github.io/p5js-shaders/#/./docs/examples/basic_gradient?id=shadervert-file
+// https://itp-xstory.github.io/p5js-shaders/#/./docs/examples/basic_gradient?id=shadervert-file
 attribute vec3 aPosition;
 
 void main() {
