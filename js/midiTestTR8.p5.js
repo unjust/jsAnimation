@@ -3,7 +3,6 @@ import p5 from 'p5';
 import 'p5/lib/addons/p5.sound';
 import Cube from 'Framework/Cube';
 import Cone from 'Framework/Cone';
-import { ConeGeometry } from "three";
 
 // 137, 153 ch 10 note on/off 
 // https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
@@ -52,15 +51,27 @@ const colors = {
 // 185 is control change channel 10
 
 new p5((sk) => {
-
+  const translateZ = 500.0;
   const cellWidth = 60, cellHeight = 60;
   let gridLength = 0, replaceIndex = 0;
   const shapeQueue = [], noteQueue = [];
+  let bgShader, shaderGraphics;
+  let drawShader = true;
+  let drawFn = () => {};
 
-  sk.preload = () => {}
+  sk.preload = () => {
+    bgShader = sk.loadShader('shaders/color.vert', 'shaders/colorFlow.frag');
+  }
 
   sk.setup = () => {
-    sk.createCanvas(800, 400, sk.WEBGL);
+    sk.createCanvas(sk.windowWidth, sk.windowHeight, sk.WEBGL);
+    // const gl = sk.canvas.getContext('webgl')
+    // gl.disable(gl.DEPTH_TEST)
+
+    //https://discourse.processing.org/t/draw-on-top-of-shader/20764/2
+    shaderGraphics = sk.createGraphics(sk.width, sk.height, sk.WEBGL);
+    shaderGraphics.noStroke();
+
     console.log('hey sound defined?', sk.midiToFreq);
     accessMIDI(onMidi);
     gridLength = sk.width/cellWidth * sk.height/cellHeight;
@@ -74,7 +85,7 @@ new p5((sk) => {
 
   const onMidi = function(msg) {
     const [ type, key, velocity ] = msg.data;
-    
+    bgShader.setUniform('midiKey', key);
     if (!key) {
       return;
     }
@@ -101,7 +112,20 @@ new p5((sk) => {
     const freq = sk.midiToFreq(key);
   }
 
-  const incIndex = (array) => {
+  sk.keyTyped = () => {
+    const c = sk.key;
+    if (c === "s") {
+      drawShader = !drawShader;
+      return;
+    } 
+    if (c === "c") {
+      drawFn = drawCircle;
+    } else {
+      drawFn = drawGrid;
+    }
+  }
+
+  sk.windowResized = () => {
 
   }
 
@@ -127,24 +151,56 @@ new p5((sk) => {
     }
   }
 
-  sk.draw = () => {
-    sk.clear();
-    sk.background(0);
+  const drawGrid = (shape, i) => {
     const cellsX = (sk.width/cellWidth);
-    // divide the canvas into a grid
-    // with every new note, select a shape and put it in the next spot on the grid
-    // when done with last row and last column, restart
     sk.push();
-    sk.translate(-sk.width/2, -sk.height/2);
+    sk.translate(-sk.width/2, -sk.height/2, 0);
     shapeQueue.forEach((shape, i) => {
-      //sk.fill(el);
-      //sk.circle((i % cellsX) * cellWidth, Math.floor(i/cellsX) * cellHeight, cellWidth / 2)
-      shape.pos.x = (i % cellsX) * cellWidth
-      shape.pos.y = Math.floor(i/cellsX) * cellHeight 
+      shape.pos.x = (i % cellsX) * cellWidth;
+      shape.pos.y = Math.floor(i/cellsX) * cellHeight;
       // shape.setPosition({ x: (i % cellsX) * cellWidth, y: Math.floor(i/cellsX) * cellHeight });
       shape.draw({ warp: false, rotate: true });
     });
     sk.pop();
+  }
+
+  const drawCircle = (shape, i) => {
+    sk.push();
+    shapeQueue.forEach((shape, i) => {
+      shape.pos.x = 400 * Math.sin(i + sk.frameCount/100);
+      shape.pos.y = 400 * Math.cos(i + sk.frameCount/100);
+      shape.draw({ warp: false, rotate: true });
+    });
+    sk.pop();
+  }
+
+  sk.draw = () => {
+    sk.clear();
+    sk.background(0);
+    
+    
+    
+    // divide the canvas into a grid
+    // with every new note, select a shape and put it in the next spot on the grid
+    // when done with last row and last column, restart
+    
+    if (drawShader) {
+      bgShader.setUniform('u_resolution', [sk.width, sk.height]);
+      bgShader.setUniform('u_time', sk.frameCount/ 100.0);
+    
+      shaderGraphics.shader(bgShader);
+      sk.push();
+      sk.translate(-sk.width/2, -sk.height/2, -translateZ);
+      shaderGraphics.rect(-translateZ/2, -translateZ/2, sk.width + translateZ, sk.height + translateZ);
+      sk.image(shaderGraphics, -translateZ * 1.2, -translateZ, sk.width + translateZ * 2.5, sk.height + translateZ * 2);
+    sk.pop();
+    }
+    
+    // sk.fill('blue');
+    // sk.quad(0, 0, sk.width, 0, sk.width, sk.height, 0, sk.height);
+    
+    drawFn();
+    
   };
 
   
