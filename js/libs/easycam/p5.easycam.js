@@ -380,7 +380,6 @@ class EasyCam {
 		    event.stopPropagation();
         
         var mouse = cam.mouse;
-
         mouse.istouchdown = false,
         mouse.isPressed = (mouse.istouchdown || mouse.ismousedown);
         cam.SHIFT_CONSTRAINT = 0;
