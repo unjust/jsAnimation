@@ -1,5 +1,4 @@
 import p5 from 'p5';
-import { CircleBufferGeometry } from 'three';
 
 // https://p5js.org/examples/input-storing-input.html
 new p5(sk => {
