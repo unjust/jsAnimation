@@ -60,6 +60,6 @@ void main() {
   float c2 = gradient(st, vec2(u_originB), 0.001, (u_time)/5.);
   // c2 += gradient(st, vec2(u_origin_2), radius/2., sin(u_time)/5.);
   gl_FragColor = vec4((c1 * u_vector1) + (c2 * u_vector2), 1.);
-
+  // gl_FragColor = vec4(1.0, 0., 0., 1.);
   
 }

@@ -12,8 +12,6 @@ float hash( float n ) {
   return fract(sin(n)*43758.5453);
 }
 
-
-
 // noise (or sometimes perlin noise or fractional brownian motion [fbm] ) is a way of making a smooth continuous random number
 // there are many glsl noise functions to be found on the internet
 // most of them contain a great deal of complex math. 
