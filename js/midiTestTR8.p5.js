@@ -49,7 +49,7 @@ const colors = {
  }
 
 // 185 is control change channel 10
-
+alert("yo");
 new p5((sk) => {
   const translateZ = 500.0;
   const cellWidth = 60, cellHeight = 60;
@@ -94,10 +94,14 @@ new p5((sk) => {
     // https://code.tutsplus.com/tutorials/introduction-to-web-midi--cms-25220
     // 144 is note on
     // 176 - 191 is control change https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
+    // 201 ch 10 program change, 192 ch 1 program change
     if (type !== 185) {
       // console.log(type, key, velocity);
     }
-
+    if (type !== 137 && type !== 153) {
+      console.log(type, key, velocity);
+    }
+    // console.log(type, key, velocity);
     switch(type) {
       case 137:
         // ch 10 note on
