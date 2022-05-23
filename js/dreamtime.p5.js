@@ -1,5 +1,6 @@
 import p5 from 'p5';
 import { init as initMidi } from 'Utils/MidiTR8';
+import { ShadedEllipse } from 'Framework/ellipseShader';
 
 // lines curve play only when SD sound tones
 // one globe for RC - deep bass
@@ -22,7 +23,11 @@ new p5((sk) => {
   let bgTrigger = 0.0, counter = 0.0;
   let pointA, pointB, pointC, pointD;
   let colorA = [Math.random(), Math.random(), Math.random()], 
-    colorB = [Math.random(), Math.random(), Math.random()];
+      colorB = [Math.random(), Math.random(), Math.random()];
+
+  // for ellipses
+  let sphereShader1, sphereShader2;
+  const ellipses = [];
 
   const onSD = (type, velocity) => {
     if (type === "noteon") {
@@ -57,18 +62,51 @@ new p5((sk) => {
     }
   }
 
+  const onMT = (type) => {
+    if (type === "noteon" && ellipses.length) {
+      ellipses[0].emitShot();
+    }
+  }
+
   sk.preload = function () {
-    initMidi({ instHandlers: { onSD, onRC } })
+    initMidi({ instHandlers: { onSD, onRC, onMT } });
+    gradientShader = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
+    sphereShader1 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
+    sphereShader2 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
   }
 
   sk.setup = function() {
     sk.createCanvas(sk.windowWidth, sk.windowHeight, sk.WEBGL);
     sk.pixelDensity(1);
-    // sk.noStroke();
+    sk.noStroke();
 
-    gradientShader = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
     bgTexture = sk.createGraphics(sk.windowWidth, sk.windowHeight, sk.WEBGL);
     bgTexture.noStroke();
+
+    setupEllipses();
+  }
+
+  const setupEllipses = () => {
+    
+    const ellipse1 = new ShadedEllipse({
+      size: [100, 100],
+      position: [100, 100],
+      sk
+    });
+    ellipse1.setResolution([sk.width, sk.height]);
+    ellipse1.setShader(sphereShader1);
+    ellipse1.setTexture(sk.createGraphics(400, 400, sk.WEBGL));
+    
+    const ellipse2 = new ShadedEllipse({
+      size: [140, 140],
+      position: [200, 200],
+      sk
+    })
+    ellipse2.setResolution([sk.width, sk.height]);
+    ellipse2.setShader(sphereShader2);
+    ellipse2.setTexture(sk.createGraphics(400, 400, sk.WEBGL));
+
+    ellipses.push(ellipse1, ellipse2);
   }
 
   const incrementUntil = (val, limit=Math.PI) => {
@@ -144,11 +182,16 @@ new p5((sk) => {
     sk.pop();
   }
 
+  const drawEllipses = () => {
+    ellipses.forEach(e => e.draw());
+  }
+
   sk.draw = function() {
     // sk.background(237, 34, 93);
     sk.background(0);
     sk.noStroke();
     drawBackgroundGradient();
+    drawEllipses();
     drawCurvedLine();
   }
 }, document.querySelector('#container'));
