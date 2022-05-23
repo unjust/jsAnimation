@@ -49,7 +49,7 @@ export class ShadedEllipse {
     
     this.counter = 0.0;
     this.incrementShot();
-    console.log(this.colorVectorA, this.colorVectorB, this.pointA, this.pointB);
+    // console.log(this.colorVectorA, this.colorVectorB, this.pointA, this.pointB);
   }
 
   incrementShot() {
@@ -58,7 +58,7 @@ export class ShadedEllipse {
     } else {
       this.shot = 0.0;
     }
-    return Math.sin(this.shot);
+    return this.shot;
   }
 
   draw() {
