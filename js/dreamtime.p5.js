@@ -1,7 +1,9 @@
 import p5 from 'p5';
 import { init as initMidi } from 'Utils/MidiTR8';
 import { ShadedEllipse } from 'Framework/ellipseShader';
-
+import { CircleGroup } from 'Framework/CircleGroup';
+import { CurvedLineGroup } from 'Framework/LineGroup';
+import { BackgroundGradient } from './myLib/BackgroundGradient';
 // lines curve play only when SD sound tones
 // one globe for RC - deep bass
 // globes rise with LT, CC strings 
@@ -12,22 +14,26 @@ import { ShadedEllipse } from 'Framework/ellipseShader';
 new p5((sk) => {
 
   // for line animation
-  const len = 60;
-  const lineBuffer = Array.from(Array(len), () => ({ x: 0, y: 0 }));
-  let newest = 0;
   let drawLine = false;
+  let curvedLine;
   let toID = -1;
 
   // for gradient clouds
-  let gradientShader, bgTexture;
-  let bgTrigger = 0.0, counter = 0.0;
-  let pointA, pointB, pointC, pointD;
-  let colorA = [Math.random(), Math.random(), Math.random()], 
-      colorB = [Math.random(), Math.random(), Math.random()];
+  let bgGradient;
+  // let gradientShader, bgTexture;
+  // let bgTrigger = 0.0, counter = 0.0;
+  // let pointA, pointB, pointC, pointD;
+  // let colorA = [Math.random(), Math.random(), Math.random()], 
+  //     colorB = [Math.random(), Math.random(), Math.random()];
 
   // for ellipses
   let sphereShader1, sphereShader2;
   const ellipses = [];
+
+  // for rising circles
+  let circles;
+  let newestCircle = 0;
+  const circlesCount = 10;
 
   const onSD = (type, velocity) => {
     if (type === "noteon") {
@@ -44,33 +50,26 @@ new p5((sk) => {
   const onRC = (type, velocity) => {
     if (type === "noteon") {
       // set trigger on shader color
-      bgTrigger = incrementUntil(bgTrigger);
-      pointA = p5.Vector.random2D();
-      pointA.add([1, 1]);
-      pointA.div(2);
-      pointB = p5.Vector.random2D();
-      pointB.add([1, 1]);
-      pointB.div(2);
-      pointC = p5.Vector.random2D();
-      pointC.add([1, 1]);
-      pointC.div(2);
-      pointD = p5.Vector.random2D();
-      pointD.add([1, 1]);
-      pointD.div(2);
-      // console.log(pointA, pointB, pointC, pointD);
-      counter = 0.0;
+      bgGradient.trigger();
     }
   }
 
   const onMT = (type) => {
-    if (type === "noteon" && ellipses.length) {
-      ellipses[0].emitShot();
+    // if (type === "noteon" && ellipses.length) {
+    //   ellipses[0].emitShot();
+    // }
+    if (type === "noteon") {
+      let i = newestCircle % (circlesCount - 1);
+      circles[i].x = ((Math.random() * 2) - 1) * sk.width/2;
+      circles[i].y = ((Math.random() * 2) - 1) * sk.height/2;
+      circles[i].reset();
+      newestCircle += 1;
     }
   }
 
   sk.preload = function () {
     initMidi({ instHandlers: { onSD, onRC, onMT } });
-    gradientShader = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
+    bgGradient = new BackgroundGradient('shaders/standard.vert', 'shaders/colorClouds.frag', sk);
     sphereShader1 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
     sphereShader2 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
   }
@@ -80,10 +79,16 @@ new p5((sk) => {
     sk.pixelDensity(1);
     sk.noStroke();
 
-    bgTexture = sk.createGraphics(sk.windowWidth, sk.windowHeight, sk.WEBGL);
-    bgTexture.noStroke();
-
+    setupCurvedLine();
     setupEllipses();
+    setupCircles();
+  }
+
+  const setupCurvedLine = () => {
+    curvedLine = new CurvedLineGroup({ sk });
+  }
+  const setupCircles = () =>  {
+    circles = Array.from(Array(circlesCount), () => Object.assign({}, CircleGroup, { sk }));
   }
 
   const setupEllipses = () => {
@@ -119,79 +124,46 @@ new p5((sk) => {
   }
 
   const drawBackgroundGradient = () => {
-    if (bgTrigger === 0.0) {
-      return;
-    }
-   
-    bgTrigger = incrementUntil(bgTrigger);
-    // (counter < 1.0) ? counter += 0.01 : counter = 1.0;
-    counter = 1.0;
-    const originA = p5.Vector.lerp(pointA, pointB, counter).array();
-    const originB = p5.Vector.lerp(pointC, pointD, counter).array();
-
-    gradientShader.setUniform('u_time', bgTrigger); // this isnt time exactly
-    gradientShader.setUniform('u_resolution', [sk.width, sk.height]);
-    gradientShader.setUniform('u_originA', [originA[0], originA[1]]);
-    gradientShader.setUniform('u_originB', [originB[0], originB[1]]);
-    gradientShader.setUniform('u_vector1', colorA);
-    gradientShader.setUniform('u_vector2', colorB);
-
-    // CRUCIAL STEP THAT I DONT UNDERSTAND
-    bgTexture.shader(gradientShader);
-    bgTexture.rect(0, 0, sk.width, sk.height);
-    
-     /* when you put a texture or shader on an ellipse it is rendered in 3d,
-     so a fifth parameter that controls the # vertices in it becomes necessary,
-     or else you'll have sharp corners. setting it to 100 is smooth. */
-    // let ellipseFidelity = int(map(mouseX, 0, width, 8, 100));
-    sk.push();
-    sk.translate(-sk.width/2, -sk.height/2);
-    sk.texture(bgTexture);
-
-    sk.rect(0, 0, sk.width, sk.height);
-    sk.pop();
+    bgGradient.draw();
   }
 
-  const drawCurvedLine = function() {
-    const t = sk.millis()/500;
-    // const scale = 2 / (3 - Math.cos(2*t));
-
-    // https://gamedev.stackexchange.com/questions/43691/how-can-i-move-an-object-in-an-infinity-or-figure-8-trajectory
-    newest = sk.frameCount % len;
-      
-    if (drawLine) {
-      lineBuffer[newest] = { x: 200 + 200 * Math.cos(t), y: 300 + 200 * Math.sin(2*t) / 2 };
-    } else {
-      lineBuffer[newest] = undefined;
-    }
-
-    sk.push();
-    sk.translate(-sk.width/2, -sk.height/2);
-
-    sk.fill(255, 153);
-    sk.stroke(255, 153);
-    for (let i = 0; i < lineBuffer.length; i++) {
-      // which+1 is the smallest (the oldest in the array)
-      let index = (newest + 1 + i) % lineBuffer.length;
-      const xy = lineBuffer[index];
-      // sk.ellipse(xy.x, xy.y, i, i);
-      if (xy) {
-        sk.line(xy.x, xy.y, xy.x + lineBuffer.length - 1, xy.y + lineBuffer.length - i);
-      }
-    }
-    sk.pop();
+  const drawCurvedLine = () => {
+    curvedLine.draw();
   }
 
   const drawEllipses = () => {
     ellipses.forEach(e => e.draw());
   }
 
+  const drawCirclesRising = () => {
+    circles.forEach((c) => c.draw());
+  }
+
   sk.draw = function() {
     // sk.background(237, 34, 93);
     sk.background(0);
     sk.noStroke();
+
+    sk.fill(0, 255, 0);
     drawBackgroundGradient();
+
     drawEllipses();
-    drawCurvedLine();
+    if (drawLine) {
+      drawCurvedLine();
+    }
+   
+    drawCirclesRising();
+  }
+
+  sk.keyTyped = function() {
+    if (sk.key === 'm') {
+      let i = newestCircle % (circlesCount - 1);
+      circles[i].x = ((Math.random() * 2) - 1) * sk.width/2;
+      circles[i].y = ((Math.random() * 2) - 1) * sk.height/2;
+      circles[i].reset();
+      newestCircle += 1;
+    }
   }
 }, document.querySelector('#container'));
+
+
