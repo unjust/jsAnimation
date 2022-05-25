@@ -5,6 +5,8 @@ import { CircleGroup } from 'Framework/CircleGroup';
 import { CurvedLineGroup } from 'Framework/LineGroup';
 import { BackgroundGradient } from './myLib/BackgroundGradient';
 import { FogShader } from 'Framework/FogShader';
+import { Droplets } from 'Framework/Droplets';
+
 // lines curve play only when SD sound tones
 // one globe for RC - deep bass
 // globes rise with LT, CC strings 
@@ -27,9 +29,13 @@ new p5((sk) => {
   const ellipses = [];
 
   // for rising circles
-  let circles;
+  const circles = [];
   let newestCircle = 0;
   const circlesCount = 3;
+
+  // for droplets
+  const droplets = [];
+  const dropletsCount = 2;
 
   const onSD = (type, velocity) => {
     if (type === "noteon") {
@@ -66,7 +72,6 @@ new p5((sk) => {
     if (key === 19) {
       fogGradient.setColor([velocity/127, velocity/127, velocity/127]);
     }
-   
   }
 
   sk.preload = function () {
@@ -86,6 +91,8 @@ new p5((sk) => {
     setupCurvedLine();
     // setupEllipses();
     setupCircles();
+
+    setupDroplets();
   }
 
   const setupCurvedLine = () => {
@@ -93,7 +100,11 @@ new p5((sk) => {
   }
 
   const setupCircles = () =>  {
-    circles = Array.from(Array(circlesCount), () => Object.assign({}, CircleGroup, { sk }));
+    circles.push(...Array.from(Array(circlesCount), () => Object.assign({}, CircleGroup, { sk })));
+  }
+
+  const setupDroplets = () => {
+    droplets.push(...Array.from(Array(dropletsCount), () => new Droplets(sk)));
   }
 
   const setupEllipses = () => {
@@ -143,6 +154,10 @@ new p5((sk) => {
     circles.forEach((c) => c.draw());
   }
 
+  const drawDroplets = () => {
+    droplets.forEach((d) => d.draw());
+  }
+
   sk.draw = function() {
     // sk.background(237, 34, 93);
     sk.background(0);
@@ -156,7 +171,7 @@ new p5((sk) => {
     // drawEllipses();
     drawCurvedLine();
     drawCirclesRising();
-    
+    drawDroplets();
     fogGradient.draw();
     
   }
