@@ -20,11 +20,6 @@ new p5((sk) => {
 
   // for gradient clouds
   let bgGradient;
-  // let gradientShader, bgTexture;
-  // let bgTrigger = 0.0, counter = 0.0;
-  // let pointA, pointB, pointC, pointD;
-  // let colorA = [Math.random(), Math.random(), Math.random()], 
-  //     colorB = [Math.random(), Math.random(), Math.random()];
 
   // for ellipses
   let sphereShader1, sphereShader2;
@@ -33,7 +28,7 @@ new p5((sk) => {
   // for rising circles
   let circles;
   let newestCircle = 0;
-  const circlesCount = 10;
+  const circlesCount = 3;
 
   const onSD = (type, velocity) => {
     if (type === "noteon") {
@@ -43,7 +38,7 @@ new p5((sk) => {
     } else if ("noteoff") {
       toID = setTimeout(() => {
         drawLine = false;
-      }, 2000)
+      }, 3000)
     }
   }
 
@@ -55,14 +50,12 @@ new p5((sk) => {
   }
 
   const onMT = (type) => {
-    // if (type === "noteon" && ellipses.length) {
-    //   ellipses[0].emitShot();
-    // }
+    if (type === "noteon" && ellipses.length) {
+      ellipses[0].emitShot();
+    }
     if (type === "noteon") {
       let i = newestCircle % (circlesCount - 1);
-      circles[i].x = ((Math.random() * 2) - 1) * sk.width/2;
-      circles[i].y = ((Math.random() * 2) - 1) * sk.height/2;
-      circles[i].reset();
+      circles[i].show({ x: Math.random() * sk.width, y: sk.random(0.5, 1) * sk.height });
       newestCircle += 1;
     }
   }
@@ -70,8 +63,8 @@ new p5((sk) => {
   sk.preload = function () {
     initMidi({ instHandlers: { onSD, onRC, onMT } });
     bgGradient = new BackgroundGradient('shaders/standard.vert', 'shaders/colorClouds.frag', sk);
-    sphereShader1 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
-    sphereShader2 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
+    //sphereShader1 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
+    //sphereShader2 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
   }
 
   sk.setup = function() {
@@ -80,19 +73,19 @@ new p5((sk) => {
     sk.noStroke();
 
     setupCurvedLine();
-    setupEllipses();
+    // setupEllipses();
     setupCircles();
   }
 
   const setupCurvedLine = () => {
-    curvedLine = new CurvedLineGroup({ sk });
+    curvedLine = new CurvedLineGroup({ len: 100, sk, centerX: sk.width/2, centerY: sk.height/2, xRadius: 200, yRadius: 300 });
   }
+
   const setupCircles = () =>  {
     circles = Array.from(Array(circlesCount), () => Object.assign({}, CircleGroup, { sk }));
   }
 
   const setupEllipses = () => {
-    
     const ellipse1 = new ShadedEllipse({
       size: [100, 100],
       position: [100, 100],
@@ -128,7 +121,7 @@ new p5((sk) => {
   }
 
   const drawCurvedLine = () => {
-    curvedLine.draw();
+    curvedLine.draw(drawLine);
   }
 
   const drawEllipses = () => {
@@ -147,11 +140,8 @@ new p5((sk) => {
     sk.fill(0, 255, 0);
     drawBackgroundGradient();
 
-    drawEllipses();
-    if (drawLine) {
-      drawCurvedLine();
-    }
-   
+    // drawEllipses();
+    drawCurvedLine();
     drawCirclesRising();
   }
 
@@ -160,7 +150,7 @@ new p5((sk) => {
       let i = newestCircle % (circlesCount - 1);
       circles[i].x = ((Math.random() * 2) - 1) * sk.width/2;
       circles[i].y = ((Math.random() * 2) - 1) * sk.height/2;
-      circles[i].reset();
+      circles[i].show();
       newestCircle += 1;
     }
   }
