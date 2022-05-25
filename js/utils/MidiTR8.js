@@ -79,7 +79,7 @@ const _onMidi = function(msg) {
       instrumentHandlers[instHandlerName]("noteon", velocity);
       break;
     case 185:
-      onControlChangeHandler(key); // is key or velocity right here?
+      onControlChangeHandler(type, key, velocity); // is key or velocity right here?
     default:
       break;
   }
