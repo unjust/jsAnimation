@@ -57,6 +57,7 @@ window.draw = function() {
 
 window.mouseMoved = function() {
     zVal = (mouseX - width/2) * -10;
+    console.log(`mouse coords x ${mouseX} y ${mouseY}`);
 }
 
 
