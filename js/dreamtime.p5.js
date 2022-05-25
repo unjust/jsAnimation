@@ -4,6 +4,7 @@ import { ShadedEllipse } from 'Framework/ellipseShader';
 import { CircleGroup } from 'Framework/CircleGroup';
 import { CurvedLineGroup } from 'Framework/LineGroup';
 import { BackgroundGradient } from './myLib/BackgroundGradient';
+import { FogShader } from 'Framework/FogShader';
 // lines curve play only when SD sound tones
 // one globe for RC - deep bass
 // globes rise with LT, CC strings 
@@ -19,7 +20,7 @@ new p5((sk) => {
   let toID = -1;
 
   // for gradient clouds
-  let bgGradient;
+  let bgGradient, fogGradient;
 
   // for ellipses
   let sphereShader1, sphereShader2;
@@ -60,9 +61,18 @@ new p5((sk) => {
     }
   }
 
+  const onControlChange = (type, key, velocity) => {
+    console.log(key, type, velocity);
+    if (key === 19) {
+      fogGradient.setColor([velocity/127, velocity/127, velocity/127]);
+    }
+   
+  }
+
   sk.preload = function () {
-    initMidi({ instHandlers: { onSD, onRC, onMT } });
+    initMidi({ onControlChange, instHandlers: { onSD, onRC, onMT } });
     bgGradient = new BackgroundGradient('shaders/standard.vert', 'shaders/colorClouds.frag', sk);
+    fogGradient = new FogShader(sk);
     //sphereShader1 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
     //sphereShader2 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
   }
@@ -71,6 +81,7 @@ new p5((sk) => {
     sk.createCanvas(sk.windowWidth, sk.windowHeight, sk.WEBGL);
     sk.pixelDensity(1);
     sk.noStroke();
+    //sk._renderer.drawingContext.disable(sk._renderer.drawingContext.DEPTH_TEST);
 
     setupCurvedLine();
     // setupEllipses();
@@ -138,20 +149,44 @@ new p5((sk) => {
     sk.noStroke();
 
     sk.fill(0, 255, 0);
+
+    sk.blendMode(sk.BLEND);    
     drawBackgroundGradient();
 
     // drawEllipses();
     drawCurvedLine();
     drawCirclesRising();
+    
+    fogGradient.draw();
+    
   }
 
-  sk.keyTyped = function() {
-    if (sk.key === 'm') {
-      let i = newestCircle % (circlesCount - 1);
-      circles[i].x = ((Math.random() * 2) - 1) * sk.width/2;
-      circles[i].y = ((Math.random() * 2) - 1) * sk.height/2;
-      circles[i].show();
-      newestCircle += 1;
+  sk.keyPressed = () => {
+    switch(sk.key) {
+      case 'r':
+        fogGradient.setColor([1.0, 0., 0.]);
+        break;
+      case 'R':
+        fogGradient.setColor([-1.0, 0., 0.]);
+        break;
+      case 'g':
+        fogGradient.setColor([0.0, 1., 0.]);
+        break;
+      case 'G':
+        fogGradient.setColor([0.0, -1., 0.]);
+        break;
+      case 'b':
+        fogGradient.setColor([0.0, 0., 1.]);
+        break;
+      case 'B':
+        fogGradient.setColor(0.0, 0., -1.);
+        break;
+      case 'v':
+        v -= 1;
+        break;
+      case 'V':
+        v += 1;
+        break;
     }
   }
 }, document.querySelector('#container'));
