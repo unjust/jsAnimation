@@ -1,6 +1,5 @@
 import { accessMIDI } from "Utils/Midi.js"
 
-
 // 137, 153 ch 10 note on/off 
 // https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
 const TR8_keys = {
@@ -30,17 +29,30 @@ const instrumentHandlerDefaults = {
   onCC: function() {},
   onRC: function() {},
 }
-const noteQueue = [];
+
 let onMidiHandler = () => {};
 let onNoteOnHandler = () => {};
 let onNoteOffHandler = () => {};
 let onControlChangeHandler = () => {};
 let instrumentHandlers = instrumentHandlerDefaults;
+const noteQueue = [];
+let noteQueueMax = 100;
 
-export const init = ({ onMidiFn=()=>{},
+export const getNoteQueue = () => noteQueue;
+
+const addNoteQueue = (note) => {
+  if (noteQueue.length >= noteQueueMax) {
+    noteQueue.shift();
+  }
+  noteQueue.push(note);
+}
+
+export const init = ({ 
+    onMidiFn=()=>{},
     onNoteOn=()=>{},
     onNoteOff=()=>{},
     onControlChange=()=>{},
+    noteQueueLimit=100,
     instHandlers={}
   }) => {
   // 185 is control change channel 10
@@ -49,6 +61,7 @@ export const init = ({ onMidiFn=()=>{},
   onNoteOffHandler = onNoteOff;
   onControlChangeHandler = onControlChange;
   instrumentHandlers = { ...instrumentHandlerDefaults, ...instHandlers };
+  noteQueueMax = noteQueueLimit;
   accessMIDI(_onMidi);
 }
 
@@ -70,11 +83,10 @@ const _onMidi = function(msg) {
     case 137:
       // ch 10 note off
       onNoteOffHandler(key);
-      
       instrumentHandlers[instHandlerName]("noteoff", velocity);
       break;
     case 153:
-      noteQueue.push(key);
+      addNoteQueue(key);
       onNoteOnHandler(key);
       instrumentHandlers[instHandlerName]("noteon", velocity);
       break;
@@ -83,6 +95,7 @@ const _onMidi = function(msg) {
     default:
       break;
   }
+
 }
 
 
