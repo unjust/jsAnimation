@@ -38,7 +38,7 @@ export const CircleGroup = {
 
     this.alpha = this.startAlpha;
     this.alphaCounter = 0.0;
-    console.log("RESET ***********");
+    // console.log("RESET ***********");
     this.counter = 0.0; // reset motion counter
   },
   draw: function() {
@@ -51,7 +51,7 @@ export const CircleGroup = {
       for (let i = 0; i < this.circleCount; i++) {
         // we want the lowest one to reduce is alpha the fastest
         const alphaDiff = this.startAlpha/(i + 1) * this.ease(ac * (i + 1)) ;
-        console.log(`alphaDiff for ${i} is ${alphaDiff}`);
+        // console.log(`alphaDiff for ${i} is ${alphaDiff}`);
         const alpha = this.startAlpha/(i + 1) - alphaDiff; // reduce alpha exponentially
         color.setAlpha(alpha);
         this.sk.fill(color);

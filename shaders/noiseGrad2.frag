@@ -12,7 +12,6 @@ float hash( float n ) {
   return fract(sin(n)*43758.5453);
 }
 
-
 // noise (or sometimes perlin noise or fractional brownian motion [fbm] ) is a way of making a smooth continuous random number
 // there are many glsl noise functions to be found on the internet
 // most of them contain a great deal of complex math. 
@@ -48,11 +47,11 @@ void main() {
   vec3 col = vec3(0.0);
 
   // for (int i = 0; i < 16; i++) {
-    float fi = 1.0;
-    col.r = u_colorVector.r * (noise(uv.xyy*(12.0+fi)+col.rgb+t*sign(sin(fi/3.0))) + 2.0)/2.0; // noise returns -1. - 1.
-    col.g = u_colorVector.g * (noise(uv.xyx*(12.0+fi)+col.rgb+t*sign(sin(fi/3.0))) + 2.0)/2.0;
-    col.b = u_colorVector.b * (noise(uv.yyx*(12.0+fi)+col.rgb+t*sign(sin(fi/3.0))) + 2.0)/2.0;
-  // }
+  //   float fi = 1.0;
+  //   col.r = u_colorVector.r * (noise(uv.xyy*(12.0+fi)+col.rgb+t*sign(sin(fi/3.0))) + 2.0)/2.0; // noise returns -1. - 1.
+  //   col.g = u_colorVector.g * (noise(uv.xyx*(12.0+fi)+col.rgb+t*sign(sin(fi/3.0))) + 2.0)/2.0;
+  //   col.b = u_colorVector.b * (noise(uv.yyx*(12.0+fi)+col.rgb+t*sign(sin(fi/3.0))) + 2.0)/2.0;
+  // // }
            
   for (int i = 0; i < 16; i++) {
     float i2 = float(i) * 1.0;
@@ -61,8 +60,9 @@ void main() {
     col.b += u_colorVector.b * noise(uv.yyx*(32.0)+col.rgb+t*sign(sin(i2/3.0)));
   }
   
+  float cc = noise(vec3(col));
   // col.rgb /= 32.0;
   // col.rgb = mix(col.rgb, normalize(col.rgb)*2.0, 1.0);
   // col.rgb += 0.3;
-  gl_FragColor = vec4(col.r, col.g, col.b, 1.0);
+  gl_FragColor = vec4(cc, cc, cc, 1.0);
 }

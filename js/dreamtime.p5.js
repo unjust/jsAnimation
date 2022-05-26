@@ -2,7 +2,7 @@ import p5 from 'p5';
 import { init as initMidi } from 'Utils/MidiTR8';
 import { ShadedEllipse } from 'Framework/ellipseShader';
 import { CircleGroup } from 'Framework/CircleGroup';
-import { CurvedLineGroup } from 'Framework/LineGroup';
+import { CurvedLineGroup, BezierLineGroup } from 'Framework/LineGroup';
 import { BackgroundGradient } from './myLib/BackgroundGradient';
 import { FogShader } from 'Framework/FogShader';
 import { Droplets } from 'Framework/Droplets';
@@ -20,6 +20,7 @@ new p5((sk) => {
   let drawLine = false;
   let curvedLine;
   let toID = -1;
+  let bezierLines;
 
   // for gradient clouds
   let bgGradient, fogGradient;
@@ -56,6 +57,12 @@ new p5((sk) => {
     }
   }
 
+  const onLT = (type) => {
+    if (type === "noteon") {
+      bezierLines.reset();
+    }
+  }
+
   const onMT = (type) => {
     if (type === "noteon" && ellipses.length) {
       ellipses[0].emitShot();
@@ -68,14 +75,14 @@ new p5((sk) => {
   }
 
   const onControlChange = (type, key, velocity) => {
-    console.log(key, type, velocity);
+    // console.log(key, type, velocity);
     if (key === 19) {
       fogGradient.setColor([velocity/127, velocity/127, velocity/127]);
     }
   }
 
   sk.preload = function () {
-    initMidi({ onControlChange, instHandlers: { onSD, onRC, onMT } });
+    initMidi({ onControlChange, instHandlers: { onSD, onRC, onMT, onLT } });
     bgGradient = new BackgroundGradient('shaders/standard.vert', 'shaders/colorClouds.frag', sk);
     fogGradient = new FogShader(sk);
     //sphereShader1 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
@@ -91,12 +98,16 @@ new p5((sk) => {
     setupCurvedLine();
     // setupEllipses();
     setupCircles();
-
+    setupBezierLines();
     setupDroplets();
   }
 
   const setupCurvedLine = () => {
     curvedLine = new CurvedLineGroup({ len: 100, sk, centerX: sk.width/2, centerY: sk.height/2, xRadius: 200, yRadius: 300 });
+  }
+
+  const setupBezierLines = () => {
+    bezierLines = new BezierLineGroup(sk);
   }
 
   const setupCircles = () =>  {
@@ -170,6 +181,7 @@ new p5((sk) => {
 
     // drawEllipses();
     drawCurvedLine();
+    bezierLines.draw();
     drawCirclesRising();
     drawDroplets();
     fogGradient.draw();

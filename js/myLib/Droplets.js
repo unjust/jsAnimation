@@ -90,10 +90,10 @@ export class Droplets {
       //sk.rotate(Math.random() * 180);
       const op = this.opacities[i];
       (op > 0.0) ? (this.opacities[i] = op - (1 * i+1)) : this.opacities[i] = 0.0;
-      console.log(this.opacities[i]);
+      // console.log(this.opacities[i]);
       this.draw_leaf(pts, this.opacities[i])
 
     });
     sk.pop();
   }
-}
+} 
