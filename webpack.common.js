@@ -42,16 +42,8 @@ const baseExports = {
     module: {
         rules: [
             {
-              test: path.resolve(__dirname, 'js/libs/easycam/p5.easycam.js'),
-              use: "imports-loader?p5=>require('p5')"
-            },
-            {
-              test: path.resolve(__dirname, 'node_modules/p5/lib/addons/p5.sound.js'),
-              use: "imports-loader?p5=>require('p5')"
-            },
-            {
-              test: path.resolve(__dirname, 'node_modules/p5/lib/addons/p5.sound.min.js'),
-              use: "imports-loader?p5=>require('p5')"
+                test: path.resolve(__dirname, 'js/libs/easycam/p5.easycam.js'),
+                use: "imports-loader?p5=>require('p5')"
             },
             {
                 // https://webpack.js.org/guides/shimming/#global-exports
@@ -64,7 +56,15 @@ const baseExports = {
                 loader: 'babel-loader',
                 options: {
                     presets: ['@babel/preset-env'],
-                    plugins: ['@babel/plugin-proposal-class-properties'],
+                    plugins: ['@babel/plugin-proposal-class-properties', 
+                    ['@babel/plugin-transform-runtime', {
+                      helpers: false, 
+                      // this caused all sorts of problems
+                      // https://stackoverflow.com/questions/50907975/babel-regeneratorruntime-is-not-defined-when-using-transform-async-to-generat
+                      // https://stackoverflow.com/questions/64579253/unable-to-set-property-wrap-of-undefined-or-null-reference
+                      regenerator: true
+                    }]
+                  ],
                     sourceMap: true
                 }
             }

@@ -2,7 +2,7 @@
 let midi = null;
 
 const onMIDIMessage = (message) => {
-  const str = `MIDI message received at timestamp ${e.timeStamp}
+  const str = `MIDI message received at timestamp ${message.timeStamp}
     ${message.data.length} bytes`;
   message.data.forEach(d => console.log(`${str} 0x${d.toString(16)}`));
 }

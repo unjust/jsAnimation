@@ -143,7 +143,7 @@ new p5((sk) => {
         cam.reset();
         break;
       case delayFeedback:
-        cam.rotateY(velocity/127*2);
+        cam.rotateY(velocity/(127*4));
         break;
     }
   }
