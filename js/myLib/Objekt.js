@@ -37,6 +37,7 @@ export default class Objekt {
 
     setShapeType(shapeType) {
         this.shapeFn = this.sk[shapeType].bind(this.sk);
+        this.shapeType = shapeType;
     }
 
     /**
@@ -50,7 +51,7 @@ export default class Objekt {
         if (this.stopped) {
             return;
         }
-        this.counter += 0.5;
+        this.counter += 0.05;
         if (this.pos - this.posEnd > 100) {
             return;
         }
@@ -80,15 +81,18 @@ export default class Objekt {
      * 
      * @param { Object } options warp keeps redrawing to produce a feedback effect, rotate
      */
-    draw(options={ warp: false, rotate: false, subDraw }) {
-        const { warp, rotate, subDraw } = options;
+    draw(options={ warp: false, rotate: false, transitionAlpha: false, subDraw }) {
+        const { warp, rotate, subDraw, transitionAlpha } = options;
 
         if (warp) {
             this.fillColor.setAlpha(190);
+        } else if (transitionAlpha) {
+          transitionAlpha();
+          // this.update();
         } else {
-            this.fillColor.setAlpha(255);
-            this.update();
-        }
+          this.fillColor.setAlpha(255);
+          this.update();
+        } 
         if (options.texture) {
             this.sk.texture(options.texture);
         } else {
