@@ -38,16 +38,35 @@ new p5((sk) => {
   let bgShader, shaderGraphics;
   let drawShader = true;
 
+  const MODES = {
+    CIRCLE: "circle",
+    GRID: "grid",
+    CONCENTRIC: "concentric",
+    SPIRAL: "spiral",
+    INDIVIDUAL: "individual"
+  };
+
   // shapes
   let drawFn = () => {};
   const translateZ = 500.0;
-  const cellWidth = 60, cellHeight = 60;
-  let gridLength = 0, replaceIndex = 0;
-  const shapeQueue = [];
+  const cellWidth = 90, cellHeight = 90;
+  let gridLength = 0, replaceIndex = 0, shapeSize = 100;
+  let shapeQueue = [];
+  let currentMode;
 
+  // circle
+  let radius = 400;
 
+  const concentricRadii = Object.keys(colors).reduce((obj, noteKey, i) => {
+    const baseRadius = 10;
+    const ceil = 52;
+    obj[noteKey] = baseRadius * ((ceil - noteKey) * 3);
+    return obj;
+  }, {});
+ 
+  
   // bg shader
-  const colorVector = sk.createVector(105.0, 0.0, 0.0);
+  let colorVector = sk.createVector(1.0, 0.0, 0.0);
   let v = 0;
 
   sk.preload = () => {
@@ -64,104 +83,224 @@ new p5((sk) => {
     shaderGraphics.noStroke();
 
     console.log('hey sound defined?', sk.midiToFreq);
-    gridLength = sk.width/cellWidth * sk.height/cellHeight;
+    gridLength = Math.ceil(sk.width/cellWidth) * Math.ceil(sk.height/cellHeight);
     
-    initMidi({ onNoteOn, noteQueueLimit: gridLength });
-    //const cells = Array.from(Array(queueLength), x => 0);
-    //shapeQueue.push(...cells);
-    // Array.prototype.eventPush = function(item, cb) {
-    //   this.push(item);
-    //   cb(this);
-    // }
+    initMidi({
+      onNoteOn,
+      onControlChange,
+      noteQueueLimit: Math.max(gridLength, getAllConcentricCirclesCapacity())
+    });
+
   };
 
   const onNoteOn = (type, key) => {
     addShapes();
   }
 
-  sk.keyTyped = () => {
-    const c = sk.key;
-    if (c === "s") {
-      drawShader = !drawShader;
-      return;
-    } 
-    if (c === "c") {
-      drawFn = drawCircle;
-    } else {
-      drawFn = drawGrid;
+  const onControlChange = (type, key) => {
+    const delay = 16;
+    const master = 19;
+    const masterOn = 15;
+    if (key === delay) {
+
+    } else if (key === master) {
+      colorVector.add(-1.0/127, 0., 1.0/127);
+    } else if (key === masterOn) {
+      colorVector = sk.createVector(1.0, 0, 0);
     }
   }
 
+  // onMasterFX
+
+  // fft?
   sk.windowResized = () => {}
+
+  const getCircleCapacity = () => Math.floor((Math.PI * 2 * radius)/shapeSize);
+
+  const getAllConcentricCirclesCapacity = () => {
+    return Object.values(concentricRadii).reduce((total, cradius) => {
+      return total + Math.floor((Math.PI * 2 * cradius)/shapeSize);
+    }, 0);
+  }
+
+  const getMaxLength = (mode) => {
+    switch(mode) {
+      case MODES.CIRCLE:
+        return getCircleCapacity();
+      case MODES.GRID:
+        return gridLength;
+      case MODES.CONCENTRIC:
+        return getAllConcentricCirclesCapacity();
+      case MODES.INDIVIDUAL:
+        return 2;
+      default:
+        return 1;
+        break;
+    }
+  }
 
   const addShapes = () => {
     const notes = getNoteQueue();
-
-    if (shapeQueue.length < gridLength) {
-      // while there are spaces to fill, fill up our shapes
-      while (notes.length > shapeQueue.length) {
-        // determine shape
-        // console.log('while');
-        const note = notes[shapeQueue.length];
-        const color = colors[note];
-        const shape = objects[note]
-        shapeQueue.push(new shape(sk, { w: cellWidth * .2, h: cellHeight * .8, x: 0, y: 0 }, { fill: color, stroke: 'black' }));
-      }
+    const maxLength = getMaxLength(currentMode);
+    
+    let noteValue = 0;
+    const queueNotFull = shapeQueue.length < maxLength;
+    if (queueNotFull) {
+      // when queue not full but notes and shapes are equal length
+      noteValue = notes[shapeQueue.length === notes.length ? shapeQueue.length - 1 : shapeQueue.length];
     } else {
-      const lastNote = notes[notes.length - 1];
-      const color = colors[lastNote];
-      const shape = objects[lastNote];
-      // console.log('shift')
-      // shapeQueue.unshift(value);
-      shapeQueue[replaceIndex] = new shape(sk,  { w: cellWidth * .2, h: cellHeight * .8, x: 0, y: 0 }, { fill: color, stroke: 'black' });
-      replaceIndex = replaceIndex < gridLength ? replaceIndex + 1 : 0;
+      noteValue = notes[notes.length - 1];
     }
+
+    const color = colors[noteValue];
+    const shapeFn = objects[noteValue];
+    const shape = new shapeFn(sk, { w: cellWidth * .2, h: cellHeight * .8, x: 0, y: 0 }, { fill: color, stroke: 'black' });
+    if (currentMode === MODES.INDIVIDUAL) {
+      if (!shapeQueue[replaceIndex % maxLength]) {
+        const otherIndex = replaceIndex % maxLength ? 1 : 0;
+        const otherShape = shapeQueue[otherIndex];
+        if (!otherShape || objects[otherShape.noteValue] !== shape) {
+          shapeQueue[replaceIndex % maxLength] = { color, noteValue, shape };
+        }
+      }
+    }
+    else if (queueNotFull) {
+      shapeQueue.push({ color, noteValue, shape });
+    } else {
+      shapeQueue[replaceIndex % maxLength] = { color, noteValue, shape };
+    }
+    replaceIndex++;
   }
 
   const drawGrid = (shape, i) => {
     const cellsX = (sk.width/cellWidth);
     sk.push();
     sk.translate(-sk.width/2, -sk.height/2, 0);
-    shapeQueue.forEach((shape, i) => {
+    shapeQueue.forEach((shapeObj, i) => {
+      const { shape } = shapeObj;
       shape.pos.x = (i % cellsX) * cellWidth;
       shape.pos.y = Math.floor(i/cellsX) * cellHeight;
-      // shape.setPosition({ x: (i % cellsX) * cellWidth, y: Math.floor(i/cellsX) * cellHeight });
       shape.draw({ warp: false, rotate: true });
     });
+    sk.pop();
+  }
+
+  const drawConcentricCircles = () => {
+    if (!shapeQueue.length) {
+      return;
+    }
+    
+    sk.push();
+    
+    // when an instrument is at max... 
+    for (let i = 0; i < shapeQueue.length; i++) {
+      // console.log(shapeQueue.length);
+      const { shape, noteValue, color } = shapeQueue[i];
+      const instRadius = concentricRadii[noteValue];
+      const cap = Math.floor((Math.PI * 2 * instRadius)/shapeSize);
+      const tick = (Math.PI*2 * i)/(cap);
+      const x = instRadius * Math.sin(tick + sk.frameCount/100);
+      const y = instRadius * Math.cos(tick + sk.frameCount/100);
+      shape.pos.x = x;
+      shape.pos.y = y;
+      
+      shape.draw({ warp: false, rotate: true });
+      // sk.circle(x, y, 20);
+    }
+    sk.pop();
+  }
+
+  const alphaA = function() { 
+    const alpha = 255 * (Math.sin(sk.frameCount/10) + 1)/2;
+    // console.log(sk.frameCount/1000);
+    if (alpha < 0.01) {
+      shapeQueue[0] = null;
+    }
+    this.fillColor.setAlpha(alpha);
+  };
+  const alphaB = function() { 
+    const alpha = 255 * (Math.sin(Math.PI + sk.frameCount/10) + 1)/2;
+    //console.log(alpha);
+    if (alpha < 0.01) {
+      shapeQueue[1] = null;
+    }
+    this.fillColor.setAlpha(alpha);
+  };
+
+  const drawIndividual = () => {
+    sk.push();
+    const scale = 10;
+    // sk.translate(0, 0);
+    sk.scale(scale, scale);
+    sk.rotate(sk.millis()/500, [1, 1, 1]);
+ 
+    shapeQueue.forEach((shapeObj, i) => {
+      if (!shapeObj) {
+        return;
+      }
+      const { shape } = shapeObj;
+      shape.draw({ warp: false, transitionAlpha: (i === 0 ? alphaA : alphaB).bind(shape), rotate: false });
+    })
+  
     sk.pop();
   }
 
   const drawCircle = (shape, i) => {
+    if (!shapeQueue.length) {
+      return;
+    }
+    const cap = getCircleCapacity();
+
     sk.push();
-    shapeQueue.forEach((shape, i) => {
-      shape.pos.x = 400 * Math.sin(i + sk.frameCount/100);
-      shape.pos.y = 400 * Math.cos(i + sk.frameCount/100);
+    for (let i = 0; i < shapeQueue.length; i++) {
+      // console.log(shapeQueue.length);
+      const { shape } = shapeQueue[i];
+      const tick = (Math.PI*2 * i)/(cap);
+      const x = radius * Math.sin(tick + sk.frameCount/100);
+      const y = radius * Math.cos(tick + sk.frameCount/100);
+      shape.pos.x = x;
+      shape.pos.y = y;
       shape.draw({ warp: false, rotate: true });
-    });
+      // sk.circle(x, y, 20);
+    }
     sk.pop();
   }
 
+  const modeDrawFns = {
+    circle: drawCircle,
+    concentric: drawConcentricCircles,
+    grid: drawGrid,
+    individual: drawIndividual,
+    spiral: () => {}
+  }
+
+  const setDrawMode = (mode) => {
+    const max = getMaxLength(mode);
+    const len = shapeQueue.length;
+    if (max < len) {
+      shapeQueue.splice(0, len - max);
+    }
+    currentMode = mode;
+    if (currentMode === MODES.INDIVIDUAL) {
+      // sk.clear();
+      // sk.background(0);
+    }
+    drawFn = modeDrawFns[mode];
+  }
+
   sk.draw = () => {
-    sk.clear();
-    sk.background(0);
-    
+    //if (currentMode !== MODES.INDIVIDUAL) {
+      sk.clear();
+      sk.background(0);
+    //}
     // divide the canvas into a grid
     // with every new note, select a shape and put it in the next spot on the grid
     // when done with last row and last column, restart
     
     if (drawShader) {
-      // bgShader.setUniform('u_resolution', [sk.width, sk.height]);
-      // bgShader.setUniform('u_time', sk.frameCount/ 100.0);
-    
-      // shaderGraphics.shader(bgShader);
-      // sk.push();
-      // sk.translate(-sk.width/2, -sk.height/2, -translateZ);
-      // shaderGraphics.rect(-translateZ/2, -translateZ/2, sk.width + translateZ, sk.height + translateZ);
-      // sk.image(shaderGraphics, -translateZ * 1.2, -translateZ, sk.width + translateZ * 2.5, sk.height + translateZ * 2);
-      // sk.pop();
       shaderGraphics.shader(bgShader);
       bgShader.setUniform('u_resolution', [sk.width, sk.height]);
-      bgShader.setUniform('u_colorVector', [colorVector.x/255.0, colorVector.y/255.0, colorVector.z/255.0]);
+      bgShader.setUniform('u_colorVector', [colorVector.x, colorVector.y, colorVector.z]);
       bgShader.setUniform('u_value', v);
       bgShader.setUniform('u_time', sk.frameCount);
       sk.push();
@@ -173,13 +312,12 @@ new p5((sk) => {
     
     // sk.fill('blue');
     // sk.quad(0, 0, sk.width, 0, sk.width, sk.height, 0, sk.height);
-    
-    drawFn();
-    
+    if (shapeQueue.length) {
+      drawFn();
+    }
   };
 
-
-  sk.keyPressed = () => {
+  sk.keyTyped = () => {
     switch(sk.key) {
       case 'r':
         const v = colorVector.add(1.0, 0., 0.);
@@ -205,6 +343,21 @@ new p5((sk) => {
         break;
       case 'V':
         v += 1;
+        break;
+      case "s":
+        drawShader = !drawShader;
+        break;
+      case "c": 
+        setDrawMode(MODES.CIRCLE);
+        break;
+      case "C": 
+        setDrawMode(MODES.CONCENTRIC);
+        break;
+      case "1": 
+        setDrawMode(MODES.INDIVIDUAL);
+        break;
+      default:
+        setDrawMode(MODES.GRID);
         break;
     }
     console.log(colorVector, v);
