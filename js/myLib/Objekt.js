@@ -61,13 +61,16 @@ export default class Objekt {
     setPosition({ x, y, z=0.0 }) {
       this.pos = this.sk.createVector(x, y, z); 
     }
-  
+    
+    setPosEnd({ x, y, z=0.0 }) {
+      this.posEnd = this.sk.createVector(x, y, z); 
+    }
+
     _updatePosition() {
-        const pct = this.counter/100;
+        const pct = this.counter/1000;
         this.pos.x = (this.pos.x * (1 - pct)) + (this.posEnd.x * pct);
         this.pos.y = (this.pos.y * (1 - pct)) + (this.posEnd.y * pct);
         this.pos.z = (this.pos.z * (1 - pct)) + (this.posEnd.z * pct);
-    
         return this.pos;
     }
 
@@ -81,9 +84,9 @@ export default class Objekt {
      * 
      * @param { Object } options warp keeps redrawing to produce a feedback effect, rotate
      */
-    draw(options={ warp: false, rotate: false, transitionAlpha: false, subDraw }) {
+    draw(options={ warp: false, rotate: false, transitionAlpha: false, subDraw: false }) {
         const { warp, rotate, subDraw, transitionAlpha } = options;
-
+        
         if (warp) {
             this.fillColor.setAlpha(190);
         } else if (transitionAlpha) {
