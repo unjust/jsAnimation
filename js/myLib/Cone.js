@@ -21,10 +21,8 @@ export default class Cone extends Objekt {
     // for a cartoon effect
     drawStroke() {
         this.sk.translate(0, -1 * this.dim.h/2, 0);
-        this.sk.rotateX(90);
+        this.sk.rotateX(Math.PI/2);
         this.sk.stroke(this.strokeColor);
-
-        this.sk.angleMode(this.sk.DEGREES);
         this.sk.circle(0, 0, this.dim.w * 2)
     }
 
