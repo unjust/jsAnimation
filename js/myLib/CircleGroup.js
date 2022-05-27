@@ -2,6 +2,7 @@ export const CircleGroup = {
   x: 400,
   y: 800,
   latestPosition: { x: 0, y: 200 },
+  tailendPosition: { x: 0, y: 0 },
   circleCount: 5,
   sk: null,
   counter: 0.0,
@@ -33,7 +34,7 @@ export const CircleGroup = {
       // just start where we left off
       this.x = this.latestPosition.x;
       this.y = this.latestPosition.y;
-      console.log(`starting where we left off lastPosition.y ${this.latestPosition.y}`)
+      // console.log(`starting where we left off lastPosition.y ${this.latestPosition.y}`)
     };
 
     this.alpha = this.startAlpha;

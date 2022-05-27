@@ -16,6 +16,10 @@ import { Droplets } from 'Framework/Droplets';
 
 new p5((sk) => {
 
+  let downward = false;
+  let downwardCount = 0;
+  let dtoID = -1;
+
   // for line animation
   let drawLine = false;
   let curvedLine;
@@ -32,11 +36,13 @@ new p5((sk) => {
   // for rising circles
   const circles = [];
   let newestCircle = 0;
-  const circlesCount = 3;
+  const circlesCount = 4;
 
   // for droplets
   const droplets = [];
   const dropletsCount = 2;
+  let dropletLeaves = 0;
+  let dropletIndex = 0;
 
   const onSD = (type, velocity) => {
     if (type === "noteon") {
@@ -57,6 +63,15 @@ new p5((sk) => {
     }
   }
 
+  const onRS = (type, velocity) => {
+    if (type === "noteon") {
+      // set trigger on shader color
+      (dropletLeaves < 10) ? dropletLeaves++ : dropletLeaves = 0;
+      dropletIndex = (dropletLeaves <= 5) ? 0 : 1;
+      droplets[dropletIndex].step();
+    }
+  }
+
   const onLT = (type) => {
     if (type === "noteon") {
       bezierLines.reset();
@@ -64,13 +79,25 @@ new p5((sk) => {
   }
 
   const onMT = (type) => {
-    if (type === "noteon" && ellipses.length) {
-      ellipses[0].emitShot();
-    }
+    // if (type === "noteon" && ellipses.length) {
+    //   ellipses[0].emitShot();
+    // }
     if (type === "noteon") {
       let i = newestCircle % (circlesCount - 1);
-      circles[i].show({ x: Math.random() * sk.width, y: sk.random(0.5, 1) * sk.height });
+      circles[i].show({ x: Math.random() * sk.width, y: sk.random(0.8, 1) * sk.height });
       newestCircle += 1;
+    }
+  }
+
+  const onCC = (type) => {
+    if (type === "noteon") {
+      downward = true;
+      //console.log('clear', toID);
+      clearTimeout(dtoID);
+    } else if ("noteoff") {
+      dtoID = setTimeout(() => {
+        downward = false;
+      }, 3000)
     }
   }
 
@@ -82,7 +109,7 @@ new p5((sk) => {
   }
 
   sk.preload = function () {
-    initMidi({ onControlChange, instHandlers: { onSD, onRC, onMT, onLT } });
+    initMidi({ onControlChange, instHandlers: { onSD, onRC, onMT, onLT, onRS, onCC } });
     bgGradient = new BackgroundGradient('shaders/standard.vert', 'shaders/colorClouds.frag', sk);
     fogGradient = new FogShader(sk);
     //sphereShader1 = sk.loadShader('shaders/standard.vert', 'shaders/colorClouds.frag');
@@ -165,6 +192,10 @@ new p5((sk) => {
     circles.forEach((c) => c.draw());
   }
 
+  const getDownwardCount = () => {
+    // console.log(Math.abs(downwardCount) < sk.height);
+    return (Math.abs(downwardCount) < sk.height) ? downwardCount-- : downwardCount = 0;
+  }
   const drawDroplets = () => {
     droplets.forEach((d) => d.draw());
   }
@@ -182,8 +213,20 @@ new p5((sk) => {
     // drawEllipses();
     drawCurvedLine();
     bezierLines.draw();
-    drawCirclesRising();
-    drawDroplets();
+    if (downward) {
+      sk.push();
+      const dc = getDownwardCount();
+      if (dc === 0) {
+        sk.translate(0, sk.height + 100);
+      } else {
+        sk.translate(0, dc);
+      }
+    }
+      drawCirclesRising();
+      drawDroplets();
+    if (downward) {
+      sk.pop();
+    }
     fogGradient.draw();
     
   }
