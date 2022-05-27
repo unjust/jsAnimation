@@ -66,6 +66,10 @@ export const init = ({
 }
 
 const _onMidi = function(msg) {
+  // 192 is kit change
+  // 248 is clock
+  // 185 ext in 
+
   const [ type, key, velocity ] = msg.data;
   if (!key) {
     return;
