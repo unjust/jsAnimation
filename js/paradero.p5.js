@@ -2,6 +2,7 @@ import p5 from 'p5';
 import { init as initMidi, getNoteQueue } from 'Utils/MidiTR8';
 import Cube from 'Framework/Cube';
 import Cone from 'Framework/Cone';
+import { createEasyCam } from 'Libraries/easycam/p5.easycam.js';
 
 const colors = {
   36: 'red',
@@ -34,6 +35,8 @@ const colors = {
 // 185 is control change channel 10
 new p5((sk) => {
   
+  let cam;
+
   // for bg
   let bgShader, shaderGraphics;
   let drawShader = true;
@@ -56,6 +59,7 @@ new p5((sk) => {
 
   // circle
   let radius = 400;
+  let radiusDelta = -1;
 
   const concentricRadii = Object.keys(colors).reduce((obj, noteKey, i) => {
     const baseRadius = 10;
@@ -88,31 +92,62 @@ new p5((sk) => {
     initMidi({
       onNoteOn,
       onControlChange,
-      noteQueueLimit: Math.max(gridLength, getAllConcentricCirclesCapacity())
+      noteQueueLimit: Math.max(gridLength, getAllConcentricCirclesCapacity()),
+      instHandlers: { onRS, onRC }
     });
-
+    cam = createEasyCam.bind(sk)();
   };
 
   const onNoteOn = (type, key) => {
     addShapes();
   }
 
-  const onControlChange = (type, key) => {
-    const delay = 16;
-    const master = 19;
-    const masterOn = 15;
-    if (key === delay) {
-
-    } else if (key === master) {
-      colorVector.add(-1.0/127, 0., 1.0/127);
-    } else if (key === masterOn) {
-      colorVector = sk.createVector(1.0, 0, 0);
+  const onRS = (type) => {
+    if (currentMode === MODES.CIRCLE && type === "noteon") {
+      if (radius === 400) {
+        radiusDelta = -1;
+      } else if (radius < 80) {
+        radiusDelta = 1;
+      }
+      radius += (5 * radiusDelta);
     }
   }
 
-  // onMasterFX
+  const onRC = onRS;
+  
+  const onControlChange = (type, key, velocity) => {
+    const delay = 16,
+      delayTime = 17,
+      delayFeedback = 18;
+    const master = 19;
+    const masterOn = 15;
+    const extInLevel = 12;
+    switch(key) {
+      case extInLevel:
+        const modes = 127/3;
+        if (velocity < modes) {
+          setDrawMode(MODES.CIRCLE);
+        } else if (velocity < modes * 2) {
+          setDrawMode(MODES.GRID);
+        } else {
+          setDrawMode(MODES.INDIVIDUAL);
+        }
+      case delay: 
+        colorVector.add(-1.0/127, 1.0/127, 1.0/127);
+        break;
+      case master:
+        colorVector.add(-1.0/127, 0., 1.0/127);
+        break;
+      case masterOn:
+        colorVector = sk.createVector(1.0, 0, 0);
+        cam.reset();
+        break;
+      case delayFeedback:
+        cam.rotateY(velocity/127*2);
+        break;
+    }
+  }
 
-  // fft?
   sk.windowResized = () => {}
 
   const getCircleCapacity = () => Math.floor((Math.PI * 2 * radius)/shapeSize);
@@ -130,7 +165,7 @@ new p5((sk) => {
       case MODES.GRID:
         return gridLength;
       case MODES.CONCENTRIC:
-        return getAllConcentricCirclesCapacity();
+        return 30; // getAllConcentricCirclesCapacity();
       case MODES.INDIVIDUAL:
         return 2;
       default:
@@ -185,30 +220,51 @@ new p5((sk) => {
     sk.pop();
   }
 
-  const drawConcentricCircles = () => {
-    if (!shapeQueue.length) {
-      return;
-    }
+  // const drawConcentricCircles = () => {
+  //   if (!shapeQueue.length) {
+  //     return;
+  //   }
     
+  //   sk.push();
+    
+  //   // when an instrument is at max... 
+  //   for (let i = 0; i < shapeQueue.length; i++) {
+  //     // console.log(shapeQueue.length);
+  //     const { shape, noteValue, color } = shapeQueue[i];
+  //     const instRadius = concentricRadii[noteValue];
+  //     const cap = Math.floor((Math.PI * 2 * instRadius)/shapeSize);
+  //     const tick = (Math.PI*2 * i)/(cap);
+  //     const x = instRadius * Math.sin(tick + sk.frameCount/100);
+  //     const y = instRadius * Math.cos(tick + sk.frameCount/100);
+  //     shape.pos.x = x;
+  //     shape.pos.y = y;
+      
+  //     shape.draw({ warp: false, rotate: true });
+  //     // sk.circle(x, y, 20);
+  //   }
+  //   sk.pop();
+  // }
+
+  const drawConcentricCircles = () => {
+    const counter = sk.millis()/5000;
+
     sk.push();
     
-    // when an instrument is at max... 
-    for (let i = 0; i < shapeQueue.length; i++) {
-      // console.log(shapeQueue.length);
-      const { shape, noteValue, color } = shapeQueue[i];
-      const instRadius = concentricRadii[noteValue];
-      const cap = Math.floor((Math.PI * 2 * instRadius)/shapeSize);
-      const tick = (Math.PI*2 * i)/(cap);
-      const x = instRadius * Math.sin(tick + sk.frameCount/100);
-      const y = instRadius * Math.cos(tick + sk.frameCount/100);
-      shape.pos.x = x;
-      shape.pos.y = y;
-      
-      shape.draw({ warp: false, rotate: true });
-      // sk.circle(x, y, 20);
-    }
+    shapeQueue.forEach(s => {
+      const shape = s.shape;
+      const tw_delta = 1;
+      const th_delta = 1;
+      const x = shape.pos.x + (tw_delta * shape.dim.w/2);
+      const y = shape.pos.y + (th_delta * shape.dim.h);
+      const z = shape.pos.x + (tw_delta * shape.dim.w/2);
+      // debugger
+      sk.rotateY(Math.sin(counter/300));
+      shape.setPosEnd({ x, y, z });
+      shape.draw();
+    });
+    
     sk.pop();
-  }
+  };
 
   const alphaA = function() { 
     const alpha = 255 * (Math.sin(sk.frameCount/10) + 1)/2;
@@ -250,9 +306,9 @@ new p5((sk) => {
       return;
     }
     const cap = getCircleCapacity();
-
+    const limit = Math.min(shapeQueue.length, cap);
     sk.push();
-    for (let i = 0; i < shapeQueue.length; i++) {
+    for (let i = 0; i < limit; i++) {
       // console.log(shapeQueue.length);
       const { shape } = shapeQueue[i];
       const tick = (Math.PI*2 * i)/(cap);
@@ -275,6 +331,9 @@ new p5((sk) => {
   }
 
   const setDrawMode = (mode) => {
+    if (mode === currentMode) {
+      return;
+    }
     const max = getMaxLength(mode);
     const len = shapeQueue.length;
     if (max < len) {
@@ -310,8 +369,6 @@ new p5((sk) => {
       sk.pop();
     }
     
-    // sk.fill('blue');
-    // sk.quad(0, 0, sk.width, 0, sk.width, sk.height, 0, sk.height);
     if (shapeQueue.length) {
       drawFn();
     }
